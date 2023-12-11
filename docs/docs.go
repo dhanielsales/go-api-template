@@ -10,7 +10,7 @@ const docTemplate = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {
-            "name": "Ben Davis"
+            "name": "Dhaniel Sales"
         },
         "license": {
             "name": "MIT"
@@ -20,9 +20,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/todos": {
+        "/category": {
             "get": {
-                "description": "fetch every todo available.",
+                "description": "fetch every category available.",
                 "consumes": [
                     "*/*"
                 ],
@@ -30,23 +30,23 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "todos"
+                    "Category"
                 ],
-                "summary": "Get all todos.",
+                "summary": "Get all categories.",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/todo.todoDB"
+                                "$ref": "#/definitions/category_entity.Category"
                             }
                         }
                     }
                 }
             },
             "post": {
-                "description": "creates one todo.",
+                "description": "creates one category.",
                 "consumes": [
                     "*/*"
                 ],
@@ -54,56 +54,34 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "todos"
+                    "Category"
                 ],
-                "summary": "Create one todo.",
+                "summary": "Create one category.",
                 "parameters": [
                     {
-                        "description": "Todo to create",
-                        "name": "todo",
+                        "description": "Category to create",
+                        "name": "Category",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/todo.createTodoRequest"
+                            "$ref": "#/definitions/category_http.createCategoryRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/todo.createTodoResponse"
-                        }
+                    "201": {
+                        "description": "Created"
                     }
                 }
             }
         }
     },
     "definitions": {
-        "todo.createTodoRequest": {
+        "category_entity.Category": {
             "type": "object",
             "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "todo.createTodoResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "todo.todoDB": {
-            "type": "object",
-            "properties": {
-                "completed": {
-                    "type": "boolean"
+                "created_at": {
+                    "type": "integer"
                 },
                 "description": {
                     "type": "string"
@@ -111,8 +89,28 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "title": {
+                "name": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "integer"
+                }
+            }
+        },
+        "category_http.createCategoryRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 300
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
                 }
             }
         }
@@ -121,12 +119,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "2.0",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Tapir App Template",
-	Description:      "An example template of a Golang backend API using Fiber and MongoDB",
+	Title:            "Golang scaffold",
+	Description:      "A simple Golang backend scaffold",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

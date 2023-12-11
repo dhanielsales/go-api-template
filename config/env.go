@@ -10,6 +10,7 @@ import (
 type EnvVars struct {
 	MONGODB_URI  string `mapstructure:"MONGODB_URI"`
 	MONGODB_NAME string `mapstructure:"MONGODB_NAME"`
+	POSTGRES_URI string `mapstructure:"POSTGRES_URI"`
 	PORT         string `mapstructure:"PORT"`
 }
 
@@ -19,6 +20,7 @@ func LoadConfig() (config EnvVars, err error) {
 		return EnvVars{
 			MONGODB_URI:  os.Getenv("MONGODB_URI"),
 			MONGODB_NAME: os.Getenv("MONGODB_NAME"),
+			POSTGRES_URI: os.Getenv("POSTGRES_URI"),
 			PORT:         os.Getenv("PORT"),
 		}, nil
 	}
@@ -44,6 +46,11 @@ func LoadConfig() (config EnvVars, err error) {
 
 	if config.MONGODB_NAME == "" {
 		err = errors.New("MONGODB_NAME is required")
+		return
+	}
+
+	if config.POSTGRES_URI == "" {
+		err = errors.New("POSTGRES_URI is required")
 		return
 	}
 

@@ -16,9 +16,9 @@ RUN task build
 
 FROM scratch
 
-COPY --from=builder ["/build/server", "/server"]
+COPY --from=builder ["/build/service", "/service"]
 
 ENV GO_ENV=production
 
-CMD ["/server"]
+CMD ["/service"]
 

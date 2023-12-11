@@ -1,42 +1,44 @@
 basePath: /
 definitions:
-  todo.createTodoRequest:
+  category_entity.Category:
     properties:
-      description:
-        type: string
-      title:
-        type: string
-    type: object
-  todo.createTodoResponse:
-    properties:
-      id:
-        type: string
-    type: object
-  todo.todoDB:
-    properties:
-      completed:
-        type: boolean
+      created_at:
+        type: integer
       description:
         type: string
       id:
         type: string
-      title:
+      name:
         type: string
+      updated_at:
+        type: integer
+    type: object
+  category_http.createCategoryRequest:
+    properties:
+      description:
+        maxLength: 300
+        type: string
+      name:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - name
     type: object
 info:
   contact:
-    name: Ben Davis
-  description: An example template of a Golang backend API using Fiber and MongoDB
+    name: Dhaniel Sales
+  description: A simple Golang backend scaffold
   license:
     name: MIT
-  title: Tapir App Template
-  version: "2.0"
+  title: Golang scaffold
+  version: "1.0"
 paths:
-  /todos:
+  /category:
     get:
       consumes:
       - '*/*'
-      description: fetch every todo available.
+      description: fetch every category available.
       produces:
       - application/json
       responses:
@@ -44,30 +46,28 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/todo.todoDB'
+              $ref: '#/definitions/category_entity.Category'
             type: array
-      summary: Get all todos.
+      summary: Get all categories.
       tags:
-      - todos
+      - Category
     post:
       consumes:
       - '*/*'
-      description: creates one todo.
+      description: creates one category.
       parameters:
-      - description: Todo to create
+      - description: Category to create
         in: body
-        name: todo
+        name: Category
         required: true
         schema:
-          $ref: '#/definitions/todo.createTodoRequest'
+          $ref: '#/definitions/category_http.createCategoryRequest'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/todo.createTodoResponse'
-      summary: Create one todo.
+        "201":
+          description: Created
+      summary: Create one category.
       tags:
-      - todos
+      - Category
 swagger: "2.0"

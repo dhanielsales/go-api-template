@@ -1,19 +1,98 @@
 version: "3"
 
+dotenv: 
+  - ./app.env
+
+vars:
+  POSTGRES_CONTAINER_NAME: postgres_test
+  MONDODB_CONTAINER_NAME: mongodb_test
+
 tasks:
   dev:
+    desc: Run development server
     cmds:
       - air
+
   docs:
+    desc: Generate swagger docs
     cmds:
-      - swag init --dir ./cmd/server,./internal/todo
+      - swag init --dir ./cmd/service,./modules
+
   build:
+    desc: Build binary
     cmds:
-      - go build -o server cmd/server/main.go
+      - go build -o service cmd/service/main.go
+
   start:
+    desc: Start binary
     cmds:
-      - ./server
+      - ./service
+
+  migration-create:
+    desc: "Create migration. Example: task migration-create name=create_users_table"
+    cmds:
+      - migrate create -ext sql -dir internal/postgres/migrations -seq '{{.name}}'
+
+  migration-up:
+    desc: Run migrations
+    cmds:
+      - migrate -database '{{.POSTGRES_URI}}' -path internal/postgres/migrations -verbose up
+
+  migration-down:
+    desc: Rollback migrations
+    cmds:
+      - migrate -database '{{.POSTGRES_URI}}' -path internal/postgres/migrations -verbose down 1
+
+  migration-fix:
+    desc: "Fix migrations to specific version. Example: task migration-force version=1"
+    cmds:
+      - migrate -database '{{.POSTGRES_URI}}' -path internal/postgres/migrations -verbose force '{{.version}}'
+
   install:
+    desc: Install dependencies
     cmds:
-      - go install github.com/swaggo/swag/cmd/swag@latest
+      - go mod tidy
+
+  setup-tools:
+    desc: Install tools
+    cmds:
+      - go get -u github.com/swaggo/swag
+      - go install github.com/cosmtrek/air@latest
       - go install github.com/go-task/task/v3/cmd/task@latest
+      - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
+  setup-infra:
+    desc: Create infrastructure
+    cmds:
+      - docker run --name '{{.POSTGRES_CONTAINER_NAME}}' --network=app-network -e "POSTGRES_USER=postgres" -e "POSTGRES_PASSWORD=postgres" -e "POSTGRES_DB=main" -d -p 5432:5432 postgres
+      - docker run --name '{{.MONDODB_CONTAINER_NAME}}'  -e "MONGO_INITDB_ROOT_USERNAME=user" -e "MONGO_INITDB_ROOT_PASSWORD=password" -e "MONGO_INITDB_DATABASE=main" -d -p 27017:27017 mongo
+
+  start-infra:
+    desc: Start infrastructure
+    cmds:
+      - docker start '{{.POSTGRES_CONTAINER_NAME}}'
+      - docker start '{{.MONDODB_CONTAINER_NAME}}'
+
+  stop-infra:
+    desc: Stop infrastructure
+    cmds:
+      - docker stop '{{.POSTGRES_CONTAINER_NAME}}'
+      - docker stop '{{.MONDODB_CONTAINER_NAME}}'
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test -v ./...
+
+  test-coverage-html:
+    desc: Run tests with coverage and generate html report
+    cmds:
+      - go test ./... -coverprofile=coverage.out
+      - go tool cover -html=coverage.out
+
+  test-coverage:
+    desc: Run tests with coverage
+    cmds:
+      - go test ./... -coverprofile=coverage.out
+      - go tool cover -func=coverage.out
+

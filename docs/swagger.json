@@ -1,101 +1,111 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "description": "A simple Golang backend scaffold",
-    "title": "Golang scaffold",
-    "contact": {
-      "name": "Dhaniel Sales"
+    "swagger": "2.0",
+    "info": {
+        "description": "A simple Golang backend scaffold",
+        "title": "Golang scaffold",
+        "contact": {
+            "name": "Dhaniel Sales"
+        },
+        "license": {
+            "name": "MIT"
+        },
+        "version": "1.0"
     },
-    "license": {
-      "name": "MIT"
+    "basePath": "/",
+    "paths": {
+        "/category": {
+            "get": {
+                "description": "fetch every category available.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Get all categories.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/category_entity.Category"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "creates one category.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Create one category.",
+                "parameters": [
+                    {
+                        "description": "Category to create",
+                        "name": "Category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/category_http.createCategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        }
     },
-    "version": "2.0"
-  },
-  "basePath": "/",
-  "paths": {
-    "/todos": {
-      "get": {
-        "description": "fetch every todo available.",
-        "consumes": ["*/*"],
-        "produces": ["application/json"],
-        "tags": ["todos"],
-        "summary": "Get all todos.",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/todo.todoDB"
-              }
+    "definitions": {
+        "category_entity.Category": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "integer"
+                }
             }
-          }
+        },
+        "category_http.createCategoryRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 300
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                }
+            }
         }
-      },
-      "post": {
-        "description": "creates one todo.",
-        "consumes": ["*/*"],
-        "produces": ["application/json"],
-        "tags": ["todos"],
-        "summary": "Create one todo.",
-        "parameters": [
-          {
-            "description": "Todo to create",
-            "name": "todo",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/todo.createTodoRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/todo.createTodoResponse"
-            }
-          }
-        }
-      }
     }
-  },
-  "definitions": {
-    "todo.createTodoRequest": {
-      "type": "object",
-      "properties": {
-        "description": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        }
-      }
-    },
-    "todo.createTodoResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        }
-      }
-    },
-    "todo.todoDB": {
-      "type": "object",
-      "properties": {
-        "completed": {
-          "type": "boolean"
-        },
-        "description": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        }
-      }
-    }
-  }
 }
