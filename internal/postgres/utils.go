@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"strconv"
 )
 
 type PaginationResult struct {
@@ -11,28 +12,38 @@ type PaginationResult struct {
 	Offset int32
 }
 
-func Pagination(page, perPage int32) PaginationResult {
-	var limit int32
-	var offset int32
-
-	if page == 0 {
-		page = 1
+func Pagination(page, perPage string) PaginationResult {
+	currentPage, err := strconv.Atoi(page)
+	if err != nil {
+		currentPage = 1
 	}
 
-	if perPage == 0 {
-		perPage = 10
+	currentPerPage, err := strconv.Atoi(perPage)
+	if err != nil {
+		currentPerPage = 1
 	}
 
-	if perPage > 100 {
-		perPage = 100
+	var limit int
+	var offset int
+
+	if currentPage == 0 {
+		currentPage = 1
 	}
 
-	limit = perPage
-	offset = (page - 1) * perPage
+	if currentPerPage == 0 {
+		currentPerPage = 10
+	}
+
+	if currentPerPage > 100 {
+		currentPerPage = 100
+	}
+
+	limit = currentPerPage
+	offset = (currentPage - 1) * currentPerPage
 
 	return PaginationResult{
-		Limit:  limit,
-		Offset: offset,
+		Limit:  int32(limit),
+		Offset: int32(offset),
 	}
 }
 

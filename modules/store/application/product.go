@@ -71,8 +71,8 @@ func (s *StoreService) GetProductById(ctx context.Context, id uuid.UUID) (*entit
 }
 
 type GetManyProductParams struct {
-	Page           int32
-	PerPage        int32
+	Page           string
+	PerPage        string
 	OrderBy        string
 	OrderDirection string
 }

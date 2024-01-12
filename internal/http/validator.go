@@ -59,16 +59,45 @@ func (v Validator) Validate(data any) []ErrorDetail {
 	return validationErrors
 }
 
-func (v Validator) ValidateField(field any, tag string) *ErrorDetail {
+func (v Validator) ValidateField(field any, fieldName, tag string) *ErrorDetail {
 	err := v.validator.Var(field, tag)
 	if err != nil {
 		return &ErrorDetail{
-			Error:   true,
-			Tag:     tag,
-			Value:   field,
-			Message: err.Error(),
+			FailedField: fieldName,
+			Error:       true,
+			Tag:         tag,
+			Value:       field,
+			Message:     err.Error(),
 		}
 	}
 
 	return nil
+}
+
+func setupCustomValidator(validate *validator.Validate) {
+	validate.RegisterValidation("sorting", func(fl validator.FieldLevel) bool {
+		orderString := fl.Field().String()
+
+		if orderString == "" {
+			return true
+		}
+
+		parts := strings.Split(orderString, ":")
+		if len(parts) != 2 {
+			return false
+		}
+
+		fieldName := strings.TrimSpace(parts[0])
+		direction := strings.TrimSpace(parts[1])
+
+		if direction != "asc" && direction != "desc" {
+			return false
+		}
+
+		if fieldName == "" {
+			return false
+		}
+
+		return true
+	})
 }

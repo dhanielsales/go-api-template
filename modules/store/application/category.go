@@ -40,18 +40,8 @@ func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPa
 	return &affected, nil
 }
 
-type GetCategoryByIdResult struct {
-	ID          uuid.UUID        `json:"id"`
-	Name        string           `json:"name"`
-	Slug        string           `json:"slug"`
-	Description *string          `json:"description"`
-	Products    []entity.Product `json:"products"`
-	CreatedAt   int64            `json:"created_at"`
-	UpdatedAt   *int64           `json:"updated_at"`
-}
-
-func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*GetCategoryByIdResult, error) {
-	return postgres.CallTx(ctx, s.storage.Db.Client, func(tx *sql.Tx) (*GetCategoryByIdResult, error) {
+func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*entity.Category, error) {
+	return postgres.CallTx(ctx, s.storage.Db.Client, func(tx *sql.Tx) (*entity.Category, error) {
 		queries := s.storage.Queries.WithTx(tx)
 
 		dbResult, err := queries.GetCategoryById(ctx, id)
@@ -68,33 +58,20 @@ func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*GetC
 		var products []entity.Product = []entity.Product{}
 
 		for _, prod := range dbResultProd {
-			products = append(products, entity.Product{
-				ID:          prod.ID,
-				Name:        prod.Name,
-				Slug:        prod.Slug,
-				Description: &prod.Description.String,
-				Price:       prod.Price,
-				CategoryID:  prod.CategoryID,
-				CreatedAt:   prod.CreatedAt,
-				UpdatedAt:   &prod.UpdatedAt.Int64,
-			})
+			curr := storage.ToProduct(&prod)
+			products = append(products, *curr)
 		}
 
-		return &GetCategoryByIdResult{
-			ID:          dbResult.ID,
-			Name:        dbResult.Name,
-			Slug:        dbResult.Slug,
-			Description: &dbResult.Description.String,
-			Products:    products,
-			CreatedAt:   dbResult.CreatedAt,
-			UpdatedAt:   &dbResult.UpdatedAt.Int64,
-		}, nil
+		res := storage.ToCategory(&dbResult)
+		res.Products = &products
+
+		return res, nil
 	})
 }
 
 type GetManyCategoryParams struct {
-	Page           int32
-	PerPage        int32
+	Page           string
+	PerPage        string
 	OrderBy        string
 	OrderDirection string
 }
@@ -119,13 +96,8 @@ func (s *StoreService) GetManyCategory(ctx context.Context, params GetManyCatego
 		var result []entity.Category = []entity.Category{}
 
 		for _, dbCategory := range dbResult {
-			result = append(result, entity.Category{
-				ID:          dbCategory.ID,
-				Name:        dbCategory.Name,
-				Description: &dbCategory.Description.String,
-				CreatedAt:   dbCategory.CreatedAt,
-				UpdatedAt:   &dbCategory.UpdatedAt.Int64,
-			})
+			curr := storage.ToCategory(&dbCategory)
+			result = append(result, *curr)
 		}
 
 		return &result, nil

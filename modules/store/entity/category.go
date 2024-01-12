@@ -8,12 +8,13 @@ import (
 )
 
 type Category struct {
-	ID          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	Slug        string    `json:"slug"`
-	Description *string   `json:"description"`
-	CreatedAt   int64     `json:"created_at"`
-	UpdatedAt   *int64    `json:"updated_at"`
+	ID          uuid.UUID  `json:"id"`
+	Name        string     `json:"name"`
+	Slug        string     `json:"slug"`
+	Description *string    `json:"description"`
+	Products    *[]Product `json:"products,omitempty"`
+	CreatedAt   int64      `json:"created_at"`
+	UpdatedAt   *int64     `json:"updated_at"`
 }
 
 func NewCategory(name, description string) *Category {
