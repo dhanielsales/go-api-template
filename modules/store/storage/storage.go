@@ -42,11 +42,12 @@ func ToCategory(category *postgresStorage.Category) *entity.Category {
 
 func ToProduct(category *postgresStorage.Product) *entity.Product {
 	res := entity.Product{
-		ID:        category.ID,
-		Name:      category.Name,
-		Slug:      category.Slug,
-		Price:     category.Price,
-		CreatedAt: category.CreatedAt,
+		ID:         category.ID,
+		Name:       category.Name,
+		Slug:       category.Slug,
+		Price:      category.Price,
+		CategoryID: category.CategoryID,
+		CreatedAt:  category.CreatedAt,
 	}
 
 	if category.UpdatedAt.Valid {
