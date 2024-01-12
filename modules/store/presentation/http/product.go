@@ -9,8 +9,8 @@ import (
 	"github.com/dhanielsales/golang-scaffold/modules/store/application"
 )
 
-func setupProductRoutes(httpServer *http.HttpServer, controller *StoreController) {
-	router := httpServer.App.Group("/product")
+func setupProductRoutes(r fiber.Router, controller *StoreController) {
+	router := r.Group("/product")
 
 	// Setup middlewares here
 	// EX: router.Use(middleware)
@@ -36,7 +36,7 @@ type createProductRequest struct {
 // @Accept */*
 // @Produce json
 // @Param Product body createProductRequest true "Product to create"
-// @Success 201
+// @Success 201 {object} int64
 // @Router /product [post]
 func (t *StoreController) createProduct(c *fiber.Ctx) error {
 	var req createProductRequest
@@ -70,10 +70,14 @@ func (t *StoreController) createProduct(c *fiber.Ctx) error {
 // @Tags Product
 // @Accept */*
 // @Produce json
-// @Success 200 {object} []product_entity.Product
+// @Success 200 {object} []entity.Product
 // @Router /product [get]
 func (t *StoreController) getManyProduct(c *fiber.Ctx) error {
-	categories, err := t.service.GetManyProduct(c.Context(), application.GetManyProductParams{}) // TODO: add pagination and sorting params from query string
+	categories, err := t.service.GetManyProduct(c.Context(), application.GetManyProductParams{
+		Page:    c.Query("page"),
+		PerPage: c.Query("perPage"),
+		OrderBy: c.Query("orderBy"),
+	})
 	if err != nil {
 		return http.ResponseError(c, err)
 	}
@@ -87,10 +91,10 @@ func (t *StoreController) getManyProduct(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Param id path string true "Product ID"
-// @Success 200 {object} product_entity.Product
+// @Success 200 {object} entity.Product
 // @Router /product/{id} [get]
 func (t *StoreController) getOneProduct(c *fiber.Ctx) error {
-	if err := t.validator.ValidateField(c.Params("id"), "required,uuid4"); err != nil {
+	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)
 		currErr.AddDetail("failed_fields", err)
 		return http.ResponseError(c, currErr)
@@ -117,7 +121,7 @@ type updateProductRequest struct {
 // @Produce json
 // @Param id path string true "Product ID"
 // @Param Product body updateProductRequest true "Product to update"
-// @Success 200
+// @Success 200 {object} int64
 // @Router /product/{id} [put]
 func (t *StoreController) updateProduct(c *fiber.Ctx) error {
 	var req updateProductRequest
@@ -132,7 +136,7 @@ func (t *StoreController) updateProduct(c *fiber.Ctx) error {
 		return http.ResponseError(c, err)
 	}
 
-	if err := t.validator.ValidateField(c.Params("id"), "required,uuid4"); err != nil {
+	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)
 		currErr.AddDetail("failed_fields", err)
 		return http.ResponseError(c, currErr)
@@ -157,10 +161,10 @@ func (t *StoreController) updateProduct(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Param id path string true "Product ID"
-// @Success 200
+// @Success 200 {object} int64
 // @Router /product/{id} [delete]
 func (t *StoreController) deleteProduct(c *fiber.Ctx) error {
-	if err := t.validator.ValidateField(c.Params("id"), "required,uuid4"); err != nil {
+	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)
 		currErr.AddDetail("failed_fields", err)
 		return http.ResponseError(c, currErr)

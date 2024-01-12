@@ -8,8 +8,12 @@ import (
 func NewHttp(service *application.StoreService, httpServer *http.HttpServer, validator *http.Validator) {
 	controller := newController(service, validator)
 
-	setupCategoryRoutes(httpServer, controller)
-	setupProductRoutes(httpServer, controller)
+	router := httpServer.App.Group("/api/v0/")
+	// Setup middlewares here
+	// EX: router.Use(middleware)
+
+	setupCategoryRoutes(router, controller)
+	setupProductRoutes(router, controller)
 }
 
 type StoreController struct {

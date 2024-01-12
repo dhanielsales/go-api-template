@@ -9,8 +9,8 @@ import (
 	"github.com/dhanielsales/golang-scaffold/modules/store/application"
 )
 
-func setupCategoryRoutes(httpServer *http.HttpServer, controller *StoreController) {
-	router := httpServer.App.Group("/category")
+func setupCategoryRoutes(r fiber.Router, controller *StoreController) {
+	router := r.Group("/category")
 
 	// Setup middlewares here
 	// EX: router.Use(middleware)
@@ -34,7 +34,7 @@ type createCategoryRequest struct {
 // @Accept */*
 // @Produce json
 // @Param Category body createCategoryRequest true "Category to create"
-// @Success 201
+// @Success 201 {object} int64
 // @Router /category [post]
 func (t *StoreController) createCategory(c *fiber.Ctx) error {
 	var req createCategoryRequest
@@ -66,10 +66,14 @@ func (t *StoreController) createCategory(c *fiber.Ctx) error {
 // @Tags Category
 // @Accept */*
 // @Produce json
-// @Success 200 {object} []category_entity.Category
+// @Success 200 {object} []entity.Category
 // @Router /category [get]
 func (t *StoreController) getManyCategory(c *fiber.Ctx) error {
-	categories, err := t.service.GetManyCategory(c.Context(), application.GetManyCategoryParams{}) // TODO: add pagination and sorting params from query string
+	categories, err := t.service.GetManyCategory(c.Context(), application.GetManyCategoryParams{
+		Page:    c.Query("page"),
+		PerPage: c.Query("perPage"),
+		OrderBy: c.Query("orderBy"),
+	})
 	if err != nil {
 		return http.ResponseError(c, err)
 	}
@@ -83,10 +87,10 @@ func (t *StoreController) getManyCategory(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Param id path string true "Category ID"
-// @Success 200 {object} category_entity.Category
+// @Success 200 {object} entity.Category
 // @Router /category/{id} [get]
 func (t *StoreController) getOneCategory(c *fiber.Ctx) error {
-	if err := t.validator.ValidateField(c.Params("id"), "required,uuid4"); err != nil {
+	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)
 		currErr.AddDetail("failed_fields", err)
 		return http.ResponseError(c, currErr)
@@ -113,7 +117,7 @@ type updateCategoryRequest struct {
 // @Produce json
 // @Param id path string true "Category ID"
 // @Param Category body updateCategoryRequest true "Category to update"
-// @Success 200
+// @Success 200 {object} int64
 // @Router /category/{id} [put]
 func (t *StoreController) updateCategory(c *fiber.Ctx) error {
 	var req updateCategoryRequest
@@ -128,7 +132,7 @@ func (t *StoreController) updateCategory(c *fiber.Ctx) error {
 		return http.ResponseError(c, err)
 	}
 
-	if err := t.validator.ValidateField(c.Params("id"), "required,uuid4"); err != nil {
+	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)
 		currErr.AddDetail("failed_fields", err)
 		return http.ResponseError(c, currErr)
@@ -153,10 +157,10 @@ func (t *StoreController) updateCategory(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Param id path string true "Category ID"
-// @Success 200
+// @Success 200 {object} int64
 // @Router /category/{id} [delete]
 func (t *StoreController) deleteCategory(c *fiber.Ctx) error {
-	if err := t.validator.ValidateField(c.Params("id"), "required,uuid4"); err != nil {
+	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)
 		currErr.AddDetail("failed_fields", err)
 		return http.ResponseError(c, currErr)

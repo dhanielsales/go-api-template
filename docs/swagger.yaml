@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  category_entity.Category:
+  entity.Category:
     properties:
       created_at:
         type: integer
@@ -10,13 +10,85 @@ definitions:
         type: string
       name:
         type: string
+      products:
+        items:
+          $ref: '#/definitions/entity.Product'
+        type: array
+      slug:
+        type: string
       updated_at:
         type: integer
     type: object
-  category_http.createCategoryRequest:
+  entity.Product:
+    properties:
+      category_id:
+        type: string
+      created_at:
+        type: integer
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      slug:
+        type: string
+      updated_at:
+        type: integer
+    type: object
+  http.createCategoryRequest:
     properties:
       description:
         maxLength: 300
+        minLength: 1
+        type: string
+      name:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  http.createProductRequest:
+    properties:
+      category_id:
+        type: string
+      description:
+        maxLength: 300
+        minLength: 1
+        type: string
+      name:
+        maxLength: 50
+        minLength: 1
+        type: string
+      price:
+        minimum: 0
+        type: number
+    required:
+    - category_id
+    - name
+    - price
+    type: object
+  http.updateCategoryRequest:
+    properties:
+      description:
+        maxLength: 300
+        minLength: 1
+        type: string
+      name:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  http.updateProductRequest:
+    properties:
+      description:
+        maxLength: 300
+        minLength: 1
         type: string
       name:
         maxLength: 50
@@ -46,7 +118,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/category_entity.Category'
+              $ref: '#/definitions/entity.Category'
             type: array
       summary: Get all categories.
       tags:
@@ -61,13 +133,187 @@ paths:
         name: Category
         required: true
         schema:
-          $ref: '#/definitions/category_http.createCategoryRequest'
+          $ref: '#/definitions/http.createCategoryRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
+          schema:
+            type: integer
       summary: Create one category.
       tags:
       - Category
+  /category/{id}:
+    delete:
+      consumes:
+      - '*/*'
+      description: deletes one category by id.
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: Delete one category.
+      tags:
+      - Category
+    get:
+      consumes:
+      - '*/*'
+      description: fetch one category by id.
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Category'
+      summary: Get one category.
+      tags:
+      - Category
+    put:
+      consumes:
+      - '*/*'
+      description: updates one category by id.
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Category to update
+        in: body
+        name: Category
+        required: true
+        schema:
+          $ref: '#/definitions/http.updateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: Update one category.
+      tags:
+      - Category
+  /product:
+    get:
+      consumes:
+      - '*/*'
+      description: fetch every product available.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Product'
+            type: array
+      summary: Get all categories.
+      tags:
+      - Product
+    post:
+      consumes:
+      - '*/*'
+      description: creates one product.
+      parameters:
+      - description: Product to create
+        in: body
+        name: Product
+        required: true
+        schema:
+          $ref: '#/definitions/http.createProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: integer
+      summary: Create one product.
+      tags:
+      - Product
+  /product/{id}:
+    delete:
+      consumes:
+      - '*/*'
+      description: deletes one product by id.
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: Delete one product.
+      tags:
+      - Product
+    get:
+      consumes:
+      - '*/*'
+      description: fetch one product by id.
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Product'
+      summary: Get one product.
+      tags:
+      - Product
+    put:
+      consumes:
+      - '*/*'
+      description: updates one product by id.
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Product to update
+        in: body
+        name: Product
+        required: true
+        schema:
+          $ref: '#/definitions/http.updateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: Update one product.
+      tags:
+      - Product
 swagger: "2.0"
