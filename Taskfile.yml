@@ -28,6 +28,11 @@ tasks:
     cmds:
       - ./service
 
+  update-repositories:
+    desc: Update database repositories
+    cmds:
+      - sqlc generate
+
   migration-create:
     desc: "Create migration. Example: task migration-create name=create_users_table"
     cmds:
@@ -48,6 +53,11 @@ tasks:
     cmds:
       - migrate -database '{{.POSTGRES_URI}}' -path internal/postgres/migrations -verbose force '{{.version}}'
 
+  mock:
+    desc: Generate mocks
+    cmds:
+      - mockgen -source=internal/postgres/postgres.go -destination=mock/postgres.go -package=mock
+
   install:
     desc: Install dependencies
     cmds:
@@ -60,6 +70,7 @@ tasks:
       - go install github.com/cosmtrek/air@latest
       - go install github.com/go-task/task/v3/cmd/task@latest
       - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+      - go install go.uber.org/mock/mockgen@latest
 
   setup-infra:
     desc: Create infrastructure

@@ -1,17 +1,17 @@
 package postgres
 
 import (
-	"github.com/jmoiron/sqlx"
+	"database/sql"
 
 	_ "github.com/lib/pq"
 )
 
 type Storage struct {
-	Client *sqlx.DB
+	Client *sql.DB
 }
 
 func Bootstrap(uri string) (*Storage, error) {
-	db, err := sqlx.Open("postgres", uri)
+	db, err := sql.Open("postgres", uri)
 	if err != nil {
 		return nil, err
 	}
@@ -22,5 +22,10 @@ func Bootstrap(uri string) (*Storage, error) {
 }
 
 func (s *Storage) Cleanup() error {
-	return s.Client.Close()
+	err := s.Client.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

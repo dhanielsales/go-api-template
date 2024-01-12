@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
+
+	"github.com/go-playground/validator/v10"
 
 	"github.com/dhanielsales/golang-scaffold/config"
 	_ "github.com/dhanielsales/golang-scaffold/docs"
@@ -11,7 +14,7 @@ import (
 	"github.com/dhanielsales/golang-scaffold/internal/mongo"
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
 
-	"github.com/dhanielsales/golang-scaffold/modules/category"
+	"github.com/dhanielsales/golang-scaffold/modules/store"
 )
 
 type service struct {
@@ -19,14 +22,15 @@ type service struct {
 	mongodb  *mongo.Storage
 	postgres *postgres.Storage
 	env      config.EnvVars
+	validate *validator.Validate
 }
 
 func new(env config.EnvVars) (*service, error) {
 	// init the Mongodb storage
-	// mongodb, err := mongo.Bootstrap(env.MONGODB_URI, env.MONGODB_NAME, 10*time.Second)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	mongodb, err := mongo.Bootstrap(env.MONGODB_URI, env.MONGODB_NAME, 10*time.Second)
+	if err != nil {
+		return nil, err
+	}
 
 	// init the Postgres storage
 	postgres, err := postgres.Bootstrap(env.POSTGRES_URI)
@@ -37,12 +41,16 @@ func new(env config.EnvVars) (*service, error) {
 	// init http server
 	httpServer := http.Bootstrap(env.PORT)
 
-	// Start Category module
-	category.Bootstrap(postgres, httpServer)
+	// init validator
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	validator := http.NewValidator(validate)
+
+	// Start store module
+	store.Bootstrap(postgres, httpServer, validator)
 
 	return &service{
-		http: httpServer,
-		// mongodb:  mongodb,
+		http:     httpServer,
+		mongodb:  mongodb,
 		postgres: postgres,
 		env:      env,
 	}, nil
