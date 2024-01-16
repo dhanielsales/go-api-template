@@ -2,6 +2,7 @@ package application
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
@@ -37,11 +38,22 @@ func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPa
 		return nil, err
 	}
 
+	err = s.storage.Cache.DeleteAllCategoryInCache(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	return &affected, nil
 }
 
 func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*entity.Category, error) {
-	return postgres.CallTx(ctx, s.storage.Db.Client, func(tx *sql.Tx) (*entity.Category, error) {
+	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*entity.Category, error) {
+		categoryInCache := s.storage.Cache.GetCategoryInCache(ctx, id)
+
+		if categoryInCache != nil {
+			return categoryInCache, nil
+		}
+
 		queries := s.storage.Queries.WithTx(tx)
 
 		dbResult, err := queries.GetCategoryById(ctx, id)
@@ -65,6 +77,12 @@ func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*enti
 		res := storage.ToCategory(&dbResult)
 		res.Products = &products
 
+		err = s.storage.Cache.SetCategoryInCache(ctx, *res, time.Hour*24)
+
+		if err != nil {
+			return nil, err
+		}
+
 		return res, nil
 	})
 }
@@ -77,7 +95,7 @@ type GetManyCategoryParams struct {
 }
 
 func (s *StoreService) GetManyCategory(ctx context.Context, params GetManyCategoryParams) (*[]entity.Category, error) {
-	return postgres.CallTx(ctx, s.storage.Db.Client, func(tx *sql.Tx) (*[]entity.Category, error) {
+	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*[]entity.Category, error) {
 		queries := s.storage.Queries.WithTx(tx)
 
 		pagination := postgres.Pagination(params.Page, params.PerPage)
@@ -110,7 +128,7 @@ type UpdateCategoryPayload struct {
 }
 
 func (s *StoreService) UpdateCategory(ctx context.Context, id uuid.UUID, data UpdateCategoryPayload) (*int64, error) {
-	return postgres.CallTx(ctx, s.storage.Db.Client, func(tx *sql.Tx) (*int64, error) {
+	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
 		queries := s.storage.Queries.WithTx(tx)
 
 		res, err := queries.GetCategoryById(ctx, id)
@@ -138,6 +156,11 @@ func (s *StoreService) UpdateCategory(ctx context.Context, id uuid.UUID, data Up
 			return nil, err
 		}
 
+		err = s.storage.Cache.DeleteCategoryInCache(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+
 		return &affected, nil
 	})
 }
@@ -149,6 +172,11 @@ func (s *StoreService) DeleteCategory(ctx context.Context, id uuid.UUID) (*int64
 	}
 
 	affected, err := dbResult.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.storage.Cache.DeleteCategoryInCache(ctx, id)
 	if err != nil {
 		return nil, err
 	}

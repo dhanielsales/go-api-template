@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"encoding/json"
+
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 
@@ -15,6 +17,14 @@ type Category struct {
 	Products    *[]Product `json:"products,omitempty"`
 	CreatedAt   int64      `json:"created_at"`
 	UpdatedAt   *int64     `json:"updated_at"`
+}
+
+func (c Category) MarshalBinary() ([]byte, error) {
+	return json.Marshal(c)
+}
+
+func (c *Category) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, c)
 }
 
 func NewCategory(name, description string) *Category {

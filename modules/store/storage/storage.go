@@ -2,26 +2,33 @@ package storage
 
 import (
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
+	"github.com/dhanielsales/golang-scaffold/internal/redis"
 
 	"github.com/dhanielsales/golang-scaffold/modules/store/entity"
-	postgresStorage "github.com/dhanielsales/golang-scaffold/modules/store/storage/postgres"
+	q "github.com/dhanielsales/golang-scaffold/modules/store/storage/postgres"
+	c "github.com/dhanielsales/golang-scaffold/modules/store/storage/redis"
 )
 
 type StoreStorage struct {
-	Db      *postgres.Storage
-	Queries *postgresStorage.Queries
+	Postgres *postgres.Storage
+	Redis    *redis.Storage
+	Queries  *q.Queries
+	Cache    *c.Cache
 }
 
-func NewStorage(db *postgres.Storage) *StoreStorage {
-	queries := postgresStorage.New(db.Client)
+func NewStorage(postgresStorage *postgres.Storage, redisStorage *redis.Storage) *StoreStorage {
+	queries := q.New(postgresStorage.Client)
+	cache := c.New(redisStorage)
 
 	return &StoreStorage{
-		Db:      db,
-		Queries: queries,
+		Postgres: postgresStorage,
+		Redis:    redisStorage,
+		Queries:  queries,
+		Cache:    cache,
 	}
 }
 
-func ToCategory(category *postgresStorage.Category) *entity.Category {
+func ToCategory(category *q.Category) *entity.Category {
 	res := entity.Category{
 		ID:        category.ID,
 		Name:      category.Name,
@@ -40,7 +47,7 @@ func ToCategory(category *postgresStorage.Category) *entity.Category {
 	return &res
 }
 
-func ToProduct(category *postgresStorage.Product) *entity.Product {
+func ToProduct(category *q.Product) *entity.Product {
 	res := entity.Product{
 		ID:         category.ID,
 		Name:       category.Name,

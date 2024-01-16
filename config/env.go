@@ -1,58 +1,66 @@
 package config
 
 import (
-	"errors"
+	"fmt"
 	"os"
+	"reflect"
 
 	"github.com/spf13/viper"
 )
 
 type EnvVars struct {
-	MONGODB_URI  string `mapstructure:"MONGODB_URI"`
+	MONGODB_URL  string `mapstructure:"MONGODB_URL"`
 	MONGODB_NAME string `mapstructure:"MONGODB_NAME"`
-	POSTGRES_URI string `mapstructure:"POSTGRES_URI"`
+	POSTGRES_URL string `mapstructure:"POSTGRES_URL"`
+	REDIS_URL    string `mapstructure:"REDIS_URL"`
 	PORT         string `mapstructure:"PORT"`
 }
 
-func LoadConfig() (config EnvVars, err error) {
+func LoadConfig() (*EnvVars, error) {
+	var config EnvVars
+
 	env := os.Getenv("GO_ENV")
 	if env == "production" {
-		return EnvVars{
-			MONGODB_URI:  os.Getenv("MONGODB_URI"),
-			MONGODB_NAME: os.Getenv("MONGODB_NAME"),
-			POSTGRES_URI: os.Getenv("POSTGRES_URI"),
-			PORT:         os.Getenv("PORT"),
-		}, nil
+		val := reflect.Indirect(reflect.ValueOf(config))
+		for i := 0; i < val.NumField(); i++ {
+			envVar := val.Type().Field(i).Tag.Get("mapstructure")
+			if envVar == "" {
+				return nil, fmt.Errorf("Env var '%s' not found", envVar)
+			}
+
+			val.Field(i).SetString(os.Getenv(envVar))
+		}
+
+		return &config, nil
 	}
 
 	viper.AddConfigPath(".")
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
-
 	viper.AutomaticEnv()
 
-	err = viper.ReadInConfig()
+	err := viper.ReadInConfig()
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	err = viper.Unmarshal(&config)
-
-	// validate config here
-	if config.MONGODB_URI == "" {
-		err = errors.New("MONGODB_URI is required")
-		return
+	if err != nil {
+		return nil, err
 	}
 
-	if config.MONGODB_NAME == "" {
-		err = errors.New("MONGODB_NAME is required")
-		return
+	val := reflect.Indirect(reflect.ValueOf(config))
+	for i := 0; i < val.NumField(); i++ {
+		envVar := val.Type().Field(i).Tag.Get("mapstructure")
+		if envVar == "" {
+			return nil, fmt.Errorf("Env var '%s' not found", envVar)
+		}
 	}
 
-	if config.POSTGRES_URI == "" {
-		err = errors.New("POSTGRES_URI is required")
-		return
-	}
+	return &config, nil
+}
 
-	return
+func loadFromLocalEnvFile() {
+	viper.SetConfigFile(".env")
+	viper.ReadInConfig()
 }

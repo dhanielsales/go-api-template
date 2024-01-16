@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"encoding/json"
 	"errors"
 
 	"github.com/google/uuid"
@@ -18,6 +19,14 @@ type Product struct {
 	CategoryID  uuid.UUID `json:"category_id"`
 	CreatedAt   int64     `json:"created_at"`
 	UpdatedAt   *int64    `json:"updated_at"`
+}
+
+func (c Product) MarshalBinary() ([]byte, error) {
+	return json.Marshal(c)
+}
+
+func (c *Product) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, c)
 }
 
 func NewProduct(name, description string, price float64, CategoryID uuid.UUID) (*Product, error) {

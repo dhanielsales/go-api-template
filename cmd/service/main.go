@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/go-playground/validator/v10"
 
@@ -11,29 +10,29 @@ import (
 	_ "github.com/dhanielsales/golang-scaffold/docs"
 	"github.com/dhanielsales/golang-scaffold/init/shutdown"
 	"github.com/dhanielsales/golang-scaffold/internal/http"
-	"github.com/dhanielsales/golang-scaffold/internal/mongo"
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
+	"github.com/dhanielsales/golang-scaffold/internal/redis"
 
 	"github.com/dhanielsales/golang-scaffold/modules/store"
 )
 
 type service struct {
 	http     *http.HttpServer
-	mongodb  *mongo.Storage
 	postgres *postgres.Storage
-	env      config.EnvVars
+	redis    *redis.Storage
+	env      *config.EnvVars
 	validate *validator.Validate
 }
 
-func new(env config.EnvVars) (*service, error) {
-	// init the Mongodb storage
-	mongodb, err := mongo.Bootstrap(env.MONGODB_URI, env.MONGODB_NAME, 10*time.Second)
+func new(env *config.EnvVars) (*service, error) {
+	// init the Postgres storage
+	postgres, err := postgres.Bootstrap(env.POSTGRES_URL)
 	if err != nil {
 		return nil, err
 	}
 
-	// init the Postgres storage
-	postgres, err := postgres.Bootstrap(env.POSTGRES_URI)
+	// init the Redis storage
+	redis, err := redis.Bootstrap(env.REDIS_URL)
 	if err != nil {
 		return nil, err
 	}
@@ -46,12 +45,12 @@ func new(env config.EnvVars) (*service, error) {
 	validator := http.NewValidator(validate)
 
 	// Start store module
-	store.Bootstrap(postgres, httpServer, validator)
+	store.Bootstrap(postgres, redis, httpServer, validator)
 
 	return &service{
 		http:     httpServer,
-		mongodb:  mongodb,
 		postgres: postgres,
+		redis:    redis,
 		env:      env,
 	}, nil
 }
@@ -62,7 +61,6 @@ func (s *service) run() {
 
 func (s *service) cleanup() {
 	s.http.Cleanup()
-	s.mongodb.Cleanup()
 	s.postgres.Cleanup()
 }
 

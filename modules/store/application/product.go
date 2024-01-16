@@ -48,7 +48,7 @@ func (s *StoreService) CreateProduct(ctx context.Context, data CreateProductPayl
 }
 
 func (s *StoreService) GetProductById(ctx context.Context, id uuid.UUID) (*entity.Product, error) {
-	return postgres.CallTx(ctx, s.storage.Db.Client, func(tx *sql.Tx) (*entity.Product, error) {
+	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*entity.Product, error) {
 		queries := s.storage.Queries.WithTx(tx)
 
 		dbResult, err := queries.GetProductById(ctx, id)
@@ -78,7 +78,7 @@ type GetManyProductParams struct {
 }
 
 func (s *StoreService) GetManyProduct(ctx context.Context, params GetManyProductParams) (*[]entity.Product, error) {
-	return postgres.CallTx(ctx, s.storage.Db.Client, func(tx *sql.Tx) (*[]entity.Product, error) {
+	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*[]entity.Product, error) {
 		queries := s.storage.Queries.WithTx(tx)
 
 		pagination := postgres.Pagination(params.Page, params.PerPage)
@@ -120,7 +120,7 @@ type UpdateProductPayload struct {
 }
 
 func (s *StoreService) UpdateProduct(ctx context.Context, id uuid.UUID, data UpdateProductPayload) (*int64, error) {
-	return postgres.CallTx(ctx, s.storage.Db.Client, func(tx *sql.Tx) (*int64, error) {
+	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
 		queries := s.storage.Queries.WithTx(tx)
 
 		res, err := queries.GetProductById(ctx, id)

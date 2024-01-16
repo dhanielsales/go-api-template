@@ -30,5 +30,17 @@ task setup-infra
 ## Deployment
 
 [PENDING]
+- Checar GO_ENV para deploy
 
 https://railway.app/pricing
+
+
+-----
+
+AUTH FLOW
+
+1 - Checar no Redis pelo Hashmap do usuario com Email, Password e ID
+2 - Se nao existir, ir buscar no banco de dados Postgres
+4 - Criar o Hashmap e salvar no Redis
+3 - Operar o auth
+5 - Retornar o token

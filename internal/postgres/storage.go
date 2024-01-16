@@ -10,8 +10,8 @@ type Storage struct {
 	Client *sql.DB
 }
 
-func Bootstrap(uri string) (*Storage, error) {
-	db, err := sql.Open("postgres", uri)
+func Bootstrap(url string) (*Storage, error) {
+	db, err := sql.Open("postgres", url)
 	if err != nil {
 		return nil, err
 	}
