@@ -1,24 +1,29 @@
 package http
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	fiberLogger "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
+
+	"github.com/dhanielsales/golang-scaffold/config/log"
 )
 
 type HttpServer struct {
-	App  *fiber.App
-	port string
+	App          *fiber.App
+	port         string
+	ErrorHandler *HttpErrorHandler
 }
 
-func Bootstrap(port string) *HttpServer {
+func Bootstrap(port string, logger log.Logger) *HttpServer {
 	// create the fiber app
 	app := fiber.New()
 
 	// add middleware
 	app.Use(cors.New())
-	app.Use(logger.New())
+	app.Use(fiberLogger.New())
 
 	// add health check
 	app.Get("/health", func(c *fiber.Ctx) error {
@@ -29,8 +34,9 @@ func Bootstrap(port string) *HttpServer {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	return &HttpServer{
-		App:  app,
-		port: port,
+		App:          app,
+		port:         port,
+		ErrorHandler: NewErrorHandler(logger),
 	}
 }
 
@@ -39,5 +45,5 @@ func (h *HttpServer) Start() {
 }
 
 func (h *HttpServer) Cleanup() {
-	h.App.Shutdown()
+	h.App.ShutdownWithTimeout(time.Second * 5)
 }

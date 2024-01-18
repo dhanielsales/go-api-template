@@ -42,13 +42,14 @@ func (t *StoreController) createProduct(c *fiber.Ctx) error {
 	var req createProductRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return http.ResponseError(c, appError.New(err, appError.BadRequestError, "Malformed request body"))
+		return t.http.ErrorHandler.Response(c, appError.New(err, appError.BadRequestError, "Malformed request body"))
 	}
 
 	if errs := t.validator.Validate(req); len(errs) > 0 && errs[0].Error {
 		err := appError.New(nil, appError.BadRequestError, errs[0].Message)
 		err.AddDetail("failed_fields", errs)
-		return http.ResponseError(c, err)
+		return t.http.ErrorHandler.Response(c, err)
+
 	}
 
 	affected, err := t.service.CreateProduct(c.Context(), application.CreateProductPayload{
@@ -59,7 +60,8 @@ func (t *StoreController) createProduct(c *fiber.Ctx) error {
 	})
 
 	if err != nil {
-		return http.ResponseError(c, err)
+		return t.http.ErrorHandler.Response(c, err)
+
 	}
 
 	return c.Status(fiber.StatusOK).Send(http.Int64ToByte(*affected))
@@ -79,7 +81,8 @@ func (t *StoreController) getManyProduct(c *fiber.Ctx) error {
 		OrderBy: c.Query("orderBy"),
 	})
 	if err != nil {
-		return http.ResponseError(c, err)
+		return t.http.ErrorHandler.Response(c, err)
+
 	}
 
 	return c.JSON(categories)
@@ -97,13 +100,14 @@ func (t *StoreController) getOneProduct(c *fiber.Ctx) error {
 	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)
 		currErr.AddDetail("failed_fields", err)
-		return http.ResponseError(c, currErr)
+		return t.http.ErrorHandler.Response(c, currErr)
 	}
 
 	id := uuid.MustParse(c.Params("id"))
 	product, err := t.service.GetProductById(c.Context(), id)
 	if err != nil {
-		return http.ResponseError(c, err)
+		return t.http.ErrorHandler.Response(c, err)
+
 	}
 
 	return c.JSON(product)
@@ -127,19 +131,20 @@ func (t *StoreController) updateProduct(c *fiber.Ctx) error {
 	var req updateProductRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return http.ResponseError(c, appError.New(err, appError.BadRequestError, "Malformed request body"))
+		return t.http.ErrorHandler.Response(c, appError.New(err, appError.BadRequestError, "Malformed request body"))
 	}
 
 	if errs := t.validator.Validate(req); len(errs) > 0 && errs[0].Error {
 		err := appError.New(nil, appError.BadRequestError, errs[0].Message)
 		err.AddDetail("failed_fields", errs)
-		return http.ResponseError(c, err)
+		return t.http.ErrorHandler.Response(c, err)
+
 	}
 
 	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)
 		currErr.AddDetail("failed_fields", err)
-		return http.ResponseError(c, currErr)
+		return t.http.ErrorHandler.Response(c, currErr)
 	}
 
 	id := uuid.MustParse(c.Params("id"))
@@ -149,7 +154,8 @@ func (t *StoreController) updateProduct(c *fiber.Ctx) error {
 	})
 
 	if err != nil {
-		return http.ResponseError(c, err)
+		return t.http.ErrorHandler.Response(c, err)
+
 	}
 
 	return c.Status(fiber.StatusOK).Send(http.Int64ToByte(*affected))
@@ -167,13 +173,14 @@ func (t *StoreController) deleteProduct(c *fiber.Ctx) error {
 	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)
 		currErr.AddDetail("failed_fields", err)
-		return http.ResponseError(c, currErr)
+		return t.http.ErrorHandler.Response(c, currErr)
 	}
 
 	id := uuid.MustParse(c.Params("id"))
 	affected, err := t.service.DeleteProduct(c.Context(), id)
 	if err != nil {
-		return http.ResponseError(c, err)
+		return t.http.ErrorHandler.Response(c, err)
+
 	}
 
 	return c.Status(fiber.StatusOK).Send(http.Int64ToByte(*affected))

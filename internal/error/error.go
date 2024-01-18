@@ -3,16 +3,20 @@ package error
 import (
 	"errors"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 type Map map[string]any
 
 type AppError struct {
-	Name        ErrorName `json:"name"`
-	Description string    `json:"description,omitempty"`
-	LogId       string    `json:"logId,omitempty"`
-	Err         error     `json:"-"`
-	Details     Map       `json:"details,omitempty"`
+	Name        ErrorName  `json:"name"`
+	Level       ErrorLevel `json:"-"`
+	Description string     `json:"description,omitempty"`
+	Id          string     `json:"logId,omitempty"`
+	Err         error      `json:"-"`
+	Details     Map        `json:"details,omitempty"`
+	stack       []byte     `json:"-"`
 }
 
 func (e AppError) Error() string {
@@ -30,6 +34,10 @@ func (e *AppError) AddDetail(key string, value any) {
 	e.Details[key] = value
 }
 
+func (e *AppError) Stack() string {
+	return string(e.stack)
+}
+
 func Is(err error) (*AppError, bool) {
 	appError, ok := err.(*AppError)
 	return appError, ok
@@ -38,7 +46,10 @@ func Is(err error) (*AppError, bool) {
 func New(err error, name ErrorName, description string) *AppError {
 	return &AppError{
 		Name:        name,
+		Id:          uuid.New().String(),
+		Level:       name.Level(),
 		Description: description,
 		Err:         err,
+		stack:       getStack(),
 	}
 }

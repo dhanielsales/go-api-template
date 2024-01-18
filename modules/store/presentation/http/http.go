@@ -6,7 +6,7 @@ import (
 )
 
 func NewHttp(service *application.StoreService, httpServer *http.HttpServer, validator *http.Validator) {
-	controller := newController(service, validator)
+	controller := newController(service, httpServer, validator)
 
 	router := httpServer.App.Group("/api/v0/")
 	// Setup middlewares here
@@ -17,13 +17,15 @@ func NewHttp(service *application.StoreService, httpServer *http.HttpServer, val
 }
 
 type StoreController struct {
-	service   *application.StoreService
 	validator *http.Validator
+	service   *application.StoreService
+	http      *http.HttpServer
 }
 
-func newController(service *application.StoreService, validator *http.Validator) *StoreController {
+func newController(service *application.StoreService, http *http.HttpServer, validator *http.Validator) *StoreController {
 	return &StoreController{
-		service:   service,
 		validator: validator,
+		service:   service,
+		http:      http,
 	}
 }

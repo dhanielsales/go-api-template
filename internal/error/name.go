@@ -48,3 +48,21 @@ func (n ErrorName) Status() int {
 	}
 	return 500
 }
+
+func (n ErrorName) Level() ErrorLevel {
+	switch n {
+	case ServerError:
+		return Error
+	case UnauthorizedError:
+		return Warn
+	case NotFoundError:
+		return Info
+	case BadRequestError:
+		return Info
+	case UnprocessableEntityError:
+		return Info
+	case ForbiddenRequestError:
+		return Warn
+	}
+	return Error
+}

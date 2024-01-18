@@ -8,6 +8,7 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
+
 	"github.com/dhanielsales/golang-scaffold/modules/store/entity"
 	"github.com/dhanielsales/golang-scaffold/modules/store/storage"
 	store_storage "github.com/dhanielsales/golang-scaffold/modules/store/storage/postgres"
@@ -57,8 +58,8 @@ func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*enti
 		queries := s.storage.Queries.WithTx(tx)
 
 		dbResult, err := queries.GetCategoryById(ctx, id)
-
 		if err != nil {
+			// return nil, appError.New(err, appError.UnauthorizedError, "Category not found")
 			return nil, err
 		}
 

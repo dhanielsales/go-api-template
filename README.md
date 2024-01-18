@@ -39,6 +39,8 @@ https://railway.app/pricing
 
 AUTH FLOW
 
+Interface de Logs no Request Error Handler
+
 1 - Checar no Redis pelo Hashmap do usuario com Email, Password e ID
 2 - Se nao existir, ir buscar no banco de dados Postgres
 4 - Criar o Hashmap e salvar no Redis
