@@ -21,12 +21,12 @@ tasks:
   build:
     desc: Build binary
     cmds:
-      - go build -o service cmd/service/main.go
+      - go build -o 'dist/{{.APP_NAME}}' cmd/service/main.go
 
   start:
     desc: Start binary
     cmds:
-      - ./service
+      - ./dist/{{.APP_NAME}}
 
   update-repositories:
     desc: Update database repositories
@@ -98,12 +98,12 @@ tasks:
   test-coverage-html:
     desc: Run tests with coverage and generate html report
     cmds:
-      - go test ./... -coverprofile=coverage.out
-      - go tool cover -html=coverage.out
+      - go test ./... -coverprofile=tmp/coverage.out
+      - go tool cover -html=tmp/coverage.out
 
   test-coverage:
     desc: Run tests with coverage
     cmds:
-      - go test ./... -coverprofile=coverage.out
-      - go tool cover -func=coverage.out
+      - go test ./... -coverprofile=tmp/coverage.out
+      - go tool cover -func=tmp/coverage.out
 

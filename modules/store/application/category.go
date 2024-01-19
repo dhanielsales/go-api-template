@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
 
+	appError "github.com/dhanielsales/golang-scaffold/internal/error"
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
 
 	"github.com/dhanielsales/golang-scaffold/modules/store/entity"
@@ -31,17 +32,17 @@ func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPa
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 	}
 
 	affected, err := dbResult.RowsAffected()
 	if err != nil {
-		return nil, err
+		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 	}
 
 	err = s.storage.Cache.DeleteAllCategoryInCache(ctx)
 	if err != nil {
-		return nil, err
+		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 	}
 
 	return &affected, nil
@@ -59,13 +60,16 @@ func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*enti
 
 		dbResult, err := queries.GetCategoryById(ctx, id)
 		if err != nil {
-			// return nil, appError.New(err, appError.UnauthorizedError, "Category not found")
-			return nil, err
+			if err == sql.ErrNoRows {
+				return nil, appError.New(err, appError.NotFoundError, "Category not found")
+			}
+
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
 		dbResultProd, err := queries.GetManyProductByCategoryId(ctx, id)
-		if err != nil {
-			return nil, err
+		if err != nil && err != sql.ErrNoRows {
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 		}
 
 		var products []entity.Product = []entity.Product{}
@@ -79,9 +83,8 @@ func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*enti
 		res.Products = &products
 
 		err = s.storage.Cache.SetCategoryInCache(ctx, *res, time.Hour*24)
-
 		if err != nil {
-			return nil, err
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
 		return res, nil
@@ -109,7 +112,7 @@ func (s *StoreService) GetManyCategory(ctx context.Context, params GetManyCatego
 		})
 
 		if err != nil {
-			return nil, err
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
 		var result []entity.Category = []entity.Category{}
@@ -134,7 +137,7 @@ func (s *StoreService) UpdateCategory(ctx context.Context, id uuid.UUID, data Up
 
 		res, err := queries.GetCategoryById(ctx, id)
 		if err != nil {
-			return nil, err
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
 		category := storage.ToCategory(&res)
@@ -149,17 +152,17 @@ func (s *StoreService) UpdateCategory(ctx context.Context, id uuid.UUID, data Up
 			UpdatedAt:   sql.NullInt64{Int64: *category.UpdatedAt, Valid: true},
 		})
 		if err != nil {
-			return nil, err
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
 		affected, err := dbResult.RowsAffected()
 		if err != nil {
-			return nil, err
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
 		err = s.storage.Cache.DeleteCategoryInCache(ctx, id)
 		if err != nil {
-			return nil, err
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
 		return &affected, nil
@@ -169,17 +172,17 @@ func (s *StoreService) UpdateCategory(ctx context.Context, id uuid.UUID, data Up
 func (s *StoreService) DeleteCategory(ctx context.Context, id uuid.UUID) (*int64, error) {
 	dbResult, err := s.storage.Queries.DeleteCategory(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 	}
 
 	affected, err := dbResult.RowsAffected()
 	if err != nil {
-		return nil, err
+		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 	}
 
 	err = s.storage.Cache.DeleteCategoryInCache(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 	}
 
 	return &affected, nil

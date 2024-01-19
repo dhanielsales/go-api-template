@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
 
+	appError "github.com/dhanielsales/golang-scaffold/internal/error"
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
 	"github.com/dhanielsales/golang-scaffold/modules/store/entity"
 	"github.com/dhanielsales/golang-scaffold/modules/store/storage"
@@ -22,7 +23,7 @@ type CreateProductPayload struct {
 func (s *StoreService) CreateProduct(ctx context.Context, data CreateProductPayload) (*int64, error) {
 	product, err := entity.NewProduct(data.Name, data.Description, data.Price, data.CategotyID)
 	if err != nil {
-		return nil, err
+		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 	}
 
 	dbResult, err := s.storage.Queries.CreateProduct(ctx, store_storage.CreateProductParams{
@@ -36,12 +37,12 @@ func (s *StoreService) CreateProduct(ctx context.Context, data CreateProductPayl
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 	}
 
 	affected, err := dbResult.RowsAffected()
 	if err != nil {
-		return nil, err
+		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 	}
 
 	return &affected, nil
@@ -54,7 +55,7 @@ func (s *StoreService) GetProductById(ctx context.Context, id uuid.UUID) (*entit
 		dbResult, err := queries.GetProductById(ctx, id)
 
 		if err != nil {
-			return nil, err
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 		}
 
 		return &entity.Product{
@@ -91,7 +92,11 @@ func (s *StoreService) GetManyProduct(ctx context.Context, params GetManyProduct
 		})
 
 		if err != nil {
-			return nil, err
+			if err == sql.ErrNoRows {
+				return nil, appError.New(err, appError.NotFoundError, "Product not found")
+			}
+
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 		}
 
 		var result []entity.Product = []entity.Product{}
@@ -125,7 +130,7 @@ func (s *StoreService) UpdateProduct(ctx context.Context, id uuid.UUID, data Upd
 
 		res, err := queries.GetProductById(ctx, id)
 		if err != nil {
-			return nil, err
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 		}
 
 		product := storage.ToProduct(&res)
@@ -142,12 +147,12 @@ func (s *StoreService) UpdateProduct(ctx context.Context, id uuid.UUID, data Upd
 			UpdatedAt:   sql.NullInt64{Int64: *product.UpdatedAt, Valid: true},
 		})
 		if err != nil {
-			return nil, err
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 		}
 
 		affected, err := dbResult.RowsAffected()
 		if err != nil {
-			return nil, err
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 		}
 
 		return &affected, nil
@@ -157,12 +162,12 @@ func (s *StoreService) UpdateProduct(ctx context.Context, id uuid.UUID, data Upd
 func (s *StoreService) DeleteProduct(ctx context.Context, id uuid.UUID) (*int64, error) {
 	dbResult, err := s.storage.Queries.DeleteProduct(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 	}
 
 	affected, err := dbResult.RowsAffected()
 	if err != nil {
-		return nil, err
+		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 	}
 
 	return &affected, nil
