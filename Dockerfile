@@ -22,5 +22,7 @@ COPY --from=builder ["/app/service", "/service"]
 
 ENV GO_ENV=production
 
+EXPOSE 8080
+
 CMD ["/service"]
 
