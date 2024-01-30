@@ -22,5 +22,5 @@ COPY --from=builder ["/app/dist/$APP_NAME", "/$APP_NAME"]
 
 ENV GO_ENV=production
 
-CMD ["/$APP_NAME"]
+CMD ["/", $APP_NAME]
 
