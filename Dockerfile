@@ -1,6 +1,7 @@
 FROM golang:1.20-alpine as builder
 
 ENV APP_NAME $APP_NAME
+ENV PORT $PORT
 
 WORKDIR /app
 
@@ -22,7 +23,7 @@ COPY --from=builder ["/app/service", "/service"]
 
 ENV GO_ENV=production
 
-EXPOSE 8080
+EXPOSE $PORT
 
 CMD ["/service"]
 
