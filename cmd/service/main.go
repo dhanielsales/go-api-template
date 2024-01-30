@@ -67,7 +67,7 @@ func new(env *env.EnvVars) (*service, error) {
 	validator := http.NewValidator(validate)
 
 	// init ideal client
-	clientIdeal := gql.NewClient(env.IDEAL_URL, nil)
+	clientIdeal := gql.NewClient(env.EXTERNAL_URL, nil)
 
 	// Start store module
 	store.Bootstrap(postgres, redis, clientIdeal, httpServer, validator)
