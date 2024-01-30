@@ -1,5 +1,7 @@
 FROM golang:1.20-alpine as builder
 
+ENV APP_NAME $APP_NAME
+
 WORKDIR /app
 
 COPY go.mod go.sum ./
@@ -16,9 +18,9 @@ RUN task build
 
 FROM scratch
 
-COPY --from=builder ["/app/dist/scaffold", "/scaffold"]
+COPY --from=builder ["/app/dist/$APP_NAME", "/$APP_NAME"]
 
 ENV GO_ENV=production
 
-CMD ["/scaffold"]
+CMD ["/$APP_NAME"]
 
