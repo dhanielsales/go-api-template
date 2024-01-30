@@ -1,6 +1,6 @@
-FROM golang:1.19.5-alpine as builder
+FROM golang:1.20-alpine as builder
 
-WORKDIR /build
+WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
@@ -16,9 +16,9 @@ RUN task build
 
 FROM scratch
 
-COPY --from=builder ["/build/service", "/service"]
+COPY --from=builder ["/app/dist/scaffold", "/scaffold"]
 
 ENV GO_ENV=production
 
-CMD ["/service"]
+CMD ["/scaffold"]
 
