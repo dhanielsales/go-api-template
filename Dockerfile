@@ -21,7 +21,6 @@ COPY --from=builder ["/app/service", "/service"]
 
 ENV GO_ENV=production
 
-EXPOSE 3000
+EXPOSE $PORT
 
 CMD ["/service"]
-

@@ -41,7 +41,7 @@ func Bootstrap(port string, logger log.Logger) *HttpServer {
 }
 
 func (h *HttpServer) Start() {
-	h.App.Listen("0.0.0.0:" + h.port)
+	h.App.Listen(":" + h.port)
 }
 
 func (h *HttpServer) Cleanup() {
