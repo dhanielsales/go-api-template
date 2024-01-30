@@ -61,7 +61,7 @@ tasks:
   install:
     desc: Install dependencies
     cmds:
-      - go mod tidy
+      - go mod download
 
   setup-tools:
     desc: Install tools

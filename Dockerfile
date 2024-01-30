@@ -1,6 +1,5 @@
 FROM golang:1.20-alpine as builder
 
-ENV APP_NAME $APP_NAME
 ENV PORT $PORT
 
 WORKDIR /app
@@ -15,7 +14,6 @@ RUN go install github.com/go-task/task/v3/cmd/task@latest
 RUN go build -o service cmd/service/main.go
 
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-RUN task build
 
 FROM scratch
 
@@ -23,7 +21,7 @@ COPY --from=builder ["/app/service", "/service"]
 
 ENV GO_ENV=production
 
-EXPOSE $PORT
+EXPOSE 3000
 
 CMD ["/service"]
 
