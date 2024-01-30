@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 
-	"github.com/dhanielsales/golang-scaffold/internal/time"
+	"github.com/dhanielsales/golang-scaffold/internal/utils"
 )
 
 type Product struct {
@@ -37,7 +37,7 @@ func NewProduct(name, description string, price float64, CategoryID uuid.UUID) (
 		Price:       price,
 		CategoryID:  CategoryID,
 		Description: &description,
-		CreatedAt:   time.Now(),
+		CreatedAt:   utils.TimeNow(),
 	}
 
 	if err := product.validate(); err != nil {
@@ -63,7 +63,7 @@ func (c *Product) Update(name, description string, price float64, CategoryID uui
 
 	c.CategoryID = CategoryID
 
-	updatedAt := time.Now()
+	updatedAt := utils.TimeNow()
 	c.UpdatedAt = &updatedAt
 }
 

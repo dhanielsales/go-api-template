@@ -15,6 +15,7 @@ type EnvVars struct {
 	POSTGRES_URL string `mapstructure:"POSTGRES_URL"`
 	REDIS_URL    string `mapstructure:"REDIS_URL"`
 	PORT         string `mapstructure:"PORT"`
+	IDEAL_URL    string `mapstructure:"IDEAL_URL"`
 }
 
 func LoadEnv() (*EnvVars, error) {

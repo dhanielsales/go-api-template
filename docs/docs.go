@@ -12,9 +12,6 @@ const docTemplate = `{
         "contact": {
             "name": "Dhaniel Sales"
         },
-        "license": {
-            "name": "MIT"
-        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -352,6 +349,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "image_url": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -401,6 +401,7 @@ const docTemplate = `{
         "http.createCategoryRequest": {
             "type": "object",
             "required": [
+                "imageUrl",
                 "name"
             ],
             "properties": {
@@ -408,6 +409,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 300,
                     "minLength": 1
+                },
+                "imageUrl": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string",
@@ -488,8 +492,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Golang scaffold",
-	Description:      "A simple Golang backend scaffold",
+	Title:            "Go Scaffold API",
+	Description:      "A simple API to show how to use Go in a clean way",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

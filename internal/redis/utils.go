@@ -3,18 +3,13 @@ package redis
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/redis/go-redis/v9"
 )
 
 func ComposeKey(keys ...string) string {
-	var key string
-
-	for _, k := range keys {
-		key += k + ":"
-	}
-
-	return key
+	return strings.Join(keys, ":")
 }
 
 var (
@@ -29,7 +24,11 @@ func CallTx(ctx context.Context, client *redis.Client, fn func(pipe redis.Pipeli
 			return err
 		})
 
-		if err != redis.TxFailedErr {
+		if err == nil {
+			return nil
+		}
+
+		if err == redis.TxFailedErr {
 			return err
 		}
 	}

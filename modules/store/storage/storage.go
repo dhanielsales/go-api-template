@@ -16,7 +16,7 @@ type StoreStorage struct {
 	Cache    *c.Cache
 }
 
-func NewStorage(postgresStorage *postgres.Storage, redisStorage *redis.Storage) *StoreStorage {
+func New(postgresStorage *postgres.Storage, redisStorage *redis.Storage) *StoreStorage {
 	queries := q.New(postgresStorage.Client)
 	cache := c.New(redisStorage)
 

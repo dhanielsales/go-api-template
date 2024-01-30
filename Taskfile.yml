@@ -4,8 +4,8 @@ dotenv:
   - ./app.env
 
 vars:
-  POSTGRES_CONTAINER_NAME: postgres_test
-  REDISDB_CONTAINER_NAME: redisdb_test
+  POSTGRES_CONTAINER_NAME: postgres_db
+  REDISDB_CONTAINER_NAME: redisdb_db
 
 tasks:
   dev:
@@ -41,17 +41,17 @@ tasks:
   migration-up:
     desc: Run migrations
     cmds:
-      - migrate -database '{{.POSTGRES_URI}}' -path internal/postgres/migrations -verbose up
+      - migrate -database '{{.POSTGRES_URL}}' -path internal/postgres/migrations -verbose up
 
   migration-down:
     desc: Rollback migrations
     cmds:
-      - migrate -database '{{.POSTGRES_URI}}' -path internal/postgres/migrations -verbose down 1
+      - migrate -database '{{.POSTGRES_URL}}' -path internal/postgres/migrations -verbose down 1
 
   migration-fix:
     desc: "Fix migrations to specific version. Example: task migration-force version=1"
     cmds:
-      - migrate -database '{{.POSTGRES_URI}}' -path internal/postgres/migrations -verbose force '{{.version}}'
+      - migrate -database '{{.POSTGRES_URL}}' -path internal/postgres/migrations -verbose force '{{.version}}'
 
   mock:
     desc: Generate mocks
@@ -71,6 +71,7 @@ tasks:
       - go install github.com/go-task/task/v3/cmd/task@latest
       - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
       - go install go.uber.org/mock/mockgen@latest
+      - npm i -g json-graphql-server
 
   setup-infra:
     desc: Create infrastructure
@@ -89,6 +90,11 @@ tasks:
     cmds:
       - docker stop '{{.POSTGRES_CONTAINER_NAME}}'
       - docker stop '{{.REDISDB_CONTAINER_NAME}}'
+
+  run-mock-graphql:
+    desc: Run mock graphql server
+    cmds:
+      - json-graphql-server graphql-mock-api.json
 
   test:
     desc: Run tests

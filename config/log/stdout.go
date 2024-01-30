@@ -54,17 +54,20 @@ func formatPayload(params Params) string {
 func (l *stdoutLogger) Info(params Params) {
 	formated := formatPayload(params)
 	l.logger.Println(formated)
+	fmt.Println(params.Error.Err)
 	fmt.Println(params.Error.Stack())
 }
 
 func (l *stdoutLogger) Warn(params Params) {
 	formated := formatPayload(params)
 	l.logger.Println(formated)
+	fmt.Println(params.Error.Err)
 	fmt.Println(params.Error.Stack())
 }
 
 func (l *stdoutLogger) Error(params Params) {
 	formated := formatPayload(params)
 	l.logger.Println(formated)
+	fmt.Println(params.Error.Err)
 	fmt.Println(params.Error.Stack())
 }

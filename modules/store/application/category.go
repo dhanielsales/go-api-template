@@ -18,34 +18,53 @@ import (
 type CreateCategoryPayload struct {
 	Name        string
 	Description string
+	ImageUrl    string
 }
 
 func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPayload) (*int64, error) {
-	category := entity.NewCategory(data.Name, data.Description)
+	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
+		queries := s.storage.Queries.WithTx(tx)
 
-	dbResult, err := s.storage.Queries.CreateCategory(ctx, store_storage.CreateCategoryParams{
-		ID:          category.ID,
-		Name:        category.Name,
-		Slug:        category.Slug,
-		Description: sql.NullString{String: *category.Description},
-		CreatedAt:   category.CreatedAt,
+		category := entity.NewCategory(data.Name, data.Description)
+
+		payload := store_storage.CreateCategoryParams{
+			ID:        category.ID,
+			Name:      category.Name,
+			Slug:      category.Slug,
+			CreatedAt: category.CreatedAt,
+		}
+
+		if data.Description != "" {
+			payload.Description = sql.NullString{String: data.Description, Valid: true}
+		}
+
+		dbResult, err := queries.CreateCategory(ctx, payload)
+
+		if err != nil {
+			if postgres.IsUniqueViolationByField(err, "slug") {
+				return nil, appError.New(err, appError.UnprocessableEntityError, "Já existe uma categoria com esse slug")
+			}
+
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
+		}
+
+		affected, err := dbResult.RowsAffected()
+		if err != nil {
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
+		}
+
+		err = s.storage.Cache.DeleteAllCategoryInCache(ctx)
+		if err != nil {
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
+		}
+
+		if _, err = s.external.Ideal.CreateImage(ctx, category.ID.String(), data.ImageUrl); err != nil {
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
+		}
+
+		return &affected, nil
 	})
 
-	if err != nil {
-		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
-	}
-
-	affected, err := dbResult.RowsAffected()
-	if err != nil {
-		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
-	}
-
-	err = s.storage.Cache.DeleteAllCategoryInCache(ctx)
-	if err != nil {
-		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
-	}
-
-	return &affected, nil
 }
 
 func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*entity.Category, error) {
@@ -119,6 +138,16 @@ func (s *StoreService) GetManyCategory(ctx context.Context, params GetManyCatego
 
 		for _, dbCategory := range dbResult {
 			curr := storage.ToCategory(&dbCategory)
+
+			ext, err := s.external.Ideal.GetImage(ctx, curr.ID.String())
+			if err != nil {
+				return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
+			}
+
+			if len(ext.AllImages) > 0 {
+				curr.ImageUrl = &ext.AllImages[0].Url
+			}
+
 			result = append(result, *curr)
 		}
 
@@ -144,14 +173,23 @@ func (s *StoreService) UpdateCategory(ctx context.Context, id uuid.UUID, data Up
 
 		category.Update(data.Name, data.Description)
 
-		dbResult, err := queries.UpdateCategory(ctx, store_storage.UpdateCategoryParams{
-			ID:          category.ID,
-			Name:        category.Name,
-			Slug:        category.Slug,
-			Description: sql.NullString{String: data.Description},
-			UpdatedAt:   sql.NullInt64{Int64: *category.UpdatedAt, Valid: true},
-		})
+		payload := store_storage.UpdateCategoryParams{
+			ID:        category.ID,
+			Name:      category.Name,
+			Slug:      category.Slug,
+			UpdatedAt: sql.NullInt64{Int64: *category.UpdatedAt, Valid: true},
+		}
+
+		if data.Description != "" {
+			payload.Description = sql.NullString{String: data.Description, Valid: true}
+		}
+
+		dbResult, err := queries.UpdateCategory(ctx, payload)
 		if err != nil {
+			if postgres.IsUniqueViolationByField(err, "slug") {
+				return nil, appError.New(err, appError.UnprocessableEntityError, "Já existe uma categoria com esse slug")
+			}
+
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 

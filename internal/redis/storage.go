@@ -10,17 +10,10 @@ type Storage struct {
 	Client *redis.Client
 }
 
-func Bootstrap(url string) (*Storage, error) {
-	opts, err := redis.ParseURL(url)
-	if err != nil {
-		return nil, err
-	}
-
-	client := redis.NewClient(opts)
-
+func Bootstrap(client *redis.Client) (*Storage, error) {
 	ctx := context.Background()
 	ping := client.Ping(ctx)
-	_, err = ping.Result()
+	_, err := ping.Result()
 
 	if err != nil {
 		return nil, err

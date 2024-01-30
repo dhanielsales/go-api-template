@@ -64,8 +64,10 @@ func (c *Cache) DeleteAllCategoryInCache(ctx context.Context) error {
 				return err
 			}
 
-			if err := pipe.Del(ctx, keys...).Err(); err != nil {
-				return err
+			if len(keys) > 0 {
+				if err := pipe.Del(ctx, keys...).Err(); err != nil {
+					return err
+				}
 			}
 
 			if cursor == 0 {

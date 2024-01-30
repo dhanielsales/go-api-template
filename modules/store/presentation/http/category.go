@@ -26,6 +26,7 @@ func setupCategoryRoutes(r fiber.Router, controller *StoreController) {
 type createCategoryRequest struct {
 	Name        string `json:"name" validate:"required,min=1,max=50"`
 	Description string `json:"description,omitempty" validate:"min=1,max=300"`
+	ImageUrl    string `json:"imageUrl" validate:"required,url"`
 }
 
 // @Summary Create one category.
@@ -52,6 +53,7 @@ func (t *StoreController) createCategory(c *fiber.Ctx) error {
 	affected, err := t.service.CreateCategory(c.Context(), application.CreateCategoryPayload{
 		Name:        req.Name,
 		Description: req.Description,
+		ImageUrl:    req.ImageUrl,
 	})
 
 	if err != nil {

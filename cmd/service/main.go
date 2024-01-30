@@ -1,10 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 
 	"github.com/go-playground/validator/v10"
+	goredis "github.com/redis/go-redis/v9"
 
 	_ "github.com/dhanielsales/golang-scaffold/docs"
 
@@ -14,6 +16,7 @@ import (
 	"github.com/dhanielsales/golang-scaffold/config/shutdown"
 
 	// Internal
+	"github.com/dhanielsales/golang-scaffold/internal/gql"
 	"github.com/dhanielsales/golang-scaffold/internal/http"
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
 	"github.com/dhanielsales/golang-scaffold/internal/redis"
@@ -23,23 +26,32 @@ import (
 )
 
 type service struct {
-	http     *http.HttpServer
-	postgres *postgres.Storage
-	redis    *redis.Storage
-	logger   log.Logger
-	env      *env.EnvVars
-	validate *validator.Validate
+	http        *http.HttpServer
+	postgres    *postgres.Storage
+	redis       *redis.Storage
+	logger      log.Logger
+	clientIdeal *gql.Client
+	env         *env.EnvVars
+	validate    *validator.Validate
 }
 
 func new(env *env.EnvVars) (*service, error) {
 	// init the Postgres storage
-	postgres, err := postgres.Bootstrap(env.POSTGRES_URL)
+	postgresDb, err := sql.Open("postgres", env.POSTGRES_URL)
 	if err != nil {
 		return nil, err
 	}
 
+	postgres := postgres.Bootstrap(postgresDb)
+
 	// init the Redis storage
-	redis, err := redis.Bootstrap(env.REDIS_URL)
+	opts, err := goredis.ParseURL(env.REDIS_URL)
+	if err != nil {
+		return nil, err
+	}
+
+	client := goredis.NewClient(opts)
+	redis, err := redis.Bootstrap(client)
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +66,11 @@ func new(env *env.EnvVars) (*service, error) {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	validator := http.NewValidator(validate)
 
+	// init ideal client
+	clientIdeal := gql.NewClient(env.IDEAL_URL, nil)
+
 	// Start store module
-	store.Bootstrap(postgres, redis, httpServer, validator)
+	store.Bootstrap(postgres, redis, clientIdeal, httpServer, validator)
 
 	return &service{
 		http:     httpServer,
@@ -78,11 +93,10 @@ func (s *service) Cleanup() {
 	s.redis.Cleanup()
 }
 
-// @title Golang scaffold
+// @title Go Scaffold API
 // @version 1.0
-// @description A simple Golang backend scaffold
+// @description A simple API to show how to use Go in a clean way
 // @contact.name Dhaniel Sales
-// @license.name MIT
 // @BasePath /
 func main() {
 	// setup exit code for graceful shutdown

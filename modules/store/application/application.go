@@ -1,13 +1,18 @@
 package application
 
-import store_storage "github.com/dhanielsales/golang-scaffold/modules/store/storage"
+import (
+	"github.com/dhanielsales/golang-scaffold/modules/store/external"
+	store_storage "github.com/dhanielsales/golang-scaffold/modules/store/storage"
+)
 
 type StoreService struct {
-	storage *store_storage.StoreStorage
+	storage  *store_storage.StoreStorage
+	external *external.External
 }
 
-func NewService(storage *store_storage.StoreStorage) *StoreService {
+func New(storage *store_storage.StoreStorage, external *external.External) *StoreService {
 	return &StoreService{
-		storage: storage,
+		storage:  storage,
+		external: external,
 	}
 }

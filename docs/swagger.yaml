@@ -8,6 +8,8 @@ definitions:
         type: string
       id:
         type: string
+      image_url:
+        type: string
       name:
         type: string
       products:
@@ -44,11 +46,14 @@ definitions:
         maxLength: 300
         minLength: 1
         type: string
+      imageUrl:
+        type: string
       name:
         maxLength: 50
         minLength: 1
         type: string
     required:
+    - imageUrl
     - name
     type: object
   http.createProductRequest:
@@ -100,10 +105,8 @@ definitions:
 info:
   contact:
     name: Dhaniel Sales
-  description: A simple Golang backend scaffold
-  license:
-    name: MIT
-  title: Golang scaffold
+  description: A simple API to show how to use Go in a clean way
+  title: Go Scaffold API
   version: "1.0"
 paths:
   /category:

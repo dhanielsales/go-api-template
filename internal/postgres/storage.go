@@ -10,15 +10,10 @@ type Storage struct {
 	Client *sql.DB
 }
 
-func Bootstrap(url string) (*Storage, error) {
-	db, err := sql.Open("postgres", url)
-	if err != nil {
-		return nil, err
-	}
-
+func Bootstrap(client *sql.DB) *Storage {
 	return &Storage{
-		Client: db,
-	}, nil
+		Client: client,
+	}
 }
 
 func (s *Storage) Cleanup() error {

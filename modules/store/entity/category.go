@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 
-	"github.com/dhanielsales/golang-scaffold/internal/time"
+	"github.com/dhanielsales/golang-scaffold/internal/utils"
 )
 
 type Category struct {
@@ -15,6 +15,7 @@ type Category struct {
 	Slug        string     `json:"slug"`
 	Description *string    `json:"description"`
 	Products    *[]Product `json:"products,omitempty"`
+	ImageUrl    *string    `json:"image_url"`
 	CreatedAt   int64      `json:"created_at"`
 	UpdatedAt   *int64     `json:"updated_at"`
 }
@@ -33,7 +34,7 @@ func NewCategory(name, description string) *Category {
 		Name:        name,
 		Slug:        slug.Make(name),
 		Description: &description,
-		CreatedAt:   time.Now(),
+		CreatedAt:   utils.TimeNow(),
 	}
 }
 
@@ -47,6 +48,6 @@ func (c *Category) Update(name, description string) {
 		c.Description = &description
 	}
 
-	updatedAt := time.Now()
+	updatedAt := utils.TimeNow()
 	c.UpdatedAt = &updatedAt
 }

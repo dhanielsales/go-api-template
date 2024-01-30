@@ -20,7 +20,7 @@ func Pagination(page, perPage string) PaginationResult {
 
 	currentPerPage, err := strconv.Atoi(perPage)
 	if err != nil {
-		currentPerPage = 1
+		currentPerPage = 10
 	}
 
 	var limit int

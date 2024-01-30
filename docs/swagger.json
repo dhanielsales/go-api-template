@@ -1,13 +1,10 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "A simple Golang backend scaffold",
-        "title": "Golang scaffold",
+        "description": "A simple API to show how to use Go in a clean way",
+        "title": "Go Scaffold API",
         "contact": {
             "name": "Dhaniel Sales"
-        },
-        "license": {
-            "name": "MIT"
         },
         "version": "1.0"
     },
@@ -345,6 +342,9 @@
                 "id": {
                     "type": "string"
                 },
+                "image_url": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -394,6 +394,7 @@
         "http.createCategoryRequest": {
             "type": "object",
             "required": [
+                "imageUrl",
                 "name"
             ],
             "properties": {
@@ -401,6 +402,9 @@
                     "type": "string",
                     "maxLength": 300,
                     "minLength": 1
+                },
+                "imageUrl": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string",
