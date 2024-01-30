@@ -1,4 +1,4 @@
-package ideal
+package example
 
 import (
 	"context"
@@ -24,7 +24,7 @@ type GetImageResponse struct {
 	} `mapstructure:"allImages"`
 }
 
-func (i *Ideal) GetImage(ctx context.Context, id string) (*GetImageResponse, error) {
+func (i *Example) GetImage(ctx context.Context, id string) (*GetImageResponse, error) {
 	request := gql.NewRequest(ctx, getImage, map[string]any{
 		"extId": gql.NewID(id),
 	})
@@ -57,7 +57,7 @@ type CreateImageResponse struct {
 	} `mapstructure:"CreateImage"`
 }
 
-func (i *Ideal) CreateImage(ctx context.Context, id, url string) (*CreateImageResponse, error) {
+func (i *Example) CreateImage(ctx context.Context, id, url string) (*CreateImageResponse, error) {
 	request := gql.NewRequest(ctx, createImage, map[string]any{
 		"extId": id,
 		"url":   url,
