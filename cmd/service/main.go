@@ -119,8 +119,6 @@ func main() {
 		return
 	}
 
-	fmt.Println("Main 3")
-
 	// Create new service
 	srv, err := new(envVars)
 	if err != nil {
