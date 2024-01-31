@@ -100,16 +100,12 @@ func (s *service) Cleanup() {
 // @contact.name Dhaniel Sales
 // @BasePath /
 func main() {
-	fmt.Println("Main")
-
 	// setup exit code for graceful shutdown
 	var exitCode int
 	defer func() {
-		fmt.Println("Main defer")
+		fmt.Printf("exiting with code %d\n", exitCode)
 		os.Exit(exitCode)
 	}()
-
-	fmt.Println("Main 2")
 
 	// load config
 	envVars, err := env.LoadEnv()
@@ -119,8 +115,6 @@ func main() {
 		return
 	}
 
-	fmt.Println("Main 3")
-
 	// Create new service
 	srv, err := new(envVars)
 	if err != nil {
@@ -128,8 +122,6 @@ func main() {
 		exitCode = 1
 		return
 	}
-
-	fmt.Println("Main 4")
 
 	// Start and ensuring the server is shutdown gracefully & app runs
 	shutdown.StartGracefully(srv)

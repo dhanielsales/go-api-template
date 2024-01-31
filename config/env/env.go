@@ -19,35 +19,23 @@ type EnvVars struct {
 }
 
 func LoadEnv() (*EnvVars, error) {
-	fmt.Println("LoadEnv")
 	var config EnvVars
-	fmt.Println("config", config)
 
 	env := os.Getenv("GO_ENV")
-	fmt.Println("env", env)
 	if env == "production" {
-		fmt.Println("LoadEnv if")
-
 		val := reflect.Indirect(reflect.ValueOf(&config))
 		for i := 0; i < val.NumField(); i++ {
 			envVar := val.Type().Field(i).Tag.Get("mapstructure")
-			fmt.Println("envVar", envVar)
 
 			if envVar == "" {
 				return nil, fmt.Errorf("Env var '%s' not found", envVar)
 			}
 
-			fmt.Println("os.Getenv(envVar)", os.Getenv(envVar))
-
 			val.Field(i).SetString(os.Getenv(envVar))
 		}
 
-		fmt.Println("config", config)
-
 		return &config, nil
 	}
-
-	fmt.Println("LoadEnv 2")
 
 	viper.AddConfigPath(".")
 	viper.SetConfigName("app")
