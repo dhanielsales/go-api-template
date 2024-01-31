@@ -28,7 +28,7 @@ func LoadEnv() (*EnvVars, error) {
 	if env == "production" {
 		fmt.Println("LoadEnv if")
 
-		val := reflect.Indirect(reflect.ValueOf(config))
+		val := reflect.Indirect(reflect.ValueOf(&config))
 		for i := 0; i < val.NumField(); i++ {
 			envVar := val.Type().Field(i).Tag.Get("mapstructure")
 			fmt.Println("envVar", envVar)
