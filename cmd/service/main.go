@@ -39,7 +39,7 @@ func new(env *env.EnvVars) (*service, error) {
 	// init the Postgres storage
 	postgresDb, err := sql.Open("postgres", env.POSTGRES_URL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error opening postgres connection: %w", err)
 	}
 
 	postgres := postgres.Bootstrap(postgresDb)
@@ -47,13 +47,13 @@ func new(env *env.EnvVars) (*service, error) {
 	// init the Redis storage
 	opts, err := goredis.ParseURL(env.REDIS_URL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error parsing redis url: %w", err)
 	}
 
 	client := goredis.NewClient(opts)
 	redis, err := redis.Bootstrap(client)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error opening redis connection: %w", err)
 	}
 
 	// init logger
@@ -83,6 +83,7 @@ func new(env *env.EnvVars) (*service, error) {
 }
 
 func (s *service) Run() {
+	fmt.Println("Starting...")
 	s.http.Start()
 }
 
@@ -99,27 +100,36 @@ func (s *service) Cleanup() {
 // @contact.name Dhaniel Sales
 // @BasePath /
 func main() {
+	fmt.Println("Main")
+
 	// setup exit code for graceful shutdown
 	var exitCode int
 	defer func() {
+		fmt.Println("Main defer")
 		os.Exit(exitCode)
 	}()
 
+	fmt.Println("Main 2")
+
 	// load config
-	env, err := env.LoadEnv()
+	envVars, err := env.LoadEnv()
 	if err != nil {
-		fmt.Printf("error: %v", err)
+		fmt.Printf("error loading env vars: %v", err)
 		exitCode = 1
 		return
 	}
 
+	fmt.Println("Main 3")
+
 	// Create new service
-	srv, err := new(env)
+	srv, err := new(envVars)
 	if err != nil {
-		fmt.Printf("error: %v", err)
+		fmt.Printf("error creating service: %v", err)
 		exitCode = 1
 		return
 	}
+
+	fmt.Println("Main 4")
 
 	// Start and ensuring the server is shutdown gracefully & app runs
 	shutdown.StartGracefully(srv)
