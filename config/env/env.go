@@ -19,9 +19,11 @@ type EnvVars struct {
 }
 
 func LoadEnv() (*EnvVars, error) {
+	fmt.Println("LoadEnv")
 	var config EnvVars
 
 	env := os.Getenv("GO_ENV")
+	fmt.Println("env", env)
 	if env == "production" {
 		val := reflect.Indirect(reflect.ValueOf(config))
 		for i := 0; i < val.NumField(); i++ {
@@ -32,6 +34,8 @@ func LoadEnv() (*EnvVars, error) {
 
 			val.Field(i).SetString(os.Getenv(envVar))
 		}
+
+		fmt.Println("config", config)
 
 		return &config, nil
 	}
