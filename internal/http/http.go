@@ -17,7 +17,7 @@ type HttpServer struct {
 	ErrorHandler *HttpErrorHandler
 }
 
-func Bootstrap(port string, logger log.Logger) *HttpServer {
+func New(port string, logger log.Logger) *HttpServer {
 	// create the fiber app
 	app := fiber.New()
 

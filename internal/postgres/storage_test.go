@@ -19,7 +19,7 @@ func TestStorageBootstrapSuccess(t *testing.T) {
 
 	require.NoError(t, err)
 
-	s := postgres.Bootstrap(db)
+	s := postgres.New(db)
 
 	mock.ExpectPing()
 
@@ -36,7 +36,7 @@ func TestStorageCleanupSuccess(t *testing.T) {
 
 	require.NoError(t, err)
 
-	s := postgres.Bootstrap(db)
+	s := postgres.New(db)
 
 	mock.ExpectClose()
 
@@ -53,7 +53,7 @@ func TestStorageCleanupError(t *testing.T) {
 
 	require.NoError(t, err)
 
-	s := postgres.Bootstrap(db)
+	s := postgres.New(db)
 
 	err = errors.New("Error on close")
 	mock.ExpectClose().WillReturnError(err)

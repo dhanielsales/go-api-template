@@ -58,7 +58,7 @@ func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPa
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
-		if _, err = s.external.Ideal.CreateImage(ctx, category.ID.String(), data.ImageUrl); err != nil {
+		if _, err = s.external.Example.CreateImage(ctx, category.ID.String(), data.ImageUrl); err != nil {
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
@@ -139,7 +139,7 @@ func (s *StoreService) GetManyCategory(ctx context.Context, params GetManyCatego
 		for _, dbCategory := range dbResult {
 			curr := storage.ToCategory(&dbCategory)
 
-			ext, err := s.external.Ideal.GetImage(ctx, curr.ID.String())
+			ext, err := s.external.Example.GetImage(ctx, curr.ID.String())
 			if err != nil {
 				return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 			}

@@ -10,7 +10,7 @@ type Storage struct {
 	Client *redis.Client
 }
 
-func Bootstrap(client *redis.Client) (*Storage, error) {
+func New(client *redis.Client) (*Storage, error) {
 	ctx := context.Background()
 	ping := client.Ping(ctx)
 	_, err := ping.Result()

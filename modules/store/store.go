@@ -13,9 +13,9 @@ import (
 	store_http "github.com/dhanielsales/golang-scaffold/modules/store/presentation/http"
 )
 
-func Bootstrap(postgres *postgres.Storage, redis *redis.Storage, clientIdeal *gql.Client, httpServer *http.HttpServer, validator *http.Validator) {
+func Bootstrap(postgres *postgres.Storage, redis *redis.Storage, exampleClient *gql.Client, httpServer *http.HttpServer, validator *http.Validator) {
 	storage := storage.New(postgres, redis)
-	external := external.New(clientIdeal)
+	external := external.New(exampleClient)
 	service := application.New(storage, external)
 
 	store_http.NewHttp(service, httpServer, validator)

@@ -16,7 +16,7 @@ func TestStorage(t *testing.T) {
 
 	mock.ExpectPing().SetVal("PONG")
 
-	s, err := redis.Bootstrap(db)
+	s, err := redis.New(db)
 	require.NoError(t, err)
 
 	err = s.Cleanup()
@@ -28,6 +28,6 @@ func TestStoragePingError(t *testing.T) {
 
 	mock.ExpectPing().SetErr(errors.New("ping error"))
 
-	_, err := redis.Bootstrap(db)
+	_, err := redis.New(db)
 	require.Error(t, err)
 }

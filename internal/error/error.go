@@ -3,6 +3,7 @@ package error
 import (
 	"errors"
 	"fmt"
+	"runtime/debug"
 
 	"github.com/google/uuid"
 )
@@ -50,6 +51,6 @@ func New(err error, name ErrorName, description string) *AppError {
 		Level:       name.Level(),
 		Description: description,
 		Err:         err,
-		stack:       getStack(),
+		stack:       debug.Stack(),
 	}
 }

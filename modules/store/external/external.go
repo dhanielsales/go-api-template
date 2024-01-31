@@ -6,11 +6,11 @@ import (
 )
 
 type External struct {
-	Ideal *example.Example
+	Example *example.Example
 }
 
 func New(client *gql.Client) *External {
 	return &External{
-		Ideal: example.New(client),
+		Example: example.New(client),
 	}
 }

@@ -37,7 +37,7 @@ func TestCallTxTxSucceeded(t *testing.T) {
 
 	mock.ExpectPing().SetVal("PONG")
 
-	s, err := redis.Bootstrap(db)
+	s, err := redis.New(db)
 	require.NoError(t, err)
 
 	mock.ExpectTxPipeline()
@@ -56,7 +56,7 @@ func TestCallTxTxFailed(t *testing.T) {
 
 	mock.ExpectPing().SetVal("PONG")
 
-	s, err := redis.Bootstrap(db)
+	s, err := redis.New(db)
 	require.NoError(t, err)
 
 	mock.ExpectTxPipeline()
@@ -75,7 +75,7 @@ func TestCallTxMaxRetriesExceeded(t *testing.T) {
 
 	mock.ExpectPing().SetVal("PONG")
 
-	s, err := redis.Bootstrap(db)
+	s, err := redis.New(db)
 	require.NoError(t, err)
 
 	mock.ExpectTxPipeline()

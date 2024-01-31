@@ -10,7 +10,7 @@ type Storage struct {
 	Client *sql.DB
 }
 
-func Bootstrap(client *sql.DB) *Storage {
+func New(client *sql.DB) *Storage {
 	return &Storage{
 		Client: client,
 	}

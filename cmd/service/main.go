@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"runtime/debug"
 
 	"github.com/go-playground/validator/v10"
 	goredis "github.com/redis/go-redis/v9"
@@ -42,7 +43,7 @@ func new(env *env.EnvVars) (*service, error) {
 		return nil, fmt.Errorf("error opening postgres connection: %w", err)
 	}
 
-	postgres := postgres.Bootstrap(postgresDb)
+	postgres := postgres.New(postgresDb)
 
 	// init the Redis storage
 	opts, err := goredis.ParseURL(env.REDIS_URL)
@@ -51,7 +52,7 @@ func new(env *env.EnvVars) (*service, error) {
 	}
 
 	client := goredis.NewClient(opts)
-	redis, err := redis.Bootstrap(client)
+	redis, err := redis.New(client)
 	if err != nil {
 		return nil, fmt.Errorf("error opening redis connection: %w", err)
 	}
@@ -60,17 +61,17 @@ func new(env *env.EnvVars) (*service, error) {
 	logger := log.New(env.APP_NAME)
 
 	// init http server
-	httpServer := http.Bootstrap(env.PORT, logger)
+	httpServer := http.New(env.PORT, logger)
 
 	// init validator
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	validator := http.NewValidator(validate)
 
-	// init ideal client
-	clientIdeal := gql.NewClient(env.EXTERNAL_URL, nil)
+	// init Example client
+	clientExample := gql.NewClient(env.EXTERNAL_URL, nil)
 
 	// Start store module
-	store.Bootstrap(postgres, redis, clientIdeal, httpServer, validator)
+	store.Bootstrap(postgres, redis, clientExample, httpServer, validator)
 
 	return &service{
 		http:     httpServer,
@@ -94,6 +95,13 @@ func (s *service) Cleanup() {
 	s.redis.Cleanup()
 }
 
+func mainRecover() {
+	if err := recover(); err != nil {
+		fmt.Printf("panic: %v\n", err)
+		debug.PrintStack()
+	}
+}
+
 // @title Go Scaffold API
 // @version 1.0
 // @description A simple API to show how to use Go in a clean way
@@ -106,6 +114,7 @@ func main() {
 		fmt.Printf("exiting with code %d\n", exitCode)
 		os.Exit(exitCode)
 	}()
+	defer mainRecover()
 
 	// load config
 	envVars, err := env.LoadEnv()
