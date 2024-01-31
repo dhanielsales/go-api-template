@@ -15,7 +15,6 @@ FROM scratch
 
 COPY --from=builder ["/etc/ssl/certs/ca-certificates.crt", "/etc/ssl/certs/"]
 COPY --from=builder ["/app/service", "/service"]
-COPY --from=builder ["/app/app.env", "/app.env"]
 
 ENV GO_ENV=production
 ENV PORT $PORT
