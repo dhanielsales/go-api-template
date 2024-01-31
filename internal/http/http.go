@@ -23,10 +23,11 @@ func New(port string, logger log.Logger) *HttpServer {
 
 	// add middleware
 	app.Use(cors.New())
-	app.Use(fiberLogger.New(fiberLogger.Config{
-		TimeFormat: "2006-01-02 15:04:05",
-		Format:     "${time} [${ip}] ${status} - ${latency} ${method} ${path}\n",
-	}))
+	// app.Use(fiberLogger.New(fiberLogger.Config{
+	// 	TimeFormat: "2006-01-02 15:04:05",
+	// 	Format:     "${time} [${ip}] ${status} - ${latency} ${method} ${path}\n",
+	// }))
+	app.Use(fiberLogger.New())
 
 	// add health check
 	app.Get("/health", func(c *fiber.Ctx) error {
