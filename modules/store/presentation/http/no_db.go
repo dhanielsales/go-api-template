@@ -19,7 +19,7 @@ func setupNoDbRoutes(r fiber.Router, controller *StoreController) {
 // @Tags NoDb
 // @Accept */*
 // @Produce json
-// @Success 200 {object} string
+// @Success 200 {object} []entity.NoDb
 // @Router /api/v0/no-db [get]
 func (t *StoreController) getManyNoDb(c *fiber.Ctx) error {
 	data, err := t.service.GetManyNoDb(c.Context())

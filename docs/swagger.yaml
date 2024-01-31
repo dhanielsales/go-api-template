@@ -21,6 +21,13 @@ definitions:
       updated_at:
         type: integer
     type: object
+  entity.NoDb:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   entity.Product:
     properties:
       category_id:
@@ -225,7 +232,9 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            items:
+              $ref: '#/definitions/entity.NoDb'
+            type: array
       summary: Get many fake data.
       tags:
       - NoDb

@@ -193,7 +193,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.NoDb"
+                            }
                         }
                     }
                 }
@@ -389,6 +392,17 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "integer"
+                }
+            }
+        },
+        "entity.NoDb": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
