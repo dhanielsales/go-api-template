@@ -21,6 +21,7 @@ type EnvVars struct {
 func LoadEnv() (*EnvVars, error) {
 	fmt.Println("LoadEnv")
 	var config EnvVars
+	fmt.Println("config", config)
 
 	env := os.Getenv("GO_ENV")
 	fmt.Println("env", env)
