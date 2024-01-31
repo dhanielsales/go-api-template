@@ -17,7 +17,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/category": {
+        "/api/v0/category": {
             "get": {
                 "description": "fetch every category available.",
                 "consumes": [
@@ -75,7 +75,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/category/{id}": {
+        "/api/v0/category/{id}": {
             "get": {
                 "description": "fetch one category by id.",
                 "consumes": [
@@ -176,7 +176,30 @@ const docTemplate = `{
                 }
             }
         },
-        "/product": {
+        "/api/v0/no-db": {
+            "get": {
+                "description": "get many fake data.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NoDb"
+                ],
+                "summary": "Get many fake data.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v0/product": {
             "get": {
                 "description": "fetch every product available.",
                 "consumes": [
@@ -234,7 +257,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/product/{id}": {
+        "/api/v0/product/{id}": {
             "get": {
                 "description": "fetch one product by id.",
                 "consumes": [

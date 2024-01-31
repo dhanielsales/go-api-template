@@ -36,7 +36,7 @@ type createCategoryRequest struct {
 // @Produce json
 // @Param Category body createCategoryRequest true "Category to create"
 // @Success 201 {object} int64
-// @Router /category [post]
+// @Router /api/v0/category [post]
 func (t *StoreController) createCategory(c *fiber.Ctx) error {
 	var req createCategoryRequest
 
@@ -69,7 +69,7 @@ func (t *StoreController) createCategory(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Success 200 {object} []entity.Category
-// @Router /category [get]
+// @Router /api/v0/category [get]
 func (t *StoreController) getManyCategory(c *fiber.Ctx) error {
 	categories, err := t.service.GetManyCategory(c.Context(), application.GetManyCategoryParams{
 		Page:    c.Query("page"),
@@ -90,7 +90,7 @@ func (t *StoreController) getManyCategory(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "Category ID"
 // @Success 200 {object} entity.Category
-// @Router /category/{id} [get]
+// @Router /api/v0/category/{id} [get]
 func (t *StoreController) getOneCategory(c *fiber.Ctx) error {
 	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)
@@ -120,7 +120,7 @@ type updateCategoryRequest struct {
 // @Param id path string true "Category ID"
 // @Param Category body updateCategoryRequest true "Category to update"
 // @Success 200 {object} int64
-// @Router /category/{id} [put]
+// @Router /api/v0/category/{id} [put]
 func (t *StoreController) updateCategory(c *fiber.Ctx) error {
 	var req updateCategoryRequest
 
@@ -161,7 +161,7 @@ func (t *StoreController) updateCategory(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "Category ID"
 // @Success 200 {object} int64
-// @Router /category/{id} [delete]
+// @Router /api/v0/category/{id} [delete]
 func (t *StoreController) deleteCategory(c *fiber.Ctx) error {
 	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)

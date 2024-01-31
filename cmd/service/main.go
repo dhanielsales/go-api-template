@@ -61,7 +61,7 @@ func new(env *env.EnvVars) (*service, error) {
 	logger := log.New(env.APP_NAME)
 
 	// init http server
-	httpServer := http.New(env.PORT, logger)
+	httpServer := http.New(env.PORT, logger, env.GO_ENV != "production")
 
 	// init validator
 	validate := validator.New(validator.WithRequiredStructEnabled())

@@ -37,7 +37,7 @@ type createProductRequest struct {
 // @Produce json
 // @Param Product body createProductRequest true "Product to create"
 // @Success 201 {object} int64
-// @Router /product [post]
+// @Router /api/v0/product [post]
 func (t *StoreController) createProduct(c *fiber.Ctx) error {
 	var req createProductRequest
 
@@ -73,7 +73,7 @@ func (t *StoreController) createProduct(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Success 200 {object} []entity.Product
-// @Router /product [get]
+// @Router /api/v0/product [get]
 func (t *StoreController) getManyProduct(c *fiber.Ctx) error {
 	categories, err := t.service.GetManyProduct(c.Context(), application.GetManyProductParams{
 		Page:    c.Query("page"),
@@ -95,7 +95,7 @@ func (t *StoreController) getManyProduct(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "Product ID"
 // @Success 200 {object} entity.Product
-// @Router /product/{id} [get]
+// @Router /api/v0/product/{id} [get]
 func (t *StoreController) getOneProduct(c *fiber.Ctx) error {
 	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)
@@ -126,7 +126,7 @@ type updateProductRequest struct {
 // @Param id path string true "Product ID"
 // @Param Product body updateProductRequest true "Product to update"
 // @Success 200 {object} int64
-// @Router /product/{id} [put]
+// @Router /api/v0/product/{id} [put]
 func (t *StoreController) updateProduct(c *fiber.Ctx) error {
 	var req updateProductRequest
 
@@ -168,7 +168,7 @@ func (t *StoreController) updateProduct(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "Product ID"
 // @Success 200 {object} int64
-// @Router /product/{id} [delete]
+// @Router /api/v0/product/{id} [delete]
 func (t *StoreController) deleteProduct(c *fiber.Ctx) error {
 	if err := t.validator.ValidateField(c.Params("id"), "id", "required,uuid4"); err != nil {
 		currErr := appError.New(nil, appError.BadRequestError, err.Message)

@@ -9,6 +9,7 @@ import (
 )
 
 type EnvVars struct {
+	GO_ENV       string `mapstructure:"GO_ENV"`
 	APP_NAME     string `mapstructure:"APP_NAME"`
 	MONGODB_URL  string `mapstructure:"MONGODB_URL"`
 	MONGODB_NAME string `mapstructure:"MONGODB_NAME"`

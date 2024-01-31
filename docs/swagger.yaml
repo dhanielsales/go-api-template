@@ -109,7 +109,7 @@ info:
   title: Go Scaffold API
   version: "1.0"
 paths:
-  /category:
+  /api/v0/category:
     get:
       consumes:
       - '*/*'
@@ -147,7 +147,7 @@ paths:
       summary: Create one category.
       tags:
       - Category
-  /category/{id}:
+  /api/v0/category/{id}:
     delete:
       consumes:
       - '*/*'
@@ -214,7 +214,22 @@ paths:
       summary: Update one category.
       tags:
       - Category
-  /product:
+  /api/v0/no-db:
+    get:
+      consumes:
+      - '*/*'
+      description: get many fake data.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get many fake data.
+      tags:
+      - NoDb
+  /api/v0/product:
     get:
       consumes:
       - '*/*'
@@ -252,7 +267,7 @@ paths:
       summary: Create one product.
       tags:
       - Product
-  /product/{id}:
+  /api/v0/product/{id}:
     delete:
       consumes:
       - '*/*'

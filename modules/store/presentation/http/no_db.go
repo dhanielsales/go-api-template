@@ -14,6 +14,13 @@ func setupNoDbRoutes(r fiber.Router, controller *StoreController) {
 	router.Get("/", controller.getManyNoDb)
 }
 
+// @Summary Get many fake data.
+// @Description get many fake data.
+// @Tags NoDb
+// @Accept */*
+// @Produce json
+// @Success 200 {object} string
+// @Router /api/v0/no-db [get]
 func (t *StoreController) getManyNoDb(c *fiber.Ctx) error {
 	data, err := t.service.GetManyNoDb(c.Context())
 

@@ -17,7 +17,7 @@ type HttpServer struct {
 	ErrorHandler *HttpErrorHandler
 }
 
-func New(port string, logger log.Logger) *HttpServer {
+func New(port string, logger log.Logger, swaggerOn bool) *HttpServer {
 	// create the fiber app
 	app := fiber.New()
 
@@ -35,7 +35,9 @@ func New(port string, logger log.Logger) *HttpServer {
 	})
 
 	// add docs
-	app.Get("/swagger/*", swagger.HandlerDefault)
+	if swaggerOn {
+		app.Get("/swagger/*", swagger.HandlerDefault)
+	}
 
 	return &HttpServer{
 		App:          app,
