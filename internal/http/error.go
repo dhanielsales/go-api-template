@@ -12,7 +12,7 @@ type HttpErrorHandler struct {
 	logger log.Logger
 }
 
-func NewErrorHandler(logger log.Logger) *HttpErrorHandler {
+func newErrorHandler(logger log.Logger) *HttpErrorHandler {
 	return &HttpErrorHandler{
 		logger: logger,
 	}
