@@ -56,7 +56,7 @@ tasks:
   mock:
     desc: Generate mocks
     cmds:
-      - mockgen -source=internal/postgres/postgres.go -destination=mock/postgres.go -package=mock
+      - mockgen -source=modules/store/storage/postgres/db.go -destination=mock/postgres.go -package=mock
 
   install:
     desc: Install dependencies

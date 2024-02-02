@@ -6,9 +6,10 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
 
+	"github.com/dhanielsales/golang-scaffold/entity"
 	appError "github.com/dhanielsales/golang-scaffold/internal/error"
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
-	"github.com/dhanielsales/golang-scaffold/modules/store/entity"
+
 	"github.com/dhanielsales/golang-scaffold/modules/store/storage"
 	store_storage "github.com/dhanielsales/golang-scaffold/modules/store/storage/postgres"
 )

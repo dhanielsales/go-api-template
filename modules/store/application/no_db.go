@@ -1,7 +1,7 @@
 package application
 
 import (
-	"github.com/dhanielsales/golang-scaffold/modules/store/entity"
+	"github.com/dhanielsales/golang-scaffold/entity"
 	"golang.org/x/net/context"
 )
 

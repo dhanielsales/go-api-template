@@ -2,6 +2,7 @@ package entity
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
@@ -28,14 +29,20 @@ func (c *Category) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, c)
 }
 
-func NewCategory(name, description string) *Category {
-	return &Category{
+func NewCategory(name, description string) (*Category, error) {
+	category := &Category{
 		ID:          uuid.New(),
 		Name:        name,
 		Slug:        slug.Make(name),
 		Description: &description,
 		CreatedAt:   utils.TimeNow(),
 	}
+
+	if err := category.Validate(); err != nil {
+		return nil, err
+	}
+
+	return category, nil
 }
 
 func (c *Category) Update(name, description string) {
@@ -50,4 +57,12 @@ func (c *Category) Update(name, description string) {
 
 	updatedAt := utils.TimeNow()
 	c.UpdatedAt = &updatedAt
+}
+
+func (c *Category) Validate() error {
+	if c.Name == "" {
+		return errors.New("name is required")
+	}
+
+	return nil
 }

@@ -7,10 +7,10 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
 
+	"github.com/dhanielsales/golang-scaffold/entity"
 	appError "github.com/dhanielsales/golang-scaffold/internal/error"
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
 
-	"github.com/dhanielsales/golang-scaffold/modules/store/entity"
 	"github.com/dhanielsales/golang-scaffold/modules/store/storage"
 	store_storage "github.com/dhanielsales/golang-scaffold/modules/store/storage/postgres"
 )
@@ -25,7 +25,10 @@ func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPa
 	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
 		queries := s.storage.Queries.WithTx(tx)
 
-		category := entity.NewCategory(data.Name, data.Description)
+		category, err := entity.NewCategory(data.Name, data.Description)
+		if err != nil {
+			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
+		}
 
 		payload := store_storage.CreateCategoryParams{
 			ID:        category.ID,

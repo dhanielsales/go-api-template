@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	r "github.com/redis/go-redis/v9"
 
+	"github.com/dhanielsales/golang-scaffold/entity"
 	"github.com/dhanielsales/golang-scaffold/internal/redis"
-	"github.com/dhanielsales/golang-scaffold/modules/store/entity"
 )
 
 const (

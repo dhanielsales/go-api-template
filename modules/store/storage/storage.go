@@ -4,7 +4,7 @@ import (
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
 	"github.com/dhanielsales/golang-scaffold/internal/redis"
 
-	"github.com/dhanielsales/golang-scaffold/modules/store/entity"
+	"github.com/dhanielsales/golang-scaffold/entity"
 	q "github.com/dhanielsales/golang-scaffold/modules/store/storage/postgres"
 	c "github.com/dhanielsales/golang-scaffold/modules/store/storage/redis"
 )
