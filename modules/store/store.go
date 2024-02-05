@@ -8,15 +8,15 @@ import (
 
 	"github.com/dhanielsales/golang-scaffold/modules/store/application"
 	"github.com/dhanielsales/golang-scaffold/modules/store/external"
-	"github.com/dhanielsales/golang-scaffold/modules/store/storage"
+	"github.com/dhanielsales/golang-scaffold/modules/store/repository"
 
-	store_http "github.com/dhanielsales/golang-scaffold/modules/store/presentation/http"
+	"github.com/dhanielsales/golang-scaffold/modules/store/presentation/rest"
 )
 
 func Bootstrap(postgres *postgres.Storage, redis *redis.Storage, exampleClient *gql.Client, httpServer *http.HttpServer, validator *http.Validator) {
-	storage := storage.New(postgres, redis)
+	repository := repository.New(postgres, redis)
 	external := external.New(exampleClient)
-	service := application.New(storage, external)
+	service := application.New(repository, external)
 
-	store_http.NewHttp(service, httpServer, validator)
+	rest.New(service, httpServer, validator)
 }

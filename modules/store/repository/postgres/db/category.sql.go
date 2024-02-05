@@ -3,7 +3,7 @@
 //   sqlc v1.25.0
 // source: category.sql
 
-package postgres
+package db
 
 import (
 	"context"

@@ -1,4 +1,4 @@
-package redis
+package redis_repository
 
 import (
 	"context"
@@ -16,7 +16,7 @@ const (
 	CATEGORY_CACHE = "category"
 )
 
-func (c *Cache) GetCategoryInCache(ctx context.Context, categoryId uuid.UUID) *entity.Category {
+func (c *CacheRepository) GetCategoryInCache(ctx context.Context, categoryId uuid.UUID) *entity.Category {
 	key := redis.ComposeKey(CATEGORY_CACHE, categoryId.String())
 
 	var category entity.Category
@@ -29,7 +29,7 @@ func (c *Cache) GetCategoryInCache(ctx context.Context, categoryId uuid.UUID) *e
 	return &category
 }
 
-func (c *Cache) SetCategoryInCache(ctx context.Context, category entity.Category, expiration time.Duration) error {
+func (c *CacheRepository) SetCategoryInCache(ctx context.Context, category entity.Category, expiration time.Duration) error {
 	key := redis.ComposeKey(CATEGORY_CACHE, category.ID.String())
 
 	err := c.Redis.Client.Set(ctx, key, category, 0).Err()
@@ -40,7 +40,7 @@ func (c *Cache) SetCategoryInCache(ctx context.Context, category entity.Category
 	return nil
 }
 
-func (c *Cache) DeleteCategoryInCache(ctx context.Context, categoryId uuid.UUID) error {
+func (c *CacheRepository) DeleteCategoryInCache(ctx context.Context, categoryId uuid.UUID) error {
 	key := redis.ComposeKey(CATEGORY_CACHE, categoryId.String())
 
 	err := c.Redis.Client.Del(ctx, key).Err()
@@ -51,7 +51,7 @@ func (c *Cache) DeleteCategoryInCache(ctx context.Context, categoryId uuid.UUID)
 	return nil
 }
 
-func (c *Cache) DeleteAllCategoryInCache(ctx context.Context) error {
+func (c *CacheRepository) DeleteAllCategoryInCache(ctx context.Context) error {
 	keyPattern := redis.ComposeKey(CATEGORY_CACHE, "*")
 
 	return redis.CallTx(ctx, c.Redis.Client, func(pipe r.Pipeliner) error {

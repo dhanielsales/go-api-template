@@ -10,9 +10,6 @@ import (
 	"github.com/dhanielsales/golang-scaffold/entity"
 	appError "github.com/dhanielsales/golang-scaffold/internal/error"
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
-
-	"github.com/dhanielsales/golang-scaffold/modules/store/storage"
-	store_storage "github.com/dhanielsales/golang-scaffold/modules/store/storage/postgres"
 )
 
 type CreateCategoryPayload struct {
@@ -22,26 +19,15 @@ type CreateCategoryPayload struct {
 }
 
 func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPayload) (*int64, error) {
-	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
-		queries := s.storage.Queries.WithTx(tx)
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
+		queries := s.repository.Persistence.WithTx(tx)
 
 		category, err := entity.NewCategory(data.Name, data.Description)
 		if err != nil {
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
-		payload := store_storage.CreateCategoryParams{
-			ID:        category.ID,
-			Name:      category.Name,
-			Slug:      category.Slug,
-			CreatedAt: category.CreatedAt,
-		}
-
-		if data.Description != "" {
-			payload.Description = sql.NullString{String: data.Description, Valid: true}
-		}
-
-		dbResult, err := queries.CreateCategory(ctx, payload)
+		affecteds, err := queries.CreateCategory(ctx, category)
 
 		if err != nil {
 			if postgres.IsUniqueViolationByField(err, "slug") {
@@ -51,12 +37,7 @@ func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPa
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
-		affected, err := dbResult.RowsAffected()
-		if err != nil {
-			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
-		}
-
-		err = s.storage.Cache.DeleteAllCategoryInCache(ctx)
+		err = s.repository.Cache.DeleteAllCategoryInCache(ctx)
 		if err != nil {
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
@@ -65,22 +46,22 @@ func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPa
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
-		return &affected, nil
+		return affecteds, nil
 	})
 
 }
 
 func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*entity.Category, error) {
-	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*entity.Category, error) {
-		categoryInCache := s.storage.Cache.GetCategoryInCache(ctx, id)
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*entity.Category, error) {
+		categoryInCache := s.repository.Cache.GetCategoryInCache(ctx, id)
 
 		if categoryInCache != nil {
 			return categoryInCache, nil
 		}
 
-		queries := s.storage.Queries.WithTx(tx)
+		queries := s.repository.Persistence.WithTx(tx)
 
-		dbResult, err := queries.GetCategoryById(ctx, id)
+		category, err := queries.GetCategoryById(ctx, id)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				return nil, appError.New(err, appError.NotFoundError, "Category not found")
@@ -89,27 +70,12 @@ func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*enti
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
-		dbResultProd, err := queries.GetManyProductByCategoryId(ctx, id)
-		if err != nil && err != sql.ErrNoRows {
-			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
-		}
-
-		var products []entity.Product = []entity.Product{}
-
-		for _, prod := range dbResultProd {
-			curr := storage.ToProduct(&prod)
-			products = append(products, *curr)
-		}
-
-		res := storage.ToCategory(&dbResult)
-		res.Products = &products
-
-		err = s.storage.Cache.SetCategoryInCache(ctx, *res, time.Hour*24)
+		err = s.repository.Cache.SetCategoryInCache(ctx, *category, time.Hour*24)
 		if err != nil {
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
-		return res, nil
+		return category, nil
 	})
 }
 
@@ -121,16 +87,14 @@ type GetManyCategoryParams struct {
 }
 
 func (s *StoreService) GetManyCategory(ctx context.Context, params GetManyCategoryParams) (*[]entity.Category, error) {
-	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*[]entity.Category, error) {
-		queries := s.storage.Queries.WithTx(tx)
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*[]entity.Category, error) {
+		queries := s.repository.Persistence.WithTx(tx)
 
-		pagination := postgres.Pagination(params.Page, params.PerPage)
-		sorting := postgres.Sorting(params.OrderBy, params.OrderDirection)
-
-		dbResult, err := queries.GetManyCategory(ctx, store_storage.GetManyCategoryParams{
-			Limit:   pagination.Limit,
-			Offset:  pagination.Offset,
-			OrderBy: sorting,
+		dbResult, err := queries.GetManyCategory(ctx, entity.GetManyCategoryPayload{
+			Page:           params.Page,
+			PerPage:        params.PerPage,
+			OrderBy:        params.OrderBy,
+			OrderDirection: params.OrderDirection,
 		})
 
 		if err != nil {
@@ -139,19 +103,17 @@ func (s *StoreService) GetManyCategory(ctx context.Context, params GetManyCatego
 
 		var result []entity.Category = []entity.Category{}
 
-		for _, dbCategory := range dbResult {
-			curr := storage.ToCategory(&dbCategory)
-
-			ext, err := s.external.Example.GetImage(ctx, curr.ID.String())
+		for _, dbCategory := range *dbResult {
+			ext, err := s.external.Example.GetImage(ctx, dbCategory.ID.String())
 			if err != nil {
 				return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 			}
 
 			if len(ext.AllImages) > 0 {
-				curr.ImageUrl = &ext.AllImages[0].Url
+				dbCategory.ImageUrl = &ext.AllImages[0].Url
 			}
 
-			result = append(result, *curr)
+			result = append(result, dbCategory)
 		}
 
 		return &result, nil
@@ -164,30 +126,17 @@ type UpdateCategoryPayload struct {
 }
 
 func (s *StoreService) UpdateCategory(ctx context.Context, id uuid.UUID, data UpdateCategoryPayload) (*int64, error) {
-	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
-		queries := s.storage.Queries.WithTx(tx)
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
+		queries := s.repository.Persistence.WithTx(tx)
 
-		res, err := queries.GetCategoryById(ctx, id)
+		category, err := queries.GetCategoryById(ctx, id)
 		if err != nil {
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
-		category := storage.ToCategory(&res)
-
 		category.Update(data.Name, data.Description)
 
-		payload := store_storage.UpdateCategoryParams{
-			ID:        category.ID,
-			Name:      category.Name,
-			Slug:      category.Slug,
-			UpdatedAt: sql.NullInt64{Int64: *category.UpdatedAt, Valid: true},
-		}
-
-		if data.Description != "" {
-			payload.Description = sql.NullString{String: data.Description, Valid: true}
-		}
-
-		dbResult, err := queries.UpdateCategory(ctx, payload)
+		affected, err := queries.UpdateCategory(ctx, id, category)
 		if err != nil {
 			if postgres.IsUniqueViolationByField(err, "slug") {
 				return nil, appError.New(err, appError.UnprocessableEntityError, "Já existe uma categoria com esse slug")
@@ -196,35 +145,25 @@ func (s *StoreService) UpdateCategory(ctx context.Context, id uuid.UUID, data Up
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
-		affected, err := dbResult.RowsAffected()
+		err = s.repository.Cache.DeleteCategoryInCache(ctx, id)
 		if err != nil {
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 		}
 
-		err = s.storage.Cache.DeleteCategoryInCache(ctx, id)
-		if err != nil {
-			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
-		}
-
-		return &affected, nil
+		return affected, nil
 	})
 }
 
 func (s *StoreService) DeleteCategory(ctx context.Context, id uuid.UUID) (*int64, error) {
-	dbResult, err := s.storage.Queries.DeleteCategory(ctx, id)
+	affected, err := s.repository.Persistence.DeleteCategory(ctx, id)
 	if err != nil {
 		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 	}
 
-	affected, err := dbResult.RowsAffected()
+	err = s.repository.Cache.DeleteCategoryInCache(ctx, id)
 	if err != nil {
 		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
 	}
 
-	err = s.storage.Cache.DeleteCategoryInCache(ctx, id)
-	if err != nil {
-		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable category entity")
-	}
-
-	return &affected, nil
+	return affected, nil
 }

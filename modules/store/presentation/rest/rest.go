@@ -1,11 +1,11 @@
-package http
+package rest
 
 import (
 	"github.com/dhanielsales/golang-scaffold/internal/http"
 	"github.com/dhanielsales/golang-scaffold/modules/store/application"
 )
 
-func NewHttp(service *application.StoreService, httpServer *http.HttpServer, validator *http.Validator) {
+func New(service *application.StoreService, httpServer *http.HttpServer, validator *http.Validator) {
 	controller := newController(service, httpServer, validator)
 
 	router := httpServer.App.Group("/api/v0/")

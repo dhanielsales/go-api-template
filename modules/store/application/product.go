@@ -9,9 +9,6 @@ import (
 	"github.com/dhanielsales/golang-scaffold/entity"
 	appError "github.com/dhanielsales/golang-scaffold/internal/error"
 	"github.com/dhanielsales/golang-scaffold/internal/postgres"
-
-	"github.com/dhanielsales/golang-scaffold/modules/store/storage"
-	store_storage "github.com/dhanielsales/golang-scaffold/modules/store/storage/postgres"
 )
 
 type CreateProductPayload struct {
@@ -27,48 +24,26 @@ func (s *StoreService) CreateProduct(ctx context.Context, data CreateProductPayl
 		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 	}
 
-	dbResult, err := s.storage.Queries.CreateProduct(ctx, store_storage.CreateProductParams{
-		ID:          product.ID,
-		Name:        product.Name,
-		Slug:        product.Slug,
-		Description: sql.NullString{String: *product.Description},
-		Price:       product.Price,
-		CategoryID:  product.CategoryID,
-		CreatedAt:   product.CreatedAt,
-	})
+	affected, err := s.repository.Persistence.CreateProduct(ctx, product)
 
 	if err != nil {
 		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 	}
 
-	affected, err := dbResult.RowsAffected()
-	if err != nil {
-		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
-	}
-
-	return &affected, nil
+	return affected, nil
 }
 
 func (s *StoreService) GetProductById(ctx context.Context, id uuid.UUID) (*entity.Product, error) {
-	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*entity.Product, error) {
-		queries := s.storage.Queries.WithTx(tx)
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*entity.Product, error) {
+		queries := s.repository.Persistence.WithTx(tx)
 
-		dbResult, err := queries.GetProductById(ctx, id)
+		product, err := queries.GetProductById(ctx, id)
 
 		if err != nil {
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 		}
 
-		return &entity.Product{
-			ID:          dbResult.ID,
-			Name:        dbResult.Name,
-			Slug:        dbResult.Slug,
-			Price:       dbResult.Price,
-			CategoryID:  dbResult.CategoryID,
-			Description: &dbResult.Description.String,
-			CreatedAt:   dbResult.CreatedAt,
-			UpdatedAt:   &dbResult.UpdatedAt.Int64,
-		}, nil
+		return product, nil
 	})
 }
 
@@ -80,16 +55,14 @@ type GetManyProductParams struct {
 }
 
 func (s *StoreService) GetManyProduct(ctx context.Context, params GetManyProductParams) (*[]entity.Product, error) {
-	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*[]entity.Product, error) {
-		queries := s.storage.Queries.WithTx(tx)
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*[]entity.Product, error) {
+		queries := s.repository.Persistence.WithTx(tx)
 
-		pagination := postgres.Pagination(params.Page, params.PerPage)
-		sorting := postgres.Sorting(params.OrderBy, params.OrderDirection)
-
-		dbResult, err := queries.GetManyProduct(ctx, store_storage.GetManyProductParams{
-			Limit:   pagination.Limit,
-			Offset:  pagination.Offset,
-			OrderBy: sorting,
+		products, err := queries.GetManyProduct(ctx, entity.GetManyProductPayload{
+			Page:           params.Page,
+			PerPage:        params.PerPage,
+			OrderBy:        params.OrderBy,
+			OrderDirection: params.OrderDirection,
 		})
 
 		if err != nil {
@@ -100,21 +73,7 @@ func (s *StoreService) GetManyProduct(ctx context.Context, params GetManyProduct
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 		}
 
-		var result []entity.Product = []entity.Product{}
-
-		for _, dbProduct := range dbResult {
-			result = append(result, entity.Product{
-				ID:          dbProduct.ID,
-				Name:        dbProduct.Name,
-				Description: &dbProduct.Description.String,
-				Price:       dbProduct.Price,
-				CategoryID:  dbProduct.CategoryID,
-				CreatedAt:   dbProduct.CreatedAt,
-				UpdatedAt:   &dbProduct.UpdatedAt.Int64,
-			})
-		}
-
-		return &result, nil
+		return products, nil
 	})
 }
 
@@ -126,50 +85,30 @@ type UpdateProductPayload struct {
 }
 
 func (s *StoreService) UpdateProduct(ctx context.Context, id uuid.UUID, data UpdateProductPayload) (*int64, error) {
-	return postgres.CallTx(ctx, s.storage.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
-		queries := s.storage.Queries.WithTx(tx)
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
+		queries := s.repository.Persistence.WithTx(tx)
 
-		res, err := queries.GetProductById(ctx, id)
+		product, err := queries.GetProductById(ctx, id)
 		if err != nil {
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 		}
-
-		product := storage.ToProduct(&res)
 
 		product.Update(data.Name, data.Description, data.Price, data.CategoryID)
 
-		dbResult, err := queries.UpdateProduct(ctx, store_storage.UpdateProductParams{
-			ID:          product.ID,
-			Name:        product.Name,
-			Slug:        product.Slug,
-			Price:       product.Price,
-			CategoryID:  product.CategoryID,
-			Description: sql.NullString{String: data.Description},
-			UpdatedAt:   sql.NullInt64{Int64: *product.UpdatedAt, Valid: true},
-		})
+		affected, err := queries.UpdateProduct(ctx, id, product)
 		if err != nil {
 			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 		}
 
-		affected, err := dbResult.RowsAffected()
-		if err != nil {
-			return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
-		}
-
-		return &affected, nil
+		return affected, nil
 	})
 }
 
 func (s *StoreService) DeleteProduct(ctx context.Context, id uuid.UUID) (*int64, error) {
-	dbResult, err := s.storage.Queries.DeleteProduct(ctx, id)
+	affected, err := s.repository.Persistence.DeleteProduct(ctx, id)
 	if err != nil {
 		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
 	}
 
-	affected, err := dbResult.RowsAffected()
-	if err != nil {
-		return nil, appError.New(err, appError.UnprocessableEntityError, "Can't processable product entity")
-	}
-
-	return &affected, nil
+	return affected, nil
 }
