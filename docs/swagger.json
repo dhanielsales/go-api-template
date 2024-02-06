@@ -54,7 +54,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.createCategoryRequest"
+                            "$ref": "#/definitions/store_presentation_rest.createCategoryRequest"
                         }
                     }
                 ],
@@ -63,6 +63,32 @@
                         "description": "Created",
                         "schema": {
                             "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v0/category/no-db": {
+            "get": {
+                "description": "fetch every category available.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Get all categories.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Category"
+                            }
                         }
                     }
                 }
@@ -125,7 +151,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.updateCategoryRequest"
+                            "$ref": "#/definitions/store_presentation_rest.updateCategoryRequest"
                         }
                     }
                 ],
@@ -164,32 +190,6 @@
                         "description": "OK",
                         "schema": {
                             "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v0/no-db": {
-            "get": {
-                "description": "get many fake data.",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NoDb"
-                ],
-                "summary": "Get many fake data.",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/entity.NoDb"
-                            }
                         }
                     }
                 }
@@ -239,7 +239,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.createProductRequest"
+                            "$ref": "#/definitions/store_presentation_rest.createProductRequest"
                         }
                     }
                 ],
@@ -310,7 +310,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.updateProductRequest"
+                            "$ref": "#/definitions/store_presentation_rest.updateProductRequest"
                         }
                     }
                 ],
@@ -388,17 +388,6 @@
                 }
             }
         },
-        "entity.NoDb": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "entity.Product": {
             "type": "object",
             "properties": {
@@ -428,7 +417,7 @@
                 }
             }
         },
-        "http.createCategoryRequest": {
+        "store_presentation_rest.createCategoryRequest": {
             "type": "object",
             "required": [
                 "imageUrl",
@@ -450,7 +439,7 @@
                 }
             }
         },
-        "http.createProductRequest": {
+        "store_presentation_rest.createProductRequest": {
             "type": "object",
             "required": [
                 "category_id",
@@ -477,7 +466,7 @@
                 }
             }
         },
-        "http.updateCategoryRequest": {
+        "store_presentation_rest.updateCategoryRequest": {
             "type": "object",
             "required": [
                 "name"
@@ -495,7 +484,7 @@
                 }
             }
         },
-        "http.updateProductRequest": {
+        "store_presentation_rest.updateProductRequest": {
             "type": "object",
             "required": [
                 "name"

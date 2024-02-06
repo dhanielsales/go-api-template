@@ -18,6 +18,7 @@ func setupCategoryRoutes(r fiber.Router, controller *StoreController) {
 	// Setup routes here
 	router.Post("/", controller.createCategory)
 	router.Get("/", controller.getManyCategory)
+	router.Get("/no-db", controller.getManyCategoryNoDb)
 	router.Get("/:id", controller.getOneCategory)
 	router.Put("/:id", controller.updateCategory)
 	router.Delete("/:id", controller.deleteCategory)
@@ -177,4 +178,20 @@ func (t *StoreController) deleteCategory(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).Send(http.Int64ToByte(*affected))
+}
+
+// @Summary Get all categories.
+// @Description fetch every category available.
+// @Tags Category
+// @Accept */*
+// @Produce json
+// @Success 200 {object} []entity.Category
+// @Router /api/v0/category/no-db [get]
+func (t *StoreController) getManyCategoryNoDb(c *fiber.Ctx) error {
+	categories, err := t.service.GetManyCategoryNoDb(c.Context())
+	if err != nil {
+		return t.http.ErrorHandler.Response(c, err)
+	}
+
+	return c.JSON(categories)
 }

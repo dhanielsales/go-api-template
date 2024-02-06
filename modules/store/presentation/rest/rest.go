@@ -14,7 +14,6 @@ func New(service *application.StoreService, httpServer *http.HttpServer, validat
 
 	setupCategoryRoutes(router, controller)
 	setupProductRoutes(router, controller)
-	setupNoDbRoutes(router, controller)
 }
 
 type StoreController struct {

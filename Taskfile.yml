@@ -16,7 +16,7 @@ tasks:
   docs:
     desc: Generate swagger docs
     cmds:
-      - swag init --dir ./cmd/service,./modules
+      - swag init --parseDependency --dir  ./cmd/service,./modules
 
   build:
     desc: Build binary

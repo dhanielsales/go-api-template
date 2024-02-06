@@ -61,7 +61,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.createCategoryRequest"
+                            "$ref": "#/definitions/store_presentation_rest.createCategoryRequest"
                         }
                     }
                 ],
@@ -70,6 +70,32 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v0/category/no-db": {
+            "get": {
+                "description": "fetch every category available.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Get all categories.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Category"
+                            }
                         }
                     }
                 }
@@ -132,7 +158,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.updateCategoryRequest"
+                            "$ref": "#/definitions/store_presentation_rest.updateCategoryRequest"
                         }
                     }
                 ],
@@ -171,32 +197,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v0/no-db": {
-            "get": {
-                "description": "get many fake data.",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NoDb"
-                ],
-                "summary": "Get many fake data.",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/entity.NoDb"
-                            }
                         }
                     }
                 }
@@ -246,7 +246,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.createProductRequest"
+                            "$ref": "#/definitions/store_presentation_rest.createProductRequest"
                         }
                     }
                 ],
@@ -317,7 +317,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.updateProductRequest"
+                            "$ref": "#/definitions/store_presentation_rest.updateProductRequest"
                         }
                     }
                 ],
@@ -395,17 +395,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entity.NoDb": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "entity.Product": {
             "type": "object",
             "properties": {
@@ -435,7 +424,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.createCategoryRequest": {
+        "store_presentation_rest.createCategoryRequest": {
             "type": "object",
             "required": [
                 "imageUrl",
@@ -457,7 +446,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.createProductRequest": {
+        "store_presentation_rest.createProductRequest": {
             "type": "object",
             "required": [
                 "category_id",
@@ -484,7 +473,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.updateCategoryRequest": {
+        "store_presentation_rest.updateCategoryRequest": {
             "type": "object",
             "required": [
                 "name"
@@ -502,7 +491,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.updateProductRequest": {
+        "store_presentation_rest.updateProductRequest": {
             "type": "object",
             "required": [
                 "name"

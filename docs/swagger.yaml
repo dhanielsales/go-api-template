@@ -21,13 +21,6 @@ definitions:
       updated_at:
         type: integer
     type: object
-  entity.NoDb:
-    properties:
-      id:
-        type: string
-      name:
-        type: string
-    type: object
   entity.Product:
     properties:
       category_id:
@@ -47,7 +40,7 @@ definitions:
       updated_at:
         type: integer
     type: object
-  http.createCategoryRequest:
+  store_presentation_rest.createCategoryRequest:
     properties:
       description:
         maxLength: 300
@@ -63,7 +56,7 @@ definitions:
     - imageUrl
     - name
     type: object
-  http.createProductRequest:
+  store_presentation_rest.createProductRequest:
     properties:
       category_id:
         type: string
@@ -83,7 +76,7 @@ definitions:
     - name
     - price
     type: object
-  http.updateCategoryRequest:
+  store_presentation_rest.updateCategoryRequest:
     properties:
       description:
         maxLength: 300
@@ -96,7 +89,7 @@ definitions:
     required:
     - name
     type: object
-  http.updateProductRequest:
+  store_presentation_rest.updateProductRequest:
     properties:
       description:
         maxLength: 300
@@ -143,7 +136,7 @@ paths:
         name: Category
         required: true
         schema:
-          $ref: '#/definitions/http.createCategoryRequest'
+          $ref: '#/definitions/store_presentation_rest.createCategoryRequest'
       produces:
       - application/json
       responses:
@@ -210,7 +203,7 @@ paths:
         name: Category
         required: true
         schema:
-          $ref: '#/definitions/http.updateCategoryRequest'
+          $ref: '#/definitions/store_presentation_rest.updateCategoryRequest'
       produces:
       - application/json
       responses:
@@ -221,11 +214,11 @@ paths:
       summary: Update one category.
       tags:
       - Category
-  /api/v0/no-db:
+  /api/v0/category/no-db:
     get:
       consumes:
       - '*/*'
-      description: get many fake data.
+      description: fetch every category available.
       produces:
       - application/json
       responses:
@@ -233,11 +226,11 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/entity.NoDb'
+              $ref: '#/definitions/entity.Category'
             type: array
-      summary: Get many fake data.
+      summary: Get all categories.
       tags:
-      - NoDb
+      - Category
   /api/v0/product:
     get:
       consumes:
@@ -265,7 +258,7 @@ paths:
         name: Product
         required: true
         schema:
-          $ref: '#/definitions/http.createProductRequest'
+          $ref: '#/definitions/store_presentation_rest.createProductRequest'
       produces:
       - application/json
       responses:
@@ -332,7 +325,7 @@ paths:
         name: Product
         required: true
         schema:
-          $ref: '#/definitions/http.updateProductRequest'
+          $ref: '#/definitions/store_presentation_rest.updateProductRequest'
       produces:
       - application/json
       responses:

@@ -167,3 +167,7 @@ func (s *StoreService) DeleteCategory(ctx context.Context, id uuid.UUID) (*int64
 
 	return affected, nil
 }
+
+func (s *StoreService) GetManyCategoryNoDb(ctx context.Context) (*[]entity.Category, error) {
+	return s.repository.Fake.GetManyCategory(ctx, entity.GetManyCategoryPayload{})
+}
