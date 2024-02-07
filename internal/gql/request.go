@@ -2,22 +2,19 @@ package gql
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"regexp"
 	"strings"
 )
 
 type Request struct {
-	Query     string          `json:"query"`
-	Variables map[string]any  `json:"variables,omitempty"`
-	Context   context.Context `json:"-"`
+	Query     string         `json:"query"`
+	Variables map[string]any `json:"variables,omitempty"`
 }
 
-func NewRequest(ctx context.Context, query string, variables map[string]any) *Request {
+func NewRequest(query string, variables map[string]any) *Request {
 	return &Request{
 		Variables: variables,
-		Context:   ctx,
 		Query:     Sanitize(query),
 	}
 }

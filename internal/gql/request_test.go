@@ -1,7 +1,6 @@
 package gql_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dhanielsales/golang-scaffold/internal/gql"
@@ -10,7 +9,7 @@ import (
 )
 
 func TestRequest_Buffer(t *testing.T) {
-	req := gql.NewRequest(context.Background(), "query", map[string]any{"var": "value"})
+	req := gql.NewRequest("query", map[string]any{"var": "value"})
 	buffer, err := req.Buffer()
 	assert.NoError(t, err)
 	assert.NotNil(t, buffer)
@@ -21,7 +20,7 @@ func TestRequest_BufferWithError(t *testing.T) {
 		"foo": make(chan int),
 	}
 
-	req := gql.NewRequest(context.Background(), "query", invalidVariables)
+	req := gql.NewRequest("query", invalidVariables)
 	buffer, err := req.Buffer()
 	assert.Error(t, err)
 	assert.Nil(t, buffer)

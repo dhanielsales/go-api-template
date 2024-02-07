@@ -1,6 +1,7 @@
 package gql
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -24,7 +25,7 @@ func NewClient(url string, httpClient *http.Client) *Client {
 	}
 }
 
-func (c *Client) Do(req *Request, target any) (*Response, error) {
+func (c *Client) Do(ctx context.Context, req *Request, target any) (*Response, error) {
 	if !utils.IsPointer(target) {
 		return nil, ErrTargetIsNotPointer
 	}
@@ -34,7 +35,7 @@ func (c *Client) Do(req *Request, target any) (*Response, error) {
 		return nil, err
 	}
 
-	request, err := http.NewRequestWithContext(req.Context, "POST", c.URL, buff)
+	request, err := http.NewRequestWithContext(ctx, "POST", c.URL, buff)
 	if err != nil {
 		return nil, err
 	}

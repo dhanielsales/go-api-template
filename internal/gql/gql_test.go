@@ -26,10 +26,10 @@ func TestClient_Do(t *testing.T) {
 	defer server.Close()
 
 	client := gql.NewClient(server.URL, nil)
-	req := gql.NewRequest(context.Background(), "query", nil)
+	req := gql.NewRequest("query", nil)
 
 	var target ExampleStruct
-	response, err := client.Do(req, &target)
+	response, err := client.Do(context.Background(), req, &target)
 	assert.NoError(t, err)
 	assert.NotNil(t, response)
 	assert.Equal(t, ExampleStruct{ID: "123", Name: "Alice", Age: 30, Flag: true}, target)
@@ -37,10 +37,10 @@ func TestClient_Do(t *testing.T) {
 
 func TestClient_Do_Error(t *testing.T) {
 	client := gql.NewClient("invalid-url", nil)
-	req := gql.NewRequest(context.Background(), "query", nil)
+	req := gql.NewRequest("query", nil)
 
 	var target ExampleStruct
-	response, err := client.Do(req, &target)
+	response, err := client.Do(context.Background(), req, &target)
 	assert.Error(t, err)
 	assert.Nil(t, response)
 	assert.ErrorContains(t, err, "unsupported protocol scheme")
@@ -48,10 +48,10 @@ func TestClient_Do_Error(t *testing.T) {
 
 func TestClient_Do_ErrorTargetIsNotPointer(t *testing.T) {
 	client := gql.NewClient("http://example.com", nil)
-	req := gql.NewRequest(context.Background(), "query", nil)
+	req := gql.NewRequest("query", nil)
 
 	var target ExampleStruct
-	response, err := client.Do(req, target)
+	response, err := client.Do(context.Background(), req, target)
 	assert.Error(t, err)
 	assert.Nil(t, response)
 	assert.ErrorIs(t, err, gql.ErrTargetIsNotPointer)
@@ -62,10 +62,10 @@ func TestClient_Do_ErrorBuffer(t *testing.T) {
 		"foo": make(chan int),
 	}
 	client := gql.NewClient("http://example.com", nil)
-	req := gql.NewRequest(context.Background(), "query", invalidVariables)
+	req := gql.NewRequest("query", invalidVariables)
 
 	var target ExampleStruct
-	response, err := client.Do(req, &target)
+	response, err := client.Do(context.Background(), req, &target)
 	assert.Error(t, err)
 	assert.Nil(t, response)
 }
@@ -79,10 +79,10 @@ func TestClient_Do_ErrorServerResponse(t *testing.T) {
 	defer server.Close()
 
 	client := gql.NewClient(server.URL, nil)
-	req := gql.NewRequest(context.Background(), "query", nil)
+	req := gql.NewRequest("query", nil)
 
 	var target ExampleStruct
-	response, err := client.Do(req, &target)
+	response, err := client.Do(context.Background(), req, &target)
 	assert.Error(t, err)
 	assert.Nil(t, response)
 }
@@ -95,10 +95,10 @@ func TestClient_Do_ErrorNewRequest(t *testing.T) {
 	defer server.Close()
 
 	client := gql.NewClient(server.URL, nil)
-	req := gql.NewRequest(nil, "query", nil)
+	req := gql.NewRequest("query", nil)
 
 	var target ExampleStruct
-	response, err := client.Do(req, &target)
+	response, err := client.Do(nil, req, &target)
 	assert.Error(t, err)
 	assert.Nil(t, response)
 }
@@ -111,10 +111,10 @@ func TestClient_Do_ErrorIoReadAll(t *testing.T) {
 	}))
 
 	client := gql.NewClient(server.URL, nil)
-	req := gql.NewRequest(context.Background(), "query", nil)
+	req := gql.NewRequest("query", nil)
 
 	var target ExampleStruct
-	response, err := client.Do(req, &target)
+	response, err := client.Do(context.Background(), req, &target)
 	assert.Error(t, err)
 	assert.Nil(t, response)
 }
@@ -127,10 +127,10 @@ func TestClient_Do_ErrorResponseErr(t *testing.T) {
 	defer server.Close()
 
 	client := gql.NewClient(server.URL, nil)
-	req := gql.NewRequest(context.Background(), "query", nil)
+	req := gql.NewRequest("query", nil)
 
 	var target ExampleStruct
-	response, err := client.Do(req, &target)
+	response, err := client.Do(context.Background(), req, &target)
 	assert.Error(t, err)
 	assert.Nil(t, response)
 }
@@ -143,10 +143,10 @@ func TestClient_Do_ErrorResponseTo(t *testing.T) {
 	defer server.Close()
 
 	client := gql.NewClient(server.URL, nil)
-	req := gql.NewRequest(context.Background(), "query", nil)
+	req := gql.NewRequest("query", nil)
 
 	var target string
-	response, err := client.Do(req, &target)
+	response, err := client.Do(context.Background(), req, &target)
 	assert.Error(t, err)
 	assert.Nil(t, response)
 }
