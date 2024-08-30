@@ -40,3 +40,4 @@ https://railway.app/pricing
 - [ ] Add zap logger
 - [ ] Add observability
 - [ ] Add conversational id to logs
+- [ ] Config lint locally and in CI
