@@ -33,3 +33,10 @@ task setup-infra
 - Checar GO_ENV para deploy
 
 https://railway.app/pricing
+
+## TODO 
+- [ ] Add tests
+- [ ] Add CI/CD
+- [ ] Add zap logger
+- [ ] Add observability
+- [ ] Add conversational id to logs
