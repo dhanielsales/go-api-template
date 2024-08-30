@@ -1,6 +1,6 @@
 version: "3"
 
-dotenv: 
+dotenv:
   - ./app.env
 
 vars:
@@ -36,27 +36,22 @@ tasks:
   migration-create:
     desc: "Create migration. Example: task migration-create name=create_users_table"
     cmds:
-      - migrate create -ext sql -dir internal/postgres/migrations -seq '{{.name}}'
+      - migrate create -ext sql -dir internal/config/migrations -seq '{{.name}}'
 
   migration-up:
     desc: Run migrations
     cmds:
-      - migrate -database '{{.POSTGRES_URL}}' -path internal/postgres/migrations -verbose up
+      - migrate -database '{{.POSTGRES_URL}}' -path internal/config/migrations -verbose up
 
   migration-down:
     desc: Rollback migrations
     cmds:
-      - migrate -database '{{.POSTGRES_URL}}' -path internal/postgres/migrations -verbose down 1
+      - migrate -database '{{.POSTGRES_URL}}' -path internal/config/migrations -verbose down 1
 
   migration-fix:
     desc: "Fix migrations to specific version. Example: task migration-force version=1"
     cmds:
-      - migrate -database '{{.POSTGRES_URL}}' -path internal/postgres/migrations -verbose force '{{.version}}'
-
-  mock:
-    desc: Generate mocks
-    cmds:
-      - mockgen -source=modules/store/storage/postgres/db.go -destination=mock/postgres.go -package=mock
+      - migrate -database '{{.POSTGRES_URL}}' -path internal/config/migrations -verbose force '{{.version}}'
 
   install:
     desc: Install dependencies
@@ -112,4 +107,3 @@ tasks:
     cmds:
       - go test ./... -coverprofile=tmp/coverage.out
       - go tool cover -func=tmp/coverage.out
-
