@@ -1,8 +1,8 @@
 package redis_repository
 
 import (
-	"github.com/dhanielsales/golang-scaffold/internal/models"
-	"github.com/dhanielsales/golang-scaffold/pkg/redis"
+	"github.com/dhanielsales/go-api-template/internal/models"
+	"github.com/dhanielsales/go-api-template/pkg/redis"
 )
 
 type CacheRepository struct {

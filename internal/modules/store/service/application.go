@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/dhanielsales/golang-scaffold/internal/modules/store/repository"
+	"github.com/dhanielsales/go-api-template/internal/modules/store/repository"
 )
 
 type StoreService struct {

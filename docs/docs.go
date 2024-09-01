@@ -24,20 +24,48 @@ const docTemplate = `{
                     "*/*"
                 ],
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
                 "tags": [
                     "Category"
                 ],
                 "summary": "Get all categories.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Unique request ID.",
+                        "name": "X-Conversational-ID",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/entity.Category"
+                                "$ref": "#/definitions/models.Category"
                             }
+                        },
+                        "headers": {
+                            "X-Conversational-ID": {
+                                "type": "string",
+                                "description": "Unique request ID."
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
                         }
                     }
                 }
@@ -48,6 +76,7 @@ const docTemplate = `{
                     "*/*"
                 ],
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
                 "tags": [
@@ -56,12 +85,25 @@ const docTemplate = `{
                 "summary": "Create one category.",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Unique request ID.",
+                        "name": "X-Conversational-ID",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Category to create",
                         "name": "Category",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/store_presentation_rest.createCategoryRequest"
+                            "$ref": "#/definitions/store_presentation_controllers.createCategoryRequest"
                         }
                     }
                 ],
@@ -70,32 +112,24 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v0/category/no-db": {
-            "get": {
-                "description": "fetch every category available.",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Category"
-                ],
-                "summary": "Get all categories.",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/entity.Category"
+                        },
+                        "headers": {
+                            "X-Conversational-ID": {
+                                "type": "string",
+                                "description": "Unique request ID."
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request. Invalid request body.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
                         }
                     }
                 }
@@ -108,6 +142,7 @@ const docTemplate = `{
                     "*/*"
                 ],
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
                 "tags": [
@@ -115,6 +150,19 @@ const docTemplate = `{
                 ],
                 "summary": "Get one category.",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Unique request ID.",
+                        "name": "X-Conversational-ID",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Category ID",
@@ -127,7 +175,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.Category"
+                            "$ref": "#/definitions/models.Category"
+                        },
+                        "headers": {
+                            "X-Conversational-ID": {
+                                "type": "string",
+                                "description": "Unique request ID."
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
                         }
                     }
                 }
@@ -138,6 +198,7 @@ const docTemplate = `{
                     "*/*"
                 ],
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
                 "tags": [
@@ -147,9 +208,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Category ID",
-                        "name": "id",
-                        "in": "path",
+                        "description": "Unique request ID.",
+                        "name": "X-Conversational-ID",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization JWT",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -158,7 +225,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/store_presentation_rest.updateCategoryRequest"
+                            "$ref": "#/definitions/store_presentation_controllers.updateCategoryRequest"
                         }
                     }
                 ],
@@ -167,6 +234,18 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request. Invalid request body.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
                         }
                     }
                 }
@@ -177,6 +256,7 @@ const docTemplate = `{
                     "*/*"
                 ],
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
                 "tags": [
@@ -184,6 +264,19 @@ const docTemplate = `{
                 ],
                 "summary": "Delete one category.",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Unique request ID.",
+                        "name": "X-Conversational-ID",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Category ID",
@@ -197,6 +290,18 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "integer"
+                        },
+                        "headers": {
+                            "X-Conversational-ID": {
+                                "type": "string",
+                                "description": "Unique request ID."
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
                         }
                     }
                 }
@@ -209,20 +314,48 @@ const docTemplate = `{
                     "*/*"
                 ],
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
                 "tags": [
                     "Product"
                 ],
                 "summary": "Get all categories.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Unique request ID.",
+                        "name": "X-Conversational-ID",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/entity.Product"
+                                "$ref": "#/definitions/models.Product"
                             }
+                        },
+                        "headers": {
+                            "X-Conversational-ID": {
+                                "type": "string",
+                                "description": "Unique request ID."
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
                         }
                     }
                 }
@@ -233,6 +366,7 @@ const docTemplate = `{
                     "*/*"
                 ],
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
                 "tags": [
@@ -241,12 +375,25 @@ const docTemplate = `{
                 "summary": "Create one product.",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Unique request ID.",
+                        "name": "X-Conversational-ID",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Product to create",
                         "name": "Product",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/store_presentation_rest.createProductRequest"
+                            "$ref": "#/definitions/store_presentation_controllers.createProductRequest"
                         }
                     }
                 ],
@@ -255,6 +402,24 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "type": "integer"
+                        },
+                        "headers": {
+                            "X-Conversational-ID": {
+                                "type": "string",
+                                "description": "Unique request ID."
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request. Invalid request body.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
                         }
                     }
                 }
@@ -267,6 +432,7 @@ const docTemplate = `{
                     "*/*"
                 ],
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
                 "tags": [
@@ -274,6 +440,19 @@ const docTemplate = `{
                 ],
                 "summary": "Get one product.",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Unique request ID.",
+                        "name": "X-Conversational-ID",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Product ID",
@@ -286,7 +465,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.Product"
+                            "$ref": "#/definitions/models.Product"
+                        },
+                        "headers": {
+                            "X-Conversational-ID": {
+                                "type": "string",
+                                "description": "Unique request ID."
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
                         }
                     }
                 }
@@ -297,6 +488,7 @@ const docTemplate = `{
                     "*/*"
                 ],
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
                 "tags": [
@@ -306,9 +498,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Product ID",
-                        "name": "id",
-                        "in": "path",
+                        "description": "Unique request ID.",
+                        "name": "X-Conversational-ID",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization JWT",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -317,7 +515,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/store_presentation_rest.updateProductRequest"
+                            "$ref": "#/definitions/store_presentation_controllers.updateProductRequest"
                         }
                     }
                 ],
@@ -326,6 +524,18 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request. Invalid request body.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
                         }
                     }
                 }
@@ -336,6 +546,7 @@ const docTemplate = `{
                     "*/*"
                 ],
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
                 "tags": [
@@ -343,6 +554,19 @@ const docTemplate = `{
                 ],
                 "summary": "Delete one product.",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Unique request ID.",
+                        "name": "X-Conversational-ID",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Product ID",
@@ -356,6 +580,18 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "integer"
+                        },
+                        "headers": {
+                            "X-Conversational-ID": {
+                                "type": "string",
+                                "description": "Unique request ID."
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "$ref": "#/definitions/error.AppError"
                         }
                     }
                 }
@@ -363,7 +599,19 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "entity.Category": {
+        "error.AppError": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "details": {},
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Category": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -375,16 +623,13 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "image_url": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },
                 "products": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entity.Product"
+                        "$ref": "#/definitions/models.Product"
                     }
                 },
                 "slug": {
@@ -395,7 +640,7 @@ const docTemplate = `{
                 }
             }
         },
-        "entity.Product": {
+        "models.Product": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -424,7 +669,7 @@ const docTemplate = `{
                 }
             }
         },
-        "store_presentation_rest.createCategoryRequest": {
+        "store_presentation_controllers.createCategoryRequest": {
             "type": "object",
             "required": [
                 "imageUrl",
@@ -446,7 +691,7 @@ const docTemplate = `{
                 }
             }
         },
-        "store_presentation_rest.createProductRequest": {
+        "store_presentation_controllers.createProductRequest": {
             "type": "object",
             "required": [
                 "category_id",
@@ -473,7 +718,7 @@ const docTemplate = `{
                 }
             }
         },
-        "store_presentation_rest.updateCategoryRequest": {
+        "store_presentation_controllers.updateCategoryRequest": {
             "type": "object",
             "required": [
                 "name"
@@ -491,7 +736,7 @@ const docTemplate = `{
                 }
             }
         },
-        "store_presentation_rest.updateProductRequest": {
+        "store_presentation_controllers.updateProductRequest": {
             "type": "object",
             "required": [
                 "name"

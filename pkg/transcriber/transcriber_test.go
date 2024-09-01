@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/dhanielsales/golang-scaffold/pkg/transcriber"
+	"github.com/dhanielsales/go-api-template/pkg/transcriber"
 	"github.com/stretchr/testify/assert"
 
 	gomock "go.uber.org/mock/gomock"

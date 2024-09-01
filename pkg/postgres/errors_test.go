@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dhanielsales/golang-scaffold/pkg/postgres"
+	"github.com/dhanielsales/go-api-template/pkg/postgres"
 )
 
 func TestIsUniqueViolation(t *testing.T) {

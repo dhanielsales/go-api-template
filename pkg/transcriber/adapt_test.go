@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/dhanielsales/golang-scaffold/pkg/utils"
+	"github.com/dhanielsales/go-api-template/pkg/utils"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"

@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 
-	"github.com/dhanielsales/golang-scaffold/pkg/utils"
+	"github.com/dhanielsales/go-api-template/pkg/utils"
 )
 
 type Category struct {
@@ -16,7 +16,6 @@ type Category struct {
 	Slug        string     `json:"slug"`
 	Description *string    `json:"description"`
 	Products    *[]Product `json:"products,omitempty"`
-	ImageUrl    *string    `json:"image_url"`
 	CreatedAt   int64      `json:"created_at"`
 	UpdatedAt   *int64     `json:"updated_at"`
 }

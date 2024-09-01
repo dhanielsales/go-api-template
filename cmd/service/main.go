@@ -5,12 +5,12 @@ import (
 	"os"
 	"runtime/debug"
 
-	_ "github.com/dhanielsales/golang-scaffold/docs"
+	_ "github.com/dhanielsales/go-api-template/docs"
 
 	// Set up config
-	"github.com/dhanielsales/golang-scaffold/internal/app"
-	"github.com/dhanielsales/golang-scaffold/internal/config/env"
-	"github.com/dhanielsales/golang-scaffold/internal/config/shutdown"
+	"github.com/dhanielsales/go-api-template/internal/app"
+	"github.com/dhanielsales/go-api-template/internal/config/env"
+	"github.com/dhanielsales/go-api-template/internal/config/shutdown"
 )
 
 func mainRecover() {
@@ -35,12 +35,7 @@ func main() {
 	defer mainRecover()
 
 	// load config
-	envVars, err := env.LoadEnv()
-	if err != nil {
-		fmt.Printf("error loading env vars: %v", err)
-		exitCode = 1
-		return
-	}
+	envVars := env.GetInstance()
 
 	// Create new service
 	srv, err := app.New(envVars)

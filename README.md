@@ -37,7 +37,6 @@ https://railway.app/pricing
 ## TODO 
 - [ ] Add tests
 - [ ] Add CI/CD
-- [ ] Add zap logger
-- [ ] Add observability
-- [ ] Add conversational id to logs
-- [ ] Config lint locally and in CI
+- [x] refactor log
+- [x] Add observability
+- [x] Add conversational id to logs

@@ -6,7 +6,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dhanielsales/golang-scaffold/pkg/postgres"
+	"github.com/dhanielsales/go-api-template/pkg/postgres"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"

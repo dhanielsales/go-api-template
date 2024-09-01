@@ -3,10 +3,10 @@ package postgres_repository
 import (
 	"database/sql"
 
-	"github.com/dhanielsales/golang-scaffold/internal/models"
-	"github.com/dhanielsales/golang-scaffold/pkg/postgres"
+	"github.com/dhanielsales/go-api-template/internal/models"
+	"github.com/dhanielsales/go-api-template/pkg/postgres"
 
-	"github.com/dhanielsales/golang-scaffold/internal/modules/store/repository/postgres/db"
+	db "github.com/dhanielsales/go-api-template/internal/modules/store/repository/postgres/gen"
 )
 
 type PostgresRepository struct {

@@ -1,6 +1,14 @@
 basePath: /
 definitions:
-  entity.Category:
+  error.AppError:
+    properties:
+      description:
+        type: string
+      details: {}
+      name:
+        type: string
+    type: object
+  models.Category:
     properties:
       created_at:
         type: integer
@@ -8,20 +16,18 @@ definitions:
         type: string
       id:
         type: string
-      image_url:
-        type: string
       name:
         type: string
       products:
         items:
-          $ref: '#/definitions/entity.Product'
+          $ref: '#/definitions/models.Product'
         type: array
       slug:
         type: string
       updated_at:
         type: integer
     type: object
-  entity.Product:
+  models.Product:
     properties:
       category_id:
         type: string
@@ -40,7 +46,7 @@ definitions:
       updated_at:
         type: integer
     type: object
-  store_presentation_rest.createCategoryRequest:
+  store_presentation_controllers.createCategoryRequest:
     properties:
       description:
         maxLength: 300
@@ -56,7 +62,7 @@ definitions:
     - imageUrl
     - name
     type: object
-  store_presentation_rest.createProductRequest:
+  store_presentation_controllers.createProductRequest:
     properties:
       category_id:
         type: string
@@ -76,7 +82,7 @@ definitions:
     - name
     - price
     type: object
-  store_presentation_rest.updateCategoryRequest:
+  store_presentation_controllers.updateCategoryRequest:
     properties:
       description:
         maxLength: 300
@@ -89,7 +95,7 @@ definitions:
     required:
     - name
     type: object
-  store_presentation_rest.updateProductRequest:
+  store_presentation_controllers.updateProductRequest:
     properties:
       description:
         maxLength: 300
@@ -114,15 +120,34 @@ paths:
       consumes:
       - '*/*'
       description: fetch every category available.
+      parameters:
+      - description: Unique request ID.
+        in: header
+        name: X-Conversational-ID
+        type: string
+      - description: Authorization JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
+      - application/json
       - application/json
       responses:
         "200":
           description: OK
+          headers:
+            X-Conversational-ID:
+              description: Unique request ID.
+              type: string
           schema:
             items:
-              $ref: '#/definitions/entity.Category'
+              $ref: '#/definitions/models.Category'
             type: array
+        "500":
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/error.AppError'
       summary: Get all categories.
       tags:
       - Category
@@ -131,19 +156,41 @@ paths:
       - '*/*'
       description: creates one category.
       parameters:
+      - description: Unique request ID.
+        in: header
+        name: X-Conversational-ID
+        type: string
+      - description: Authorization JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Category to create
         in: body
         name: Category
         required: true
         schema:
-          $ref: '#/definitions/store_presentation_rest.createCategoryRequest'
+          $ref: '#/definitions/store_presentation_controllers.createCategoryRequest'
       produces:
+      - application/json
       - application/json
       responses:
         "201":
           description: Created
+          headers:
+            X-Conversational-ID:
+              description: Unique request ID.
+              type: string
           schema:
             type: integer
+        "400":
+          description: Bad Request. Invalid request body.
+          schema:
+            $ref: '#/definitions/error.AppError'
+        "500":
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/error.AppError'
       summary: Create one category.
       tags:
       - Category
@@ -153,6 +200,15 @@ paths:
       - '*/*'
       description: deletes one category by id.
       parameters:
+      - description: Unique request ID.
+        in: header
+        name: X-Conversational-ID
+        type: string
+      - description: Authorization JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Category ID
         in: path
         name: id
@@ -160,11 +216,20 @@ paths:
         type: string
       produces:
       - application/json
+      - application/json
       responses:
         "200":
           description: OK
+          headers:
+            X-Conversational-ID:
+              description: Unique request ID.
+              type: string
           schema:
             type: integer
+        "500":
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/error.AppError'
       summary: Delete one category.
       tags:
       - Category
@@ -173,6 +238,15 @@ paths:
       - '*/*'
       description: fetch one category by id.
       parameters:
+      - description: Unique request ID.
+        in: header
+        name: X-Conversational-ID
+        type: string
+      - description: Authorization JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Category ID
         in: path
         name: id
@@ -180,11 +254,20 @@ paths:
         type: string
       produces:
       - application/json
+      - application/json
       responses:
         "200":
           description: OK
+          headers:
+            X-Conversational-ID:
+              description: Unique request ID.
+              type: string
           schema:
-            $ref: '#/definitions/entity.Category'
+            $ref: '#/definitions/models.Category'
+        "500":
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/error.AppError'
       summary: Get one category.
       tags:
       - Category
@@ -193,9 +276,13 @@ paths:
       - '*/*'
       description: updates one category by id.
       parameters:
-      - description: Category ID
-        in: path
-        name: id
+      - description: Unique request ID.
+        in: header
+        name: X-Conversational-ID
+        type: string
+      - description: Authorization JWT
+        in: header
+        name: Authorization
         required: true
         type: string
       - description: Category to update
@@ -203,32 +290,24 @@ paths:
         name: Category
         required: true
         schema:
-          $ref: '#/definitions/store_presentation_rest.updateCategoryRequest'
+          $ref: '#/definitions/store_presentation_controllers.updateCategoryRequest'
       produces:
+      - application/json
       - application/json
       responses:
         "200":
           description: OK
           schema:
             type: integer
-      summary: Update one category.
-      tags:
-      - Category
-  /api/v0/category/no-db:
-    get:
-      consumes:
-      - '*/*'
-      description: fetch every category available.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
+        "400":
+          description: Bad Request. Invalid request body.
           schema:
-            items:
-              $ref: '#/definitions/entity.Category'
-            type: array
-      summary: Get all categories.
+            $ref: '#/definitions/error.AppError'
+        "500":
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/error.AppError'
+      summary: Update one category.
       tags:
       - Category
   /api/v0/product:
@@ -236,15 +315,34 @@ paths:
       consumes:
       - '*/*'
       description: fetch every product available.
+      parameters:
+      - description: Unique request ID.
+        in: header
+        name: X-Conversational-ID
+        type: string
+      - description: Authorization JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
+      - application/json
       - application/json
       responses:
         "200":
           description: OK
+          headers:
+            X-Conversational-ID:
+              description: Unique request ID.
+              type: string
           schema:
             items:
-              $ref: '#/definitions/entity.Product'
+              $ref: '#/definitions/models.Product'
             type: array
+        "500":
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/error.AppError'
       summary: Get all categories.
       tags:
       - Product
@@ -253,19 +351,41 @@ paths:
       - '*/*'
       description: creates one product.
       parameters:
+      - description: Unique request ID.
+        in: header
+        name: X-Conversational-ID
+        type: string
+      - description: Authorization JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Product to create
         in: body
         name: Product
         required: true
         schema:
-          $ref: '#/definitions/store_presentation_rest.createProductRequest'
+          $ref: '#/definitions/store_presentation_controllers.createProductRequest'
       produces:
+      - application/json
       - application/json
       responses:
         "201":
           description: Created
+          headers:
+            X-Conversational-ID:
+              description: Unique request ID.
+              type: string
           schema:
             type: integer
+        "400":
+          description: Bad Request. Invalid request body.
+          schema:
+            $ref: '#/definitions/error.AppError'
+        "500":
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/error.AppError'
       summary: Create one product.
       tags:
       - Product
@@ -275,6 +395,15 @@ paths:
       - '*/*'
       description: deletes one product by id.
       parameters:
+      - description: Unique request ID.
+        in: header
+        name: X-Conversational-ID
+        type: string
+      - description: Authorization JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Product ID
         in: path
         name: id
@@ -282,11 +411,20 @@ paths:
         type: string
       produces:
       - application/json
+      - application/json
       responses:
         "200":
           description: OK
+          headers:
+            X-Conversational-ID:
+              description: Unique request ID.
+              type: string
           schema:
             type: integer
+        "500":
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/error.AppError'
       summary: Delete one product.
       tags:
       - Product
@@ -295,6 +433,15 @@ paths:
       - '*/*'
       description: fetch one product by id.
       parameters:
+      - description: Unique request ID.
+        in: header
+        name: X-Conversational-ID
+        type: string
+      - description: Authorization JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Product ID
         in: path
         name: id
@@ -302,11 +449,20 @@ paths:
         type: string
       produces:
       - application/json
+      - application/json
       responses:
         "200":
           description: OK
+          headers:
+            X-Conversational-ID:
+              description: Unique request ID.
+              type: string
           schema:
-            $ref: '#/definitions/entity.Product'
+            $ref: '#/definitions/models.Product'
+        "500":
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/error.AppError'
       summary: Get one product.
       tags:
       - Product
@@ -315,9 +471,13 @@ paths:
       - '*/*'
       description: updates one product by id.
       parameters:
-      - description: Product ID
-        in: path
-        name: id
+      - description: Unique request ID.
+        in: header
+        name: X-Conversational-ID
+        type: string
+      - description: Authorization JWT
+        in: header
+        name: Authorization
         required: true
         type: string
       - description: Product to update
@@ -325,14 +485,23 @@ paths:
         name: Product
         required: true
         schema:
-          $ref: '#/definitions/store_presentation_rest.updateProductRequest'
+          $ref: '#/definitions/store_presentation_controllers.updateProductRequest'
       produces:
+      - application/json
       - application/json
       responses:
         "200":
           description: OK
           schema:
             type: integer
+        "400":
+          description: Bad Request. Invalid request body.
+          schema:
+            $ref: '#/definitions/error.AppError'
+        "500":
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/error.AppError'
       summary: Update one product.
       tags:
       - Product

@@ -3,8 +3,8 @@ package httputils
 import (
 	"bytes"
 
-	apperror "github.com/dhanielsales/golang-scaffold/pkg/error"
-	"github.com/dhanielsales/golang-scaffold/pkg/transcriber"
+	apperror "github.com/dhanielsales/go-api-template/pkg/error"
+	"github.com/dhanielsales/go-api-template/pkg/transcriber"
 	"github.com/gofiber/fiber/v2"
 )
 

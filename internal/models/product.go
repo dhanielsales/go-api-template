@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 
-	"github.com/dhanielsales/golang-scaffold/pkg/utils"
+	"github.com/dhanielsales/go-api-template/pkg/utils"
 )
 
 type Product struct {

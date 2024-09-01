@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"github.com/dhanielsales/golang-scaffold/pkg/httputils"
+	"github.com/dhanielsales/go-api-template/pkg/httputils"
 
-	"github.com/dhanielsales/golang-scaffold/internal/modules/store/service"
+	"github.com/dhanielsales/go-api-template/internal/modules/store/service"
 )
 
 func New(service *service.StoreService, httpServer *httputils.HttpServer, validator *httputils.Validator) {

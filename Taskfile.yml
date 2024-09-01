@@ -16,7 +16,7 @@ tasks:
   docs:
     desc: Generate swagger docs
     cmds:
-      - swag init --parseDependency --dir  ./cmd/service,./modules
+      - swag init --parseDependency --dir  ./cmd/service,./internal/modules
 
   build:
     desc: Build binary
@@ -66,6 +66,7 @@ tasks:
       - go install github.com/go-task/task/v3/cmd/task@latest
       - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
       - go install go.uber.org/mock/mockgen@latest
+        go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
       - npm i -g json-graphql-server
 
   setup-infra:

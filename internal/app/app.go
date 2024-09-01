@@ -4,19 +4,19 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "github.com/dhanielsales/golang-scaffold/docs"
+	_ "github.com/dhanielsales/go-api-template/docs"
 
 	// Set up config
-	"github.com/dhanielsales/golang-scaffold/internal/config/env"
+	"github.com/dhanielsales/go-api-template/internal/config/env"
 
-	"github.com/dhanielsales/golang-scaffold/pkg/httputils"
-	"github.com/dhanielsales/golang-scaffold/pkg/log"
-	"github.com/dhanielsales/golang-scaffold/pkg/postgres"
-	"github.com/dhanielsales/golang-scaffold/pkg/redis"
-	"github.com/dhanielsales/golang-scaffold/pkg/transcriber"
+	"github.com/dhanielsales/go-api-template/pkg/httputils"
+	"github.com/dhanielsales/go-api-template/pkg/logger"
+	"github.com/dhanielsales/go-api-template/pkg/postgres"
+	"github.com/dhanielsales/go-api-template/pkg/redis"
+	"github.com/dhanielsales/go-api-template/pkg/transcriber"
 
 	// Modules
-	"github.com/dhanielsales/golang-scaffold/internal/modules/store"
+	"github.com/dhanielsales/go-api-template/internal/modules/store"
 
 	goredis "github.com/redis/go-redis/v9"
 )
@@ -25,7 +25,7 @@ type app struct {
 	http      *httputils.HttpServer
 	postgres  *postgres.Storage
 	redis     *redis.Storage
-	logger    log.Logger
+	logger    logger.Logger
 	env       *env.EnvVars
 	transcrib transcriber.Transcriber
 }
@@ -52,10 +52,10 @@ func New(env *env.EnvVars) (*app, error) {
 	}
 
 	// init logger
-	logger := log.New(env.APP_NAME) // TODO: Change to singleton
+	logger := logger.GetInstance()
 
 	// init http server
-	httpServer := httputils.New(env.PORT, logger, env.GO_ENV != "production")
+	httpServer := httputils.New(env)
 
 	// init validator
 	transcrib := transcriber.DefaultTranscriber()

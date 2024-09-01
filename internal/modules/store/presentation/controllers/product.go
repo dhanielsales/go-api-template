@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/dhanielsales/golang-scaffold/internal/modules/store/service"
+	"github.com/dhanielsales/go-api-template/internal/modules/store/service"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -30,13 +30,21 @@ type createProductRequest struct {
 	CategoryID  string  `json:"category_id" validate:"required,uuid4"`
 }
 
+// POST /api/v0/product
+//
 // @Summary Create one product.
 // @Description creates one product.
 // @Tags Product
+// @Produce		json
 // @Accept */*
 // @Produce json
-// @Param Product body createProductRequest true "Product to create"
-// @Success 201 {object} int64
+// @Param			X-Conversational-ID		header		string					false	"Unique request ID."
+// @Param			Authorization		header		string					true	"Authorization JWT"
+// @Param 		Product body createProductRequest true "Product to create"
+// @Success		201 {object} int64
+// @Header		201,400,500	string		X-Conversational-ID	"Unique request ID."
+// @Failure		400					{object}	error.AppError	"Bad Request. Invalid request body."
+// @Failure		500					{object}	error.AppError	"Internal Server Error."
 // @Router /api/v0/product [post]
 func (t *StoreController) createProduct(c *fiber.Ctx) error {
 	var req createProductRequest
@@ -60,12 +68,19 @@ func (t *StoreController) createProduct(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(affected)
 }
 
+// GET /api/v0/product
+//
 // @Summary Get all categories.
 // @Description fetch every product available.
 // @Tags Product
+// @Produce		json
 // @Accept */*
 // @Produce json
-// @Success 200 {object} []entity.Product
+// @Param			X-Conversational-ID		header		string					false	"Unique request ID."
+// @Param			Authorization		header		string					true	"Authorization JWT"
+// @Success 	200 				{object} []models.Product
+// @Header		200,500			string		X-Conversational-ID	"Unique request ID."
+// @Failure		500					{object}	error.AppError	"Internal Server Error."
 // @Router /api/v0/product [get]
 func (t *StoreController) getManyProduct(c *fiber.Ctx) error {
 	categories, err := t.service.GetManyProduct(c.Context(), service.GetManyProductParams{
@@ -81,13 +96,20 @@ func (t *StoreController) getManyProduct(c *fiber.Ctx) error {
 	return c.JSON(categories)
 }
 
+// GET /api/v0/product/{id}
+//
 // @Summary Get one product.
 // @Description fetch one product by id.
 // @Tags Product
+// @Produce		json
 // @Accept */*
 // @Produce json
-// @Param id path string true "Product ID"
-// @Success 200 {object} entity.Product
+// @Param			X-Conversational-ID		header		string					false	"Unique request ID."
+// @Param			Authorization		header		string					true	"Authorization JWT"
+// @Param 		id path string true "Product ID"
+// @Success 	200 				{object} 	models.Product
+// @Header		200,500			string		X-Conversational-ID	"Unique request ID."
+// @Failure		500					{object}	error.AppError	"Internal Server Error."
 // @Router /api/v0/product/{id} [get]
 func (t *StoreController) getOneProduct(c *fiber.Ctx) error {
 	id := uuid.MustParse(c.Params("id"))
@@ -105,13 +127,21 @@ type updateProductRequest struct {
 	Description string `json:"description,omitempty" validate:"min=1,max=300"`
 }
 
+// PUT /api/v0/product
+//
 // @Summary Update one product.
 // @Description updates one product by id.
 // @Tags Product
+// @Produce		json
 // @Accept */*
 // @Produce json
-// @Param id path string true "Product ID"
+// @Param			X-Conversational-ID		header		string					false	"Unique request ID."
+// @Param			Authorization		header		string					true	"Authorization JWT"
 // @Param Product body updateProductRequest true "Product to update"
+// @Success		200 {object} int64
+// @Header		200,400,500	string		X-Conversational-ID	"Unique request ID."
+// @Failure		400					{object}	error.AppError	"Bad Request. Invalid request body."
+// @Failure		500					{object}	error.AppError	"Internal Server Error."
 // @Success 200 {object} int64
 // @Router /api/v0/product/{id} [put]
 func (t *StoreController) updateProduct(c *fiber.Ctx) error {
@@ -135,13 +165,20 @@ func (t *StoreController) updateProduct(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(affected)
 }
 
+// DELETE /api/v0/product/{id}
+//
 // @Summary Delete one product.
 // @Description deletes one product by id.
 // @Tags Product
+// @Produce		json
 // @Accept */*
 // @Produce json
-// @Param id path string true "Product ID"
-// @Success 200 {object} int64
+// @Param			X-Conversational-ID		header		string					false	"Unique request ID."
+// @Param			Authorization		header		string					true	"Authorization JWT"
+// @Param 		id path string true "Product ID"
+// @Success 	200 {object} int64
+// @Header		200,500			string		X-Conversational-ID	"Unique request ID."
+// @Failure		500					{object}	error.AppError	"Internal Server Error."
 // @Router /api/v0/product/{id} [delete]
 func (t *StoreController) deleteProduct(c *fiber.Ctx) error {
 	id := uuid.MustParse(c.Params("id"))

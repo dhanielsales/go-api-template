@@ -1,38 +1,54 @@
 package httputils
 
 import (
+	"github.com/dhanielsales/go-api-template/pkg/conversational"
+	"github.com/dhanielsales/go-api-template/pkg/logger"
+
+	apperror "github.com/dhanielsales/go-api-template/pkg/error"
+
 	"github.com/gofiber/fiber/v2"
-
-	"github.com/dhanielsales/golang-scaffold/pkg/log"
-
-	apperror "github.com/dhanielsales/golang-scaffold/pkg/error"
 )
 
-type HttpErrorHandler struct {
-	logger log.Logger
-}
+type HttpErrorHandler struct{}
 
-func newErrorHandler(logger log.Logger) *HttpErrorHandler {
-	return &HttpErrorHandler{
-		logger: logger,
-	}
+func newErrorHandler() *HttpErrorHandler {
+	return &HttpErrorHandler{}
 }
 
 func (h HttpErrorHandler) Response(c *fiber.Ctx, err error) error {
 	meta := getMeta(c)
+	cid := conversational.GetCIDFromContext(c.Context())
 
 	if err == nil {
-		currErr := apperror.New("Unknow error")
-		h.logger.Error(log.Params{Message: currErr.Description, Error: currErr, Meta: meta}) // Add CID here
+		currErr := apperror.New("unknow error")
+		logger.Error(
+			currErr.Error(),
+			logger.LogField("cid", cid),
+			logger.LogField("request_meta", meta),
+		)
+		c.Response().Header.Add(conversational.CID_HEADER_KEY, cid)
 		return c.Status(currErr.StatusCode()).JSON(currErr)
 	}
 
-	if appErr, ok := err.(*apperror.AppError); ok {
-		h.logger.Error(log.Params{Message: appErr.Description, Error: appErr, Meta: meta}) // Add CID here
-		return c.Status(appErr.StatusCode()).JSON(appErr)
+	if apperr, ok := err.(*apperror.AppError); ok {
+		logger.Error(
+			apperr.Error(),
+			logger.LogField("cid", cid),
+			logger.LogField("request_meta", meta),
+			logger.LogField("stack", apperr.Stack()),
+		)
+		c.Response().Header.Add(conversational.CID_HEADER_KEY, cid)
+		return c.Status(apperr.StatusCode()).JSON(apperr)
 	} else {
 		currErr := apperror.FromError(err)
-		h.logger.Error(log.Params{Message: currErr.Description, Error: currErr, Meta: meta}) // Add CID here
+		logger.Error(
+			apperr.Error(),
+			logger.LogField("cid", cid),
+			logger.LogField("request_meta", meta),
+			logger.LogField("stack", apperr.Stack()),
+		)
+
+		c.Response().Header.Add(conversational.CID_HEADER_KEY, cid)
 		return c.Status(currErr.StatusCode()).JSON(currErr)
 	}
 }

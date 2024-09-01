@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	r "github.com/redis/go-redis/v9"
 
-	"github.com/dhanielsales/golang-scaffold/internal/models"
-	"github.com/dhanielsales/golang-scaffold/pkg/redis"
+	"github.com/dhanielsales/go-api-template/internal/models"
+	"github.com/dhanielsales/go-api-template/pkg/redis"
 )
 
 const (

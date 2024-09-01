@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 
-	apperror "github.com/dhanielsales/golang-scaffold/pkg/error"
-	"github.com/dhanielsales/golang-scaffold/pkg/postgres"
+	apperror "github.com/dhanielsales/go-api-template/pkg/error"
+	"github.com/dhanielsales/go-api-template/pkg/postgres"
 
-	"github.com/dhanielsales/golang-scaffold/internal/models"
+	"github.com/dhanielsales/go-api-template/internal/models"
 
 	"github.com/google/uuid"
 )

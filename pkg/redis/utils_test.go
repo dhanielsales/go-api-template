@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dhanielsales/golang-scaffold/pkg/redis"
+	"github.com/dhanielsales/go-api-template/pkg/redis"
 
 	"github.com/go-redis/redismock/v9"
 	goredis "github.com/redis/go-redis/v9"

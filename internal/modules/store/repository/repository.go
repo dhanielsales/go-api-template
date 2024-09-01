@@ -1,13 +1,13 @@
 package repository
 
 import (
-	"github.com/dhanielsales/golang-scaffold/internal/models"
+	"github.com/dhanielsales/go-api-template/internal/models"
 
-	"github.com/dhanielsales/golang-scaffold/pkg/postgres"
-	"github.com/dhanielsales/golang-scaffold/pkg/redis"
+	"github.com/dhanielsales/go-api-template/pkg/postgres"
+	"github.com/dhanielsales/go-api-template/pkg/redis"
 
-	postgresrepository "github.com/dhanielsales/golang-scaffold/internal/modules/store/repository/postgres"
-	redisrepository "github.com/dhanielsales/golang-scaffold/internal/modules/store/repository/redis"
+	postgresrepository "github.com/dhanielsales/go-api-template/internal/modules/store/repository/postgres"
+	redisrepository "github.com/dhanielsales/go-api-template/internal/modules/store/repository/redis"
 )
 
 type StoreRepository struct {

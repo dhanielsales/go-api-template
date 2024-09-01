@@ -6,10 +6,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/dhanielsales/golang-scaffold/pkg/postgres"
+	"github.com/dhanielsales/go-api-template/pkg/postgres"
 
-	"github.com/dhanielsales/golang-scaffold/internal/models"
-	"github.com/dhanielsales/golang-scaffold/internal/modules/store/repository/postgres/db"
+	"github.com/dhanielsales/go-api-template/internal/models"
+	db "github.com/dhanielsales/go-api-template/internal/modules/store/repository/postgres/gen"
 )
 
 func ToProduct(category *db.Product) *models.Product {
