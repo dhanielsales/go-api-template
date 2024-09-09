@@ -41,7 +41,7 @@ func LogField(key string, value any) FieldOption {
 }
 
 func formatFields(fieldOptions []FieldOption) []any {
-	res := make([]any, len(fieldOptions))
+	res := make([]any, 0)
 	for _, fieldOpt := range fieldOptions {
 		field := &Field{}
 		fieldOpt(field)

@@ -31,12 +31,22 @@ func (h HttpErrorHandler) Response(c *fiber.Ctx, err error) error {
 	}
 
 	if apperr, ok := err.(*apperror.AppError); ok {
-		logger.Error(
-			apperr.Error(),
-			logger.LogField("cid", cid),
-			logger.LogField("request_meta", meta),
-			logger.LogField("stack", apperr.Stack()),
-		)
+		if apperr.Level == apperror.Warn {
+			logger.Warn(
+				apperr.Error(),
+				logger.LogField("cid", cid),
+				logger.LogField("request_meta", meta),
+				logger.LogField("stack", apperr.Stack()),
+			)
+		} else {
+			logger.Error(
+				apperr.Error(),
+				logger.LogField("cid", cid),
+				logger.LogField("request_meta", meta),
+				logger.LogField("stack", apperr.Stack()),
+			)
+		}
+
 		c.Response().Header.Add(conversational.CID_HEADER_KEY, cid)
 		return c.Status(apperr.StatusCode()).JSON(apperr)
 	} else {
