@@ -57,7 +57,6 @@ func (t *StoreController) createCategory(c *fiber.Ctx) error {
 		Description: req.Description,
 		ImageUrl:    req.ImageUrl,
 	})
-
 	if err != nil {
 		return t.http.ErrorHandler.Response(c, err)
 	}
@@ -103,9 +102,9 @@ func (t *StoreController) getManyCategory(c *fiber.Ctx) error {
 // @Param			X-Conversational-ID		header		string					false	"Unique request ID."
 // @Param			Authorization		header		string					true	"Authorization JWT"
 // @Param 		id path string true "Category ID"
-// @Success 	200 				{object} 	models.Category
 // @Header		200,500			string		X-Conversational-ID	"Unique request ID."
 // @Failure		500					{object}	error.AppError	"Internal Server Error."
+// @Success 	200 				{object} 	models.Category
 // @Router /api/v0/category/{id} [get]
 func (t *StoreController) getOneCategory(c *fiber.Ctx) error {
 	id := uuid.MustParse(c.Params("id"))
@@ -151,7 +150,6 @@ func (t *StoreController) updateCategory(c *fiber.Ctx) error {
 		Name:        req.Name,
 		Description: req.Description,
 	})
-
 	if err != nil {
 		return t.http.ErrorHandler.Response(c, err)
 	}

@@ -27,7 +27,6 @@ func (s *StoreService) CreateProduct(ctx context.Context, data CreateProductPayl
 	}
 
 	affected, err := s.repository.Persistence.CreateProduct(ctx, product)
-
 	if err != nil {
 		return nil, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
 	}
@@ -40,7 +39,6 @@ func (s *StoreService) GetProductById(ctx context.Context, id uuid.UUID) (*model
 		queries := s.repository.Persistence.WithTx(tx)
 
 		product, err := queries.GetProductById(ctx, id)
-
 		if err != nil {
 			return nil, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
@@ -66,7 +64,6 @@ func (s *StoreService) GetManyProduct(ctx context.Context, params GetManyProduct
 			OrderBy:        params.OrderBy,
 			OrderDirection: params.OrderDirection,
 		})
-
 		if err != nil {
 			if err == sql.ErrNoRows {
 				return nil, apperror.FromError(err).WithDescription("Product not found").WithStatusCode(http.StatusNotFound)

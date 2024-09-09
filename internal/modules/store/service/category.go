@@ -30,7 +30,6 @@ func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPa
 		}
 
 		affecteds, err := queries.CreateCategory(ctx, category)
-
 		if err != nil {
 			if postgres.IsUniqueViolationByField(err, "slug") {
 				return nil, apperror.FromError(err).WithDescription("Category with 'slug' already exists").WithStatusCode(http.StatusUnprocessableEntity)
@@ -46,7 +45,6 @@ func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPa
 
 		return affecteds, nil
 	})
-
 }
 
 func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*models.Category, error) {
@@ -94,7 +92,6 @@ func (s *StoreService) GetManyCategory(ctx context.Context, params GetManyCatego
 			OrderBy:        params.OrderBy,
 			OrderDirection: params.OrderDirection,
 		})
-
 		if err != nil {
 			return nil, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}

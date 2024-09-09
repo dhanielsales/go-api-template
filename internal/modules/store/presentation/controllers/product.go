@@ -59,10 +59,8 @@ func (t *StoreController) createProduct(c *fiber.Ctx) error {
 		Price:       req.Price,
 		CategotyID:  uuid.MustParse(req.CategoryID),
 	})
-
 	if err != nil {
 		return t.http.ErrorHandler.Response(c, err)
-
 	}
 
 	return c.Status(http.StatusOK).JSON(affected)
@@ -90,7 +88,6 @@ func (t *StoreController) getManyProduct(c *fiber.Ctx) error {
 	})
 	if err != nil {
 		return t.http.ErrorHandler.Response(c, err)
-
 	}
 
 	return c.JSON(categories)
@@ -116,7 +113,6 @@ func (t *StoreController) getOneProduct(c *fiber.Ctx) error {
 	product, err := t.service.GetProductById(c.Context(), id)
 	if err != nil {
 		return t.http.ErrorHandler.Response(c, err)
-
 	}
 
 	return c.JSON(product)
@@ -156,10 +152,8 @@ func (t *StoreController) updateProduct(c *fiber.Ctx) error {
 		Name:        req.Name,
 		Description: req.Description,
 	})
-
 	if err != nil {
 		return t.http.ErrorHandler.Response(c, err)
-
 	}
 
 	return c.Status(http.StatusOK).JSON(affected)
@@ -185,7 +179,6 @@ func (t *StoreController) deleteProduct(c *fiber.Ctx) error {
 	affected, err := t.service.DeleteProduct(c.Context(), id)
 	if err != nil {
 		return t.http.ErrorHandler.Response(c, err)
-
 	}
 
 	return c.Status(http.StatusOK).JSON(affected)

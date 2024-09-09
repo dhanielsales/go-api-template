@@ -20,7 +20,7 @@ func mainRecover() {
 	}
 }
 
-// @title Go Scaffold API
+// @title Go Template API
 // @version 1.0
 // @description A simple API to show how to use Go in a clean way
 // @contact.name Dhaniel Sales
