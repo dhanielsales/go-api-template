@@ -17,12 +17,13 @@ linters-settings:
     max-complexity: 15
     skip-tests: true
   govet:
-    settings:
-      check-shadowing: true
+    check-shadowing: true
   golint:
     min-confidence: 0
   gocyclo:
     min-complexity: 15
+  gocognit:
+    min-complexity: 80
   dupl:
     threshold: 100
   godot:
@@ -55,10 +56,15 @@ linters-settings:
     ignore-names:
       - tt
       - ev
+      - db
+      - id
+      - tx
+      - i
 
 linters:
   enable-all: true
   disable:
+    - nlreturn
     - gomnd
     - tagalign
     - maligned

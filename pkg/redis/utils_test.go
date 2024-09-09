@@ -37,14 +37,14 @@ func TestCallTxTxSucceeded(t *testing.T) {
 
 	mock.ExpectPing().SetVal("PONG")
 
-	s, err := redis.New(db)
+	redisStorage, err := redis.New(db)
 	require.NoError(t, err)
 
 	mock.ExpectTxPipeline()
 	mock.ExpectPing().SetVal("PONG")
 	mock.ExpectTxPipelineExec()
 
-	err = redis.CallTx(context.Background(), s.Client, func(pipe goredis.Pipeliner) error {
+	err = redis.CallTx(context.Background(), redisStorage.Client, func(pipe goredis.Pipeliner) error {
 		pipe.Ping(context.Background())
 		return nil
 	})
@@ -56,14 +56,14 @@ func TestCallTxTxFailed(t *testing.T) {
 
 	mock.ExpectPing().SetVal("PONG")
 
-	s, err := redis.New(db)
+	redisStorage, err := redis.New(db)
 	require.NoError(t, err)
 
 	mock.ExpectTxPipeline()
 	mock.ExpectPing().SetErr(goredis.TxFailedErr)
 	mock.ExpectTxPipelineExec()
 
-	err = redis.CallTx(context.Background(), s.Client, func(pipe goredis.Pipeliner) error {
+	err = redis.CallTx(context.Background(), redisStorage.Client, func(pipe goredis.Pipeliner) error {
 		pipe.Ping(context.Background())
 		return nil
 	})
@@ -75,7 +75,7 @@ func TestCallTxMaxRetriesExceeded(t *testing.T) {
 
 	mock.ExpectPing().SetVal("PONG")
 
-	s, err := redis.New(db)
+	redisStorage, err := redis.New(db)
 	require.NoError(t, err)
 
 	mock.ExpectTxPipeline()
@@ -90,7 +90,7 @@ func TestCallTxMaxRetriesExceeded(t *testing.T) {
 	mock.ExpectPing().SetErr(errors.New("ping error"))
 	mock.ExpectTxPipelineExec()
 
-	err = redis.CallTx(context.Background(), s.Client, func(pipe goredis.Pipeliner) error {
+	err = redis.CallTx(context.Background(), redisStorage.Client, func(pipe goredis.Pipeliner) error {
 		pipe.Ping(context.Background())
 		return nil
 	})

@@ -27,7 +27,7 @@ func (kaf *KafkaProvider) watchMesseges() {
 		default:
 			if message, ok := e.(*kafka.Message); ok {
 				if message.TopicPartition.Error != nil {
-					logger.Error(errors.Join(errors.New("Event delivery failed"), message.TopicPartition.Error).Error(),
+					logger.Error(errors.Join(errors.New("event delivery failed"), message.TopicPartition.Error).Error(),
 						logger.LogField("topic", *message.TopicPartition.Topic),
 						logger.LogField("partition", message.TopicPartition.Partition),
 						logger.LogField("offset", message.TopicPartition.Offset),
@@ -39,7 +39,6 @@ func (kaf *KafkaProvider) watchMesseges() {
 }
 
 // TODO Colocar o errorHandler nos erros do consumeMessages
-
 func (kaf *KafkaProvider) consumeMessages(group string) {
 	consumer := kaf.consumers[group]
 	subs := kaf.subscriptions[group]
@@ -54,11 +53,11 @@ func (kaf *KafkaProvider) consumeMessages(group string) {
 			if err != nil {
 				if kafkaError, ok := err.(kafka.Error); ok {
 					if !kafkaError.IsTimeout() {
-						logger.Error(errors.Join(errors.New("Event consuming failed"), kafkaError).Error())
+						logger.Error(errors.Join(errors.New("event consuming failed"), kafkaError).Error())
 						continue
 					}
 				} else {
-					logger.Error(errors.Join(errors.New("Unknown error occurred while consuming event"), err).Error())
+					logger.Error(errors.Join(errors.New("unknown error occurred while consuming event"), err).Error())
 					continue
 				}
 
@@ -72,7 +71,7 @@ func (kaf *KafkaProvider) consumeMessages(group string) {
 
 			handler := subs[topic]
 			if handler == nil {
-				logger.Error("Event not subscribed",
+				logger.Error("event not subscribed",
 					logger.LogField("topic", topic),
 					logger.LogField("partition", partition),
 					logger.LogField("offset", offset),
@@ -82,7 +81,7 @@ func (kaf *KafkaProvider) consumeMessages(group string) {
 
 			event := messaging.Event(topic)
 			if err = event.Validate(); err != nil {
-				logger.Error(errors.Join(errors.New("Invalid event"), err).Error(),
+				logger.Error(errors.Join(errors.New("invalid event"), err).Error(),
 					logger.LogField("topic", topic),
 					logger.LogField("partition", partition),
 					logger.LogField("offset", offset),
@@ -101,7 +100,7 @@ func (kaf *KafkaProvider) consumeMessages(group string) {
 				if header.Key == messaging.META_HEADER_KEY {
 					err := meta.FromJSON(header.Value)
 					if err != nil {
-						logger.Error("Invalid meta header",
+						logger.Error("invalid meta header",
 							logger.LogField("topic", topic),
 							logger.LogField("partition", partition),
 							logger.LogField("offset", offset),
@@ -121,7 +120,7 @@ func (kaf *KafkaProvider) consumeMessages(group string) {
 					errorExistsPreviously = true
 					err := errorPayload.FromJSON(header.Value)
 					if err != nil {
-						logger.Error("Invalid error payload header",
+						logger.Error("invalid error payload header",
 							logger.LogField("topic", topic),
 							logger.LogField("partition", partition),
 							logger.LogField("offset", offset),
@@ -136,7 +135,7 @@ func (kaf *KafkaProvider) consumeMessages(group string) {
 			withBoundary := errorBoundary(handler)
 			err = withBoundary(messagePayload)
 			if err != nil {
-				logger.Error("Event handler failed",
+				logger.Error("event handler failed",
 					logger.LogField("topic", topic),
 					logger.LogField("partition", partition),
 					logger.LogField("offset", offset),

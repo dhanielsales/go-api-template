@@ -9,7 +9,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  continuous-integrationint:
+  continuous-integration:
     runs-on: ubuntu-latest
 
     steps:
