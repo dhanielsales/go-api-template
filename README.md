@@ -35,8 +35,10 @@ task setup-infra
 https://railway.app/pricing
 
 ## TODO 
-- [ ] Add tests
-- [ ] Add CI/CD
 - [x] refactor log
 - [x] Add observability
 - [x] Add conversational id to logs
+- [ ] Add CI/CD
+- [ ] Add tests
+- [ ] Change Http layer for echo, gin or fuego
+- [ ] Add simple auth using package and an interface to able to setup your own auth or keyclock
