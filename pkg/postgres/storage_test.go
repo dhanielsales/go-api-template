@@ -12,6 +12,7 @@ import (
 )
 
 func TestStorageBootstrapSuccess(t *testing.T) {
+	t.Parallel()
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -29,6 +30,7 @@ func TestStorageBootstrapSuccess(t *testing.T) {
 }
 
 func TestStorageCleanupSuccess(t *testing.T) {
+	t.Parallel()
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -46,6 +48,7 @@ func TestStorageCleanupSuccess(t *testing.T) {
 }
 
 func TestStorageCleanupError(t *testing.T) {
+	t.Parallel()
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -55,9 +58,7 @@ func TestStorageCleanupError(t *testing.T) {
 	require.NoError(t, err)
 
 	s := postgres.New(db)
-
-	err = errors.New("Error on close")
-	mock.ExpectClose().WillReturnError(err)
+	mock.ExpectClose().WillReturnError(errors.New("Error on close"))
 
 	err = s.Cleanup()
 	assert.Error(t, err)

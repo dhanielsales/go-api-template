@@ -47,6 +47,11 @@ func Pagination(page, perPage string) PaginationResult {
 	}
 }
 
+const (
+	DESC = "DESC"
+	ASC  = "ASC"
+)
+
 func Sorting(field, direction string) string {
 	var orderBy string
 
@@ -55,11 +60,11 @@ func Sorting(field, direction string) string {
 	}
 
 	if direction == "" {
-		direction = "DESC"
+		direction = DESC
 	}
 
-	if direction != "ASC" && direction != "DESC" {
-		direction = "DESC"
+	if direction != ASC && direction != DESC {
+		direction = DESC
 	}
 
 	orderBy = field + " " + direction
@@ -67,24 +72,24 @@ func Sorting(field, direction string) string {
 	return orderBy
 }
 
-func CallTx[R any](ctx context.Context, db *sql.DB, f func(q *sql.Tx) (*R, error)) (*R, error) {
+func CallTx[R any](ctx context.Context, db *sql.DB, f func(q *sql.Tx) (R, error)) (R, error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, err
+		return *new(R), err
 	}
 
 	result, err := f(tx)
 	if err != nil {
 		errTx := tx.Rollback()
 		if errTx != nil {
-			return nil, errors.Join(err, errTx)
+			return *new(R), errors.Join(err, errTx)
 		}
-		return nil, err
+		return *new(R), err
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		return nil, err
+		return *new(R), err
 	}
 
 	return result, nil

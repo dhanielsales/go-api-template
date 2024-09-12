@@ -14,10 +14,10 @@ type PostgresRepository struct {
 	Queries  *db.Queries
 }
 
-func New(postgres *postgres.Storage) *PostgresRepository {
+func New(postgresStorage *postgres.Storage) *PostgresRepository {
 	return &PostgresRepository{
-		Postgres: postgres,
-		Queries:  db.New(postgres.Client),
+		Postgres: postgresStorage,
+		Queries:  db.New(postgresStorage.Client),
 	}
 }
 

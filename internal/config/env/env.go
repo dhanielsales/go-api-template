@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-type EnvVars struct {
+type Values struct {
 	ENV               string `env:"ENV"`
 	APP_NAME          string `env:"APP_NAME"`
 	HTTP_ADDRESS      string `env:"HTTP_ADDRESS"`
@@ -26,11 +26,13 @@ type EnvVars struct {
 	KAFKA_NOTIFICATION_ERROR_EMAIL string `env:"KAFKA_NOTIFICATION_ERROR_EMAIL"`
 }
 
-var once sync.Once
-var instance *EnvVars
+var (
+	once     sync.Once
+	instance *Values
+)
 
 // GetInstance returns the singleton instance of EnvVars or panic if it's not load correctly
-func GetInstance() *EnvVars {
+func GetInstance() *Values {
 	if instance == nil {
 		once.Do(func() {
 			instance = load()
@@ -40,8 +42,8 @@ func GetInstance() *EnvVars {
 	return instance
 }
 
-func load() *EnvVars {
-	var configStruct EnvVars
+func load() *Values {
+	var configStruct Values
 
 	config := reflect.Indirect(reflect.ValueOf(&configStruct))
 	for i := 0; i < config.NumField(); i++ {

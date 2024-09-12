@@ -1,4 +1,4 @@
-package error
+package apperror
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ type AppError struct {
 	stack       []byte     `json:"-"`
 }
 
-func (e AppError) Error() string {
+func (e *AppError) Error() string {
 	return fmt.Sprintf("error %v: err %v - %v", e.Name, e.err, e.Description)
 }
 

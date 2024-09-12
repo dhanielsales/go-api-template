@@ -14,13 +14,13 @@ import (
 	"github.com/gofiber/swagger"
 )
 
-type HttpServer struct {
+type HTTPServer struct {
 	App          *fiber.App
 	port         string
-	ErrorHandler *HttpErrorHandler
+	ErrorHandler *HTTPErrorHandler
 }
 
-func New(env *env.EnvVars) *HttpServer {
+func New(envValues *env.Values) *HTTPServer {
 	errorHandler := newErrorHandler()
 
 	// create the fiber app
@@ -34,20 +34,16 @@ func New(env *env.EnvVars) *HttpServer {
 
 	// add middleware
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: env.HTTP_ALLOW_ORIGIN,
+		AllowOrigins: envValues.HTTP_ALLOW_ORIGIN,
 		AllowHeaders: conversational.CID_HEADER_KEY,
 	}))
 
 	app.Use(requestid.New(requestid.Config{
 		Header:     conversational.CID_HEADER_KEY,
-		ContextKey: conversational.CID_CONTEXT_KEY,
+		ContextKey: conversational.CID_CONTEXT_KEY.String(),
 		Generator:  conversational.NewCID,
 	}))
 
-	// app.Use(fiberLogger.New(fiberLogger.Config{
-	// 	TimeFormat: "2006-01-02 15:04:05",
-	// 	Format:     "${time} [${ip}] ${status} - ${latency} ${method} ${path}\n",
-	// }))
 	app.Use(logger.New())
 
 	// add health check
@@ -56,21 +52,21 @@ func New(env *env.EnvVars) *HttpServer {
 	})
 
 	// add docs
-	if env.ENV != "production" {
+	if envValues.ENV != "production" {
 		app.Get("/swagger/*", swagger.HandlerDefault)
 	}
 
-	return &HttpServer{
+	return &HTTPServer{
 		App:          app,
-		port:         env.HTTP_PORT,
+		port:         envValues.HTTP_PORT,
 		ErrorHandler: errorHandler,
 	}
 }
 
-func (h *HttpServer) Start() {
-	h.App.Listen(":" + h.port)
+func (h *HTTPServer) Start() {
+	_ = h.App.Listen(":" + h.port)
 }
 
-func (h *HttpServer) Cleanup() {
-	h.App.ShutdownWithTimeout(time.Second * 5)
+func (h *HTTPServer) Cleanup() error {
+	return h.App.ShutdownWithTimeout(time.Second * 5)
 }

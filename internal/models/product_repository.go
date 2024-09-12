@@ -7,12 +7,12 @@ import (
 )
 
 type ProductPersistenceRepository interface {
-	CreateProduct(ctx context.Context, data *Product) (*int64, error)
-	UpdateProduct(ctx context.Context, id uuid.UUID, data *Product) (*int64, error)
-	DeleteProduct(ctx context.Context, id uuid.UUID) (*int64, error)
-	GetProductById(ctx context.Context, id uuid.UUID) (*Product, error)
-	GetManyProduct(ctx context.Context, data GetManyProductPayload) (*[]Product, error)
-	GetManyProductByCategoryId(ctx context.Context, categoryID uuid.UUID) (*[]Product, error)
+	CreateProduct(ctx context.Context, data *Product) (int64, error)
+	UpdateProduct(ctx context.Context, id uuid.UUID, data *Product) (int64, error)
+	DeleteProduct(ctx context.Context, id uuid.UUID) (int64, error)
+	GetProductByID(ctx context.Context, id uuid.UUID) (*Product, error)
+	GetManyProduct(ctx context.Context, data GetManyProductPayload) ([]*Product, error)
+	GetManyProductByCategoryID(ctx context.Context, categoryID uuid.UUID) ([]*Product, error)
 }
 
 type GetManyProductPayload struct {

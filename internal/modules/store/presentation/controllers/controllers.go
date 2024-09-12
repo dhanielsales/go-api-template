@@ -3,10 +3,10 @@ package controllers
 import (
 	"github.com/dhanielsales/go-api-template/pkg/httputils"
 
-	"github.com/dhanielsales/go-api-template/internal/modules/store/service"
+	storeservice "github.com/dhanielsales/go-api-template/internal/modules/store/service"
 )
 
-func New(service *service.StoreService, httpServer *httputils.HttpServer, validator *httputils.Validator) {
+func New(service *storeservice.StoreService, httpServer *httputils.HTTPServer, validator *httputils.Validator) {
 	controller := newController(service, httpServer, validator)
 
 	router := httpServer.App.Group("/api/v0/")
@@ -19,11 +19,11 @@ func New(service *service.StoreService, httpServer *httputils.HttpServer, valida
 
 type StoreController struct {
 	validator *httputils.Validator
-	service   *service.StoreService
-	http      *httputils.HttpServer
+	service   *storeservice.StoreService
+	http      *httputils.HTTPServer
 }
 
-func newController(service *service.StoreService, http *httputils.HttpServer, validator *httputils.Validator) *StoreController {
+func newController(service *storeservice.StoreService, http *httputils.HTTPServer, validator *httputils.Validator) *StoreController {
 	return &StoreController{
 		validator: validator,
 		service:   service,

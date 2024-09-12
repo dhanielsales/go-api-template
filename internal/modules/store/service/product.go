@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
 
-	apperror "github.com/dhanielsales/go-api-template/pkg/error"
+	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
 	"github.com/dhanielsales/go-api-template/pkg/postgres"
 
 	"github.com/dhanielsales/go-api-template/internal/models"
@@ -20,25 +20,25 @@ type CreateProductPayload struct {
 	CategotyID  uuid.UUID
 }
 
-func (s *StoreService) CreateProduct(ctx context.Context, data CreateProductPayload) (*int64, error) {
+func (s *StoreService) CreateProduct(ctx context.Context, data CreateProductPayload) (int64, error) {
 	product, err := models.NewProduct(data.Name, data.Description, data.Price, data.CategotyID)
 	if err != nil {
-		return nil, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
+		return 0, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
 	}
 
 	affected, err := s.repository.Persistence.CreateProduct(ctx, product)
 	if err != nil {
-		return nil, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
+		return 0, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
 	}
 
 	return affected, nil
 }
 
-func (s *StoreService) GetProductById(ctx context.Context, id uuid.UUID) (*models.Product, error) {
+func (s *StoreService) GetProductByID(ctx context.Context, id uuid.UUID) (*models.Product, error) {
 	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*models.Product, error) {
 		queries := s.repository.Persistence.WithTx(tx)
 
-		product, err := queries.GetProductById(ctx, id)
+		product, err := queries.GetProductByID(ctx, id)
 		if err != nil {
 			return nil, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
@@ -54,8 +54,8 @@ type GetManyProductParams struct {
 	OrderDirection string
 }
 
-func (s *StoreService) GetManyProduct(ctx context.Context, params GetManyProductParams) (*[]models.Product, error) {
-	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*[]models.Product, error) {
+func (s *StoreService) GetManyProduct(ctx context.Context, params GetManyProductParams) ([]*models.Product, error) {
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) ([]*models.Product, error) {
 		queries := s.repository.Persistence.WithTx(tx)
 
 		products, err := queries.GetManyProduct(ctx, models.GetManyProductPayload{
@@ -83,30 +83,30 @@ type UpdateProductPayload struct {
 	CategoryID  uuid.UUID
 }
 
-func (s *StoreService) UpdateProduct(ctx context.Context, id uuid.UUID, data UpdateProductPayload) (*int64, error) {
-	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
+func (s *StoreService) UpdateProduct(ctx context.Context, id uuid.UUID, data UpdateProductPayload) (int64, error) {
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (int64, error) {
 		queries := s.repository.Persistence.WithTx(tx)
 
-		product, err := queries.GetProductById(ctx, id)
+		product, err := queries.GetProductByID(ctx, id)
 		if err != nil {
-			return nil, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
+			return 0, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
 
 		product.Update(data.Name, data.Description, data.Price, data.CategoryID)
 
 		affected, err := queries.UpdateProduct(ctx, id, product)
 		if err != nil {
-			return nil, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
+			return 0, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
 
 		return affected, nil
 	})
 }
 
-func (s *StoreService) DeleteProduct(ctx context.Context, id uuid.UUID) (*int64, error) {
+func (s *StoreService) DeleteProduct(ctx context.Context, id uuid.UUID) (int64, error) {
 	affected, err := s.repository.Persistence.DeleteProduct(ctx, id)
 	if err != nil {
-		return nil, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
+		return 0, apperror.FromError(err).WithDescription("Can't processable product entity").WithStatusCode(http.StatusUnprocessableEntity)
 	}
 
 	return affected, nil

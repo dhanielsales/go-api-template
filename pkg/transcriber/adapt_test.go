@@ -58,7 +58,7 @@ func TestValidate(t *testing.T) {
 			args: args{val: &struct {
 				Name string `json:"name" validate:"required"`
 			}{}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "name",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldRequired, "name"),
@@ -74,7 +74,7 @@ func TestValidate(t *testing.T) {
 		{
 			name: "Error required non-anonymous struct",
 			args: args{val: &target{}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "name",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldRequired, "name"),
@@ -87,7 +87,7 @@ func TestValidate(t *testing.T) {
 			args: args{val: &struct {
 				Name string `json:"name" validate:"len=5"`
 			}{Name: "1234"}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "name",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "name", "len=5", "1234"),
@@ -147,7 +147,7 @@ func Test_formatValue(t *testing.T) {
 			args: args{val: struct {
 				Name *string `json:"name" validate:"len=2"`
 			}{}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "name",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "name", "len=2", "null"),
@@ -162,7 +162,7 @@ func Test_formatValue(t *testing.T) {
 			}{
 				Name: utils.ToPtr("a"),
 			}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "name",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "name", "len=2", "a"),
@@ -173,7 +173,7 @@ func Test_formatValue(t *testing.T) {
 		{
 			name: "struct nested",
 			args: args{val: target{}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "val",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "val", "required_without=other", "null"),
@@ -187,7 +187,7 @@ func Test_formatValue(t *testing.T) {
 				Val   struct{} `json:"val"   validate:"required_without=other"`
 				Other string   `json:"other"`
 			}{}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "val",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "val", "required_without=other", "<object>"),
@@ -201,7 +201,7 @@ func Test_formatValue(t *testing.T) {
 				Val   *struct{} `json:"val"   validate:"required_without=other"`
 				Other string    `json:"other"`
 			}{}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "val",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "val", "required_without=other", "null"),
@@ -217,7 +217,7 @@ func Test_formatValue(t *testing.T) {
 			}{
 				Val: []string{},
 			}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "val",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "val", "min=1", "<array>"),
@@ -231,7 +231,7 @@ func Test_formatValue(t *testing.T) {
 				Val   []string `json:"val"   validate:"required_without=other"`
 				Other string   `json:"other"`
 			}{}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "val",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "val", "required_without=other", "null"),
@@ -245,7 +245,7 @@ func Test_formatValue(t *testing.T) {
 				Val   map[string]string `json:"val"   validate:"required_without=other"`
 				Other string            `json:"other"`
 			}{}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "val",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "val", "required_without=other", "null"),
@@ -261,7 +261,7 @@ func Test_formatValue(t *testing.T) {
 			}{
 				Val: utils.ToPtr(map[string]string{}),
 			}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "val",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "val", "len=1", "<object>"),
@@ -275,7 +275,7 @@ func Test_formatValue(t *testing.T) {
 				Val   any    `json:"val"   validate:"required_without=other"`
 				Other string `json:"other"`
 			}{}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "val",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "val", "required_without=other", "null"),
@@ -291,7 +291,7 @@ func Test_formatValue(t *testing.T) {
 			}{
 				Val: new(any),
 			}},
-			want: want{err: InvalidFieldsError{
+			want: want{err: InvalidFieldsErrors{
 				{
 					Field:    "val",
 					Message:  fmt.Sprintf(ErrMessageInvalidFieldCriteria, "val", "required_without=other", "null"),

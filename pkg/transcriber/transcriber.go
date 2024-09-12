@@ -67,7 +67,7 @@ func (v *transcriber) DecodeAndValidate(ctx context.Context, source io.Reader, t
 
 func (v *transcriber) formatDecodeError(err error) error {
 	if jsonErr, ok := err.(*json.UnmarshalTypeError); ok {
-		return InvalidFieldsError{{
+		return InvalidFieldsErrors{{
 			Field:   jsonErr.Field,
 			Message: fmt.Sprintf(ErrMessageInvalidFieldType, jsonErr.Field, jsonErr.Type, jsonErr.Value),
 		}}

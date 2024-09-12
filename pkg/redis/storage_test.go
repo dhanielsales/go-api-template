@@ -12,6 +12,8 @@ import (
 )
 
 func TestStorage(t *testing.T) {
+	t.Parallel()
+
 	db, mock := redismock.NewClientMock()
 
 	mock.ExpectPing().SetVal("PONG")
@@ -24,6 +26,8 @@ func TestStorage(t *testing.T) {
 }
 
 func TestStoragePingError(t *testing.T) {
+	t.Parallel()
+
 	db, mock := redismock.NewClientMock()
 
 	mock.ExpectPing().SetErr(errors.New("ping error"))

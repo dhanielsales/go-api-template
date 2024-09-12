@@ -21,7 +21,7 @@ type Product struct {
 	UpdatedAt   *int64    `json:"updated_at"`
 }
 
-func (c Product) MarshalBinary() ([]byte, error) {
+func (c *Product) MarshalBinary() ([]byte, error) {
 	return json.Marshal(c)
 }
 
@@ -29,13 +29,13 @@ func (c *Product) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, c)
 }
 
-func NewProduct(name, description string, price float64, CategoryID uuid.UUID) (*Product, error) {
+func NewProduct(name, description string, price float64, categoryID uuid.UUID) (*Product, error) {
 	product := &Product{
 		ID:          uuid.New(),
 		Name:        name,
 		Slug:        slug.Make(name),
 		Price:       price,
-		CategoryID:  CategoryID,
+		CategoryID:  categoryID,
 		Description: &description,
 		CreatedAt:   utils.TimeNow(),
 	}
@@ -47,7 +47,7 @@ func NewProduct(name, description string, price float64, CategoryID uuid.UUID) (
 	return product, nil
 }
 
-func (c *Product) Update(name, description string, price float64, CategoryID uuid.UUID) {
+func (c *Product) Update(name, description string, price float64, categoryID uuid.UUID) {
 	if name != "" {
 		c.Name = name
 		c.Slug = slug.Make(name)
@@ -61,7 +61,7 @@ func (c *Product) Update(name, description string, price float64, CategoryID uui
 		c.Price = price
 	}
 
-	c.CategoryID = CategoryID
+	c.CategoryID = categoryID
 
 	updatedAt := utils.TimeNow()
 	c.UpdatedAt = &updatedAt

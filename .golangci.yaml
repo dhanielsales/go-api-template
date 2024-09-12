@@ -17,14 +17,23 @@ linters-settings:
     max-complexity: 15
     skip-tests: true
   govet:
-    settings:
-      check-shadowing: true
+    check-shadowing: true
   golint:
     min-confidence: 0
   gocyclo:
     min-complexity: 15
   dupl:
     threshold: 100
+  gosec:
+    excludes:
+      - G601
+  stylecheck:
+    checks:
+      - ST1000
+      - ST1016
+      - ST1020
+      - ST1021
+      - ST1022
   godot:
     period: false
   goconst:
@@ -55,10 +64,17 @@ linters-settings:
     ignore-names:
       - tt
       - ev
+      - db
+      - id
+      - tx
+      - i
 
 linters:
   enable-all: true
   disable:
+    - testifylint
+    - nolintlint
+    - nlreturn
     - gomnd
     - tagalign
     - maligned
@@ -90,9 +106,13 @@ linters:
     - deadcode
     - structcheck
     - varcheck
+    - revive
 
 issues:
   exclude-rules:
+    - path: cmd/
+      linters:
+        - forbidigo
     - path: _test.go
       linters:
         - funlen

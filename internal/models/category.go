@@ -15,12 +15,12 @@ type Category struct {
 	Name        string     `json:"name"`
 	Slug        string     `json:"slug"`
 	Description *string    `json:"description"`
-	Products    *[]Product `json:"products,omitempty"`
+	Products    []*Product `json:"products,omitempty"`
 	CreatedAt   int64      `json:"created_at"`
 	UpdatedAt   *int64     `json:"updated_at"`
 }
 
-func (c Category) MarshalBinary() ([]byte, error) {
+func (c *Category) MarshalBinary() ([]byte, error) {
 	return json.Marshal(c)
 }
 

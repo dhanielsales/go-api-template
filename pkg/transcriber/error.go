@@ -32,9 +32,9 @@ func (e InvalidFieldError) Error() string {
 	return fmt.Sprintf(ErrMessageInvalidField, e.Message)
 }
 
-type InvalidFieldsError []InvalidFieldError
+type InvalidFieldsErrors []InvalidFieldError
 
-func (errs InvalidFieldsError) Error() string {
+func (errs InvalidFieldsErrors) Error() string {
 	buff := bytes.NewBufferString("")
 
 	for i := range errs {

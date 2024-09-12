@@ -1,4 +1,4 @@
-package error
+package apperror
 
 type ErrorLevel uint8
 
@@ -17,7 +17,8 @@ func (l ErrorLevel) String() string {
 	case Error:
 		return "error"
 	}
-	return "unknown"
+
+	return unknown
 }
 
 func ErrorLevelFromStatus(status int) ErrorLevel {

@@ -4,18 +4,18 @@ import (
 	"github.com/dhanielsales/go-api-template/pkg/conversational"
 	"github.com/dhanielsales/go-api-template/pkg/logger"
 
-	apperror "github.com/dhanielsales/go-api-template/pkg/error"
+	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-type HttpErrorHandler struct{}
+type HTTPErrorHandler struct{}
 
-func newErrorHandler() *HttpErrorHandler {
-	return &HttpErrorHandler{}
+func newErrorHandler() *HTTPErrorHandler {
+	return &HTTPErrorHandler{}
 }
 
-func (h HttpErrorHandler) Response(c *fiber.Ctx, err error) error {
+func (h HTTPErrorHandler) Response(c *fiber.Ctx, err error) error {
 	meta := getMeta(c)
 	cid := conversational.GetCIDFromContext(c.Context())
 
@@ -23,8 +23,8 @@ func (h HttpErrorHandler) Response(c *fiber.Ctx, err error) error {
 		currErr := apperror.New("unknow error")
 		logger.Error(
 			currErr.Error(),
-			logger.LogField("cid", cid),
-			logger.LogField("request_meta", meta),
+			logger.LogString("cid", cid),
+			logger.LogAny("request_meta", meta),
 		)
 		c.Response().Header.Add(conversational.CID_HEADER_KEY, cid)
 		return c.Status(currErr.StatusCode()).JSON(currErr)
@@ -34,16 +34,16 @@ func (h HttpErrorHandler) Response(c *fiber.Ctx, err error) error {
 		if apperr.Level == apperror.Warn {
 			logger.Warn(
 				apperr.Error(),
-				logger.LogField("cid", cid),
-				logger.LogField("request_meta", meta),
-				logger.LogField("stack", apperr.Stack()),
+				logger.LogString("cid", cid),
+				logger.LogAny("request_meta", meta),
+				logger.LogString("stack", apperr.Stack()),
 			)
 		} else {
 			logger.Error(
 				apperr.Error(),
-				logger.LogField("cid", cid),
-				logger.LogField("request_meta", meta),
-				logger.LogField("stack", apperr.Stack()),
+				logger.LogString("cid", cid),
+				logger.LogAny("request_meta", meta),
+				logger.LogString("stack", apperr.Stack()),
 			)
 		}
 
@@ -53,9 +53,9 @@ func (h HttpErrorHandler) Response(c *fiber.Ctx, err error) error {
 		currErr := apperror.FromError(err)
 		logger.Error(
 			apperr.Error(),
-			logger.LogField("cid", cid),
-			logger.LogField("request_meta", meta),
-			logger.LogField("stack", apperr.Stack()),
+			logger.LogString("cid", cid),
+			logger.LogAny("request_meta", meta),
+			logger.LogString("stack", apperr.Stack()),
 		)
 
 		c.Response().Header.Add(conversational.CID_HEADER_KEY, cid)

@@ -1,8 +1,10 @@
-package error
+package apperror
 
 import "net/http"
 
 type ErrorName uint8
+
+const unknown = "unknown"
 
 const (
 	InternalServerError ErrorName = iota
@@ -28,7 +30,8 @@ func (n ErrorName) String() string {
 	case ForbiddenRequestError:
 		return "ForbiddenRequestError"
 	}
-	return "unknown"
+
+	return unknown
 }
 
 func (n ErrorName) Status() int {

@@ -19,8 +19,10 @@ type Logger interface {
 	Debug(message string, fields ...FieldOption)
 }
 
-var once sync.Once
-var instance Logger
+var (
+	once     sync.Once
+	instance Logger
+)
 
 // GetInstance returns the singleton instance of the logger
 func GetInstance() Logger {
@@ -31,24 +33,6 @@ func GetInstance() Logger {
 	}
 
 	return instance
-}
-
-func LogField(key string, value any) FieldOption {
-	return func(f *Field) {
-		f.Key = key
-		f.Value = value
-	}
-}
-
-func formatFields(fieldOptions []FieldOption) []any {
-	res := make([]any, 0)
-	for _, fieldOpt := range fieldOptions {
-		field := &Field{}
-		fieldOpt(field)
-		res = append(res, field.Key, field.Value)
-	}
-
-	return res
 }
 
 func Info(message string, fields ...FieldOption) {

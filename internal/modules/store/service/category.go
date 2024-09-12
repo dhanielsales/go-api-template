@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	apperror "github.com/dhanielsales/go-api-template/pkg/error"
+	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
 	"github.com/dhanielsales/go-api-template/pkg/postgres"
 
 	"github.com/dhanielsales/go-api-template/internal/models"
@@ -17,37 +17,36 @@ import (
 type CreateCategoryPayload struct {
 	Name        string
 	Description string
-	ImageUrl    string
 }
 
-func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPayload) (*int64, error) {
-	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
+func (s *StoreService) CreateCategory(ctx context.Context, data CreateCategoryPayload) (int64, error) {
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (int64, error) {
 		queries := s.repository.Persistence.WithTx(tx)
 
 		category, err := models.NewCategory(data.Name, data.Description)
 		if err != nil {
-			return nil, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
+			return 0, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
 
 		affecteds, err := queries.CreateCategory(ctx, category)
 		if err != nil {
 			if postgres.IsUniqueViolationByField(err, "slug") {
-				return nil, apperror.FromError(err).WithDescription("Category with 'slug' already exists").WithStatusCode(http.StatusUnprocessableEntity)
+				return 0, apperror.FromError(err).WithDescription("Category with 'slug' already exists").WithStatusCode(http.StatusUnprocessableEntity)
 			}
 
-			return nil, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
+			return 0, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
 
 		err = s.repository.Cache.DeleteAllCategoryInCache(ctx)
 		if err != nil {
-			return nil, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
+			return 0, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
 
 		return affecteds, nil
 	})
 }
 
-func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*models.Category, error) {
+func (s *StoreService) GetCategoryByID(ctx context.Context, id uuid.UUID) (*models.Category, error) {
 	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*models.Category, error) {
 		categoryInCache := s.repository.Cache.GetCategoryInCache(ctx, id)
 
@@ -57,7 +56,7 @@ func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*mode
 
 		queries := s.repository.Persistence.WithTx(tx)
 
-		category, err := queries.GetCategoryById(ctx, id)
+		category, err := queries.GetCategoryByID(ctx, id)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				return nil, apperror.FromError(err).WithDescription("Category not found").WithStatusCode(http.StatusNotFound)
@@ -66,7 +65,7 @@ func (s *StoreService) GetCategoryById(ctx context.Context, id uuid.UUID) (*mode
 			return nil, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
 
-		err = s.repository.Cache.SetCategoryInCache(ctx, *category, time.Hour*24)
+		err = s.repository.Cache.SetCategoryInCache(ctx, category, time.Hour*24)
 		if err != nil {
 			return nil, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
@@ -82,8 +81,8 @@ type GetManyCategoryParams struct {
 	OrderDirection string
 }
 
-func (s *StoreService) GetManyCategory(ctx context.Context, params GetManyCategoryParams) (*[]models.Category, error) {
-	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*[]models.Category, error) {
+func (s *StoreService) GetManyCategory(ctx context.Context, params GetManyCategoryParams) ([]*models.Category, error) {
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) ([]*models.Category, error) {
 		queries := s.repository.Persistence.WithTx(tx)
 
 		dbResult, err := queries.GetManyCategory(ctx, models.GetManyCategoryPayload{
@@ -105,13 +104,13 @@ type UpdateCategoryPayload struct {
 	Description string
 }
 
-func (s *StoreService) UpdateCategory(ctx context.Context, id uuid.UUID, data UpdateCategoryPayload) (*int64, error) {
-	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (*int64, error) {
+func (s *StoreService) UpdateCategory(ctx context.Context, id uuid.UUID, data UpdateCategoryPayload) (int64, error) {
+	return postgres.CallTx(ctx, s.repository.Postgres.Client, func(tx *sql.Tx) (int64, error) {
 		queries := s.repository.Persistence.WithTx(tx)
 
-		category, err := queries.GetCategoryById(ctx, id)
+		category, err := queries.GetCategoryByID(ctx, id)
 		if err != nil {
-			return nil, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
+			return 0, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
 
 		category.Update(data.Name, data.Description)
@@ -119,30 +118,30 @@ func (s *StoreService) UpdateCategory(ctx context.Context, id uuid.UUID, data Up
 		affected, err := queries.UpdateCategory(ctx, id, category)
 		if err != nil {
 			if postgres.IsUniqueViolationByField(err, "slug") {
-				return nil, apperror.FromError(err).WithDescription("Category with 'slug' already exists").WithStatusCode(http.StatusUnprocessableEntity)
+				return 0, apperror.FromError(err).WithDescription("Category with 'slug' already exists").WithStatusCode(http.StatusUnprocessableEntity)
 			}
 
-			return nil, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
+			return 0, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
 
 		err = s.repository.Cache.DeleteCategoryInCache(ctx, id)
 		if err != nil {
-			return nil, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
+			return 0, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
 		}
 
 		return affected, nil
 	})
 }
 
-func (s *StoreService) DeleteCategory(ctx context.Context, id uuid.UUID) (*int64, error) {
+func (s *StoreService) DeleteCategory(ctx context.Context, id uuid.UUID) (int64, error) {
 	affected, err := s.repository.Persistence.DeleteCategory(ctx, id)
 	if err != nil {
-		return nil, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
+		return 0, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
 	}
 
 	err = s.repository.Cache.DeleteCategoryInCache(ctx, id)
 	if err != nil {
-		return nil, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
+		return 0, apperror.FromError(err).WithDescription("Can't processable category entity").WithStatusCode(http.StatusUnprocessableEntity)
 	}
 
 	return affected, nil

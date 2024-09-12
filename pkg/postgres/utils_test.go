@@ -14,6 +14,7 @@ import (
 )
 
 func TestPagination(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name     string
 		page     string
@@ -29,7 +30,9 @@ func TestPagination(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt // pin
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			result := postgres.Pagination(tt.page, tt.perPage)
 			assert.Equal(t, tt.expected, result)
 		})
@@ -37,6 +40,7 @@ func TestPagination(t *testing.T) {
 }
 
 func TestSorting(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name      string
 		field     string
@@ -50,7 +54,9 @@ func TestSorting(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt // pin
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			result := postgres.Sorting(tt.field, tt.direction)
 			assert.Equal(t, tt.expected, result)
 		})
@@ -58,6 +64,7 @@ func TestSorting(t *testing.T) {
 }
 
 func TestCallTxCommitSuccess(t *testing.T) {
+	t.Parallel()
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -79,6 +86,7 @@ func TestCallTxCommitSuccess(t *testing.T) {
 }
 
 func TestCallTxRollbackOnError(t *testing.T) {
+	t.Parallel()
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -100,6 +108,7 @@ func TestCallTxRollbackOnError(t *testing.T) {
 }
 
 func TestCallTxBeginWithError(t *testing.T) {
+	t.Parallel()
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -121,6 +130,7 @@ func TestCallTxBeginWithError(t *testing.T) {
 }
 
 func TestCallTxRollbackWithError(t *testing.T) {
+	t.Parallel()
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -142,6 +152,7 @@ func TestCallTxRollbackWithError(t *testing.T) {
 }
 
 func TestCallTxWithErrorAndRollbackWithError(t *testing.T) {
+	t.Parallel()
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)

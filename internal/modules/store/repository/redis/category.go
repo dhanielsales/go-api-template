@@ -16,8 +16,8 @@ const (
 	CATEGORY_CACHE = "category"
 )
 
-func (c *CacheRepository) GetCategoryInCache(ctx context.Context, categoryId uuid.UUID) *models.Category {
-	key := redis.ComposeKey(CATEGORY_CACHE, categoryId.String())
+func (c *CacheRepository) GetCategoryInCache(ctx context.Context, categoryID uuid.UUID) *models.Category {
+	key := redis.ComposeKey(CATEGORY_CACHE, categoryID.String())
 
 	var category models.Category
 
@@ -29,7 +29,7 @@ func (c *CacheRepository) GetCategoryInCache(ctx context.Context, categoryId uui
 	return &category
 }
 
-func (c *CacheRepository) SetCategoryInCache(ctx context.Context, category models.Category, expiration time.Duration) error {
+func (c *CacheRepository) SetCategoryInCache(ctx context.Context, category *models.Category, expiration time.Duration) error {
 	key := redis.ComposeKey(CATEGORY_CACHE, category.ID.String())
 
 	err := c.Redis.Client.Set(ctx, key, category, 0).Err()
@@ -40,8 +40,8 @@ func (c *CacheRepository) SetCategoryInCache(ctx context.Context, category model
 	return nil
 }
 
-func (c *CacheRepository) DeleteCategoryInCache(ctx context.Context, categoryId uuid.UUID) error {
-	key := redis.ComposeKey(CATEGORY_CACHE, categoryId.String())
+func (c *CacheRepository) DeleteCategoryInCache(ctx context.Context, categoryID uuid.UUID) error {
+	key := redis.ComposeKey(CATEGORY_CACHE, categoryID.String())
 
 	err := c.Redis.Client.Del(ctx, key).Err()
 	if err != nil {

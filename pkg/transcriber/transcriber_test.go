@@ -150,7 +150,7 @@ func TestDecodeAndValidate(t *testing.T) {
 				}{},
 			},
 			want: want{
-				err: transcriber.InvalidFieldsError{
+				err: transcriber.InvalidFieldsErrors{
 					transcriber.InvalidFieldError{
 						Field:   "key",
 						Message: fmt.Sprintf(transcriber.ErrMessageInvalidFieldType, "key", "string", "number"),
@@ -238,6 +238,7 @@ func TestDecodeAndValidate(t *testing.T) {
 }
 
 func TestDefaultTranscriber(t *testing.T) {
+	t.Parallel()
 	transcrib := transcriber.DefaultTranscriber()
 	ctx := context.Background()
 

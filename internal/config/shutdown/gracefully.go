@@ -4,11 +4,13 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/dhanielsales/go-api-template/pkg/logger"
 )
 
 type Starter interface {
 	Run()
-	Cleanup()
+	Cleanup() error
 }
 
 func StartGracefully(s Starter) {
@@ -20,5 +22,7 @@ func StartGracefully(s Starter) {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-quit
 
-	s.Cleanup()
+	if err := s.Cleanup(); err != nil {
+		logger.Error("error on cleanup app", logger.LogErr("err", err))
+	}
 }

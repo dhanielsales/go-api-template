@@ -110,7 +110,7 @@ func (t *StoreController) getManyProduct(c *fiber.Ctx) error {
 // @Router /api/v0/product/{id} [get]
 func (t *StoreController) getOneProduct(c *fiber.Ctx) error {
 	id := uuid.MustParse(c.Params("id"))
-	product, err := t.service.GetProductById(c.Context(), id)
+	product, err := t.service.GetProductByID(c.Context(), id)
 	if err != nil {
 		return t.http.ErrorHandler.Response(c, err)
 	}

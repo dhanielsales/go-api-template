@@ -26,7 +26,6 @@ func setupCategoryRoutes(r fiber.Router, controller *StoreController) {
 type createCategoryRequest struct {
 	Name        string `json:"name" validate:"required,min=1,max=50"`
 	Description string `json:"description,omitempty" validate:"min=1,max=300"`
-	ImageUrl    string `json:"imageUrl" validate:"required,url"`
 }
 
 // POST /api/v0/category
@@ -55,7 +54,6 @@ func (t *StoreController) createCategory(c *fiber.Ctx) error {
 	affected, err := t.service.CreateCategory(c.Context(), service.CreateCategoryPayload{
 		Name:        req.Name,
 		Description: req.Description,
-		ImageUrl:    req.ImageUrl,
 	})
 	if err != nil {
 		return t.http.ErrorHandler.Response(c, err)
@@ -108,7 +106,7 @@ func (t *StoreController) getManyCategory(c *fiber.Ctx) error {
 // @Router /api/v0/category/{id} [get]
 func (t *StoreController) getOneCategory(c *fiber.Ctx) error {
 	id := uuid.MustParse(c.Params("id"))
-	category, err := t.service.GetCategoryById(c.Context(), id)
+	category, err := t.service.GetCategoryByID(c.Context(), id)
 	if err != nil {
 		return t.http.ErrorHandler.Response(c, err)
 	}

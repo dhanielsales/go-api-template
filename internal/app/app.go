@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	//nolint:revive // necessary to set up swagger docs.
 	_ "github.com/dhanielsales/go-api-template/docs"
 
 	// Set up config
@@ -11,9 +12,10 @@ import (
 
 	"github.com/dhanielsales/go-api-template/pkg/httputils"
 	"github.com/dhanielsales/go-api-template/pkg/logger"
-	"github.com/dhanielsales/go-api-template/pkg/postgres"
-	"github.com/dhanielsales/go-api-template/pkg/redis"
 	"github.com/dhanielsales/go-api-template/pkg/transcriber"
+
+	postgresstorage "github.com/dhanielsales/go-api-template/pkg/postgres"
+	redisstorage "github.com/dhanielsales/go-api-template/pkg/redis"
 
 	// Modules
 	"github.com/dhanielsales/go-api-template/internal/modules/store"
@@ -22,66 +24,76 @@ import (
 )
 
 type app struct {
-	http      *httputils.HttpServer
-	postgres  *postgres.Storage
-	redis     *redis.Storage
+	http      *httputils.HTTPServer
+	postgres  *postgresstorage.Storage
+	redis     *redisstorage.Storage
 	logger    logger.Logger
-	env       *env.EnvVars
+	env       *env.Values
 	transcrib transcriber.Transcriber
 }
 
-func New(env *env.EnvVars) (*app, error) {
+func New(envVars *env.Values) (*app, error) {
 	// init the Postgres storage
-	postgresDb, err := sql.Open("postgres", env.POSTGRES_URL)
+	postgresDB, err := sql.Open("postgres", envVars.POSTGRES_URL)
 	if err != nil {
 		return nil, fmt.Errorf("error opening postgres connection: %w", err)
 	}
 
-	postgres := postgres.New(postgresDb)
+	postgres := postgresstorage.New(postgresDB)
 
 	// init the Redis storage
-	opts, err := goredis.ParseURL(env.REDIS_URL)
+	opts, err := goredis.ParseURL(envVars.REDIS_URL)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing redis url: %w", err)
 	}
 
-	client := goredis.NewClient(opts)
-	redis, err := redis.New(client)
+	redisClient := goredis.NewClient(opts)
+	redisStorage, err := redisstorage.New(redisClient)
 	if err != nil {
 		return nil, fmt.Errorf("error opening redis connection: %w", err)
 	}
 
 	// init logger
-	logger := logger.GetInstance()
+	loggerInstance := logger.GetInstance()
 
 	// init http server
-	httpServer := httputils.New(env)
+	httpServer := httputils.New(envVars)
 
 	// init validator
 	transcrib := transcriber.DefaultTranscriber()
 	validator := httputils.NewValidator(transcrib)
 
 	// Start store module
-	store.Bootstrap(postgres, redis, httpServer, validator)
+	store.Bootstrap(postgres, redisStorage, httpServer, validator)
 
 	return &app{
 		http:      httpServer,
 		postgres:  postgres,
-		redis:     redis,
-		logger:    logger,
+		redis:     redisStorage,
+		logger:    loggerInstance,
 		transcrib: transcrib,
-		env:       env,
+		env:       envVars,
 	}, nil
 }
 
 func (s *app) Run() {
-	fmt.Println("Starting...")
+	logger.Info("Starting...")
 	s.http.Start()
 }
 
-func (s *app) Cleanup() {
-	fmt.Println("Cleaning up...")
-	s.http.Cleanup()
-	s.postgres.Cleanup()
-	s.redis.Cleanup()
+func (s *app) Cleanup() error {
+	logger.Info("Cleaning up...")
+	if err := s.http.Cleanup(); err != nil {
+		return err
+	}
+
+	if err := s.postgres.Cleanup(); err != nil {
+		return err
+	}
+
+	if err := s.redis.Cleanup(); err != nil {
+		return err
+	}
+
+	return nil
 }

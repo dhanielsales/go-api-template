@@ -3,12 +3,13 @@ package conversational
 import (
 	"context"
 
+	"github.com/dhanielsales/go-api-template/pkg/contextutils"
 	"github.com/google/uuid"
 )
 
 const (
-	CID_CONTEXT_KEY = "cid"
-	CID_HEADER_KEY  = "X-Conversational-ID"
+	CID_CONTEXT_KEY contextutils.ContextKey = "cid"
+	CID_HEADER_KEY  string                  = "X-Conversational-ID"
 )
 
 func NewCID() string {

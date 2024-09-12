@@ -1,14 +1,14 @@
 package service
 
 import (
-	"github.com/dhanielsales/go-api-template/internal/modules/store/repository"
+	storerepository "github.com/dhanielsales/go-api-template/internal/modules/store/repository"
 )
 
 type StoreService struct {
-	repository *repository.StoreRepository
+	repository *storerepository.StoreRepository
 }
 
-func New(repository *repository.StoreRepository) *StoreService {
+func New(repository *storerepository.StoreRepository) *StoreService {
 	return &StoreService{
 		repository: repository,
 	}

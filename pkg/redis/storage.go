@@ -14,7 +14,6 @@ func New(client *redis.Client) (*Storage, error) {
 	ctx := context.Background()
 	ping := client.Ping(ctx)
 	_, err := ping.Result()
-
 	if err != nil {
 		return nil, err
 	}

@@ -8,10 +8,18 @@ import (
 
 // IsUniqueViolation check if error is a unique constraint violation error
 func IsUniqueViolation(err error) bool {
-	return strings.Contains(err.(*pq.Error).Message, "duplicate key value violates unique constraint")
+	if pqErr, ok := err.(*pq.Error); ok {
+		return strings.Contains(pqErr.Message, "duplicate key value violates unique constraint")
+	}
+
+	return false
 }
 
 // IsUniqueViolationByField check if error is a unique constraint violation error by field
 func IsUniqueViolationByField(err error, field string) bool {
-	return IsUniqueViolation(err) && strings.Contains(err.(*pq.Error).Message, field)
+	if pqErr, ok := err.(*pq.Error); ok && IsUniqueViolation(err) {
+		return strings.Contains(pqErr.Message, field)
+	}
+
+	return false
 }

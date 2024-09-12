@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/dhanielsales/go-api-template/pkg/logger"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -74,14 +75,14 @@ func (v *validatorSolver) Validate(ctx context.Context, val any) (err error) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			// Add logger here
+			logger.Error("panic recoved from validator", logger.LogAny("panic", r))
 			err = fmt.Errorf(ErrUnexpectedPanic, r)
 		}
 	}()
 
-	if err := v.v.Struct(val); err != nil {
+	if err = v.v.Struct(val); err != nil {
 		if validationErrs, ok := err.(validator.ValidationErrors); ok {
-			invalidFields := make(InvalidFieldsError, 0, len(validationErrs))
+			invalidFields := make(InvalidFieldsErrors, 0, len(validationErrs))
 
 			for _, validationErr := range validationErrs {
 				fieldKey := v.getFieldKey(validationErr)
@@ -115,9 +116,8 @@ func (v *validatorSolver) getFieldKey(fieldErr validator.FieldError) string {
 	if len(namespaceSlice) == 1 {
 		return namespaceSlice[0]
 	}
-	keySlice := append(namespaceSlice[:0], namespaceSlice[1:]...)
 
-	return strings.Join(keySlice[:], ".")
+	return strings.Join(namespaceSlice[1:], ".")
 }
 
 func (v *validatorSolver) formatExpectation(fieldErr validator.FieldError) string {
@@ -129,6 +129,7 @@ func (v *validatorSolver) formatExpectation(fieldErr validator.FieldError) strin
 }
 
 func (v *validatorSolver) formatValue(fieldErr validator.FieldError) string {
+	//nolint:exhaustive // No need to check every possible kind
 	switch fieldErr.Kind() {
 	case reflect.Ptr:
 		if reflect.ValueOf(fieldErr.Value()).IsNil() {

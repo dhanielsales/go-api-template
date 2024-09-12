@@ -6,13 +6,13 @@ import (
 	"github.com/dhanielsales/go-api-template/pkg/redis"
 
 	"github.com/dhanielsales/go-api-template/internal/modules/store/presentation/controllers"
-	"github.com/dhanielsales/go-api-template/internal/modules/store/repository"
-	"github.com/dhanielsales/go-api-template/internal/modules/store/service"
+	storerepository "github.com/dhanielsales/go-api-template/internal/modules/store/repository"
+	storeservice "github.com/dhanielsales/go-api-template/internal/modules/store/service"
 )
 
-func Bootstrap(pg *postgres.Storage, redis *redis.Storage, httpServer *httputils.HttpServer, validator *httputils.Validator) {
-	repository := repository.New(pg, redis)
-	service := service.New(repository)
+func Bootstrap(postgresStorage *postgres.Storage, redisStorage *redis.Storage, httpServer *httputils.HTTPServer, validator *httputils.Validator) {
+	repository := storerepository.New(postgresStorage, redisStorage)
+	service := storeservice.New(repository)
 
 	controllers.New(service, httpServer, validator)
 }
