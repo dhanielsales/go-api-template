@@ -30,7 +30,6 @@ func TestPagination(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt // pin
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			result := postgres.Pagination(tt.page, tt.perPage)
@@ -54,7 +53,6 @@ func TestSorting(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt // pin
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			result := postgres.Sorting(tt.field, tt.direction)

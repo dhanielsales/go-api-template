@@ -41,10 +41,8 @@ func Pagination(page, perPage string) PaginationResult {
 	limit = currentPerPage
 	offset = (currentPage - 1) * currentPerPage
 
-	return PaginationResult{
-		Limit:  int32(limit),
-		Offset: int32(offset),
-	}
+	//nolint:gosec // safe conversion int to int32
+	return PaginationResult{Limit: int32(limit), Offset: int32(offset)}
 }
 
 const (

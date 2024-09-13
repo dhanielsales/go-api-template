@@ -65,7 +65,7 @@ func (t *StoreController) createCategory(c *fiber.Ctx) error {
 // GET /api/v0/category
 //
 // @Summary Get all categories.
-// @Description fetch every category available.
+// @Description fetch every category available
 // @Tags Category
 // @Produce		json
 // @Accept */*

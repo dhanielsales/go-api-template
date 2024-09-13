@@ -23,6 +23,11 @@ tasks:
     cmds:
       - go build -o 'dist/{{.APP_NAME}}' cmd/service/main.go
 
+  lint:
+    desc: Run linting
+    cmds:
+      - golangci-lint run
+
   start:
     desc: Start binary
     cmds:

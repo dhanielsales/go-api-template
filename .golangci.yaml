@@ -17,9 +17,8 @@ linters-settings:
     max-complexity: 15
     skip-tests: true
   govet:
-    check-shadowing: true
-  golint:
-    min-confidence: 0
+    enable:
+      - shadow
   gocyclo:
     min-complexity: 15
   dupl:
@@ -72,20 +71,20 @@ linters-settings:
 linters:
   enable-all: true
   disable:
+    - exportloopref
+    - execinquery
     - testifylint
     - nolintlint
     - nlreturn
     - gomnd
     - tagalign
-    - maligned
     - gochecknoglobals
     - lll
     - dupl
     - depguard
     - wsl
     - godox
-    - exhaustivestruct
-    - goerr113
+    - err113
     - gci
     - errorlint
     - wrapcheck
@@ -98,15 +97,8 @@ linters:
     - sqlclosecheck
     - wastedassign
     - ireturn
-    - interfacer
-    - scopelint
-    - golint
-    - ifshort
-    - nosnakecase
-    - deadcode
-    - structcheck
-    - varcheck
     - revive
+    - mnd
 
 issues:
   exclude-rules:
