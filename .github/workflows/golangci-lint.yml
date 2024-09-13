@@ -9,7 +9,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  continuous-integration:
+  linting:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,6 +22,10 @@ jobs:
         with:
           version: v1.61.0
           args: --config=.golangci.yaml
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
       - uses: actions/checkout@v4
       - name: Setup Go
         uses: actions/setup-go@v5
