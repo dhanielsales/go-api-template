@@ -46,7 +46,7 @@ func load() *Values {
 	var configStruct Values
 
 	config := reflect.Indirect(reflect.ValueOf(&configStruct))
-	for i := 0; i < config.NumField(); i++ {
+	for i := range config.NumField() {
 		envVar := config.Type().Field(i).Tag.Get("env")
 
 		if envVar == "" {
