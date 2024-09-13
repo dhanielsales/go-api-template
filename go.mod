@@ -4,7 +4,6 @@ go 1.22.6
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
-	github.com/confluentinc/confluent-kafka-go/v2 v2.5.0
 	github.com/go-redis/redismock/v9 v9.2.0
 	github.com/gofiber/fiber/v2 v2.41.0
 	github.com/gofiber/swagger v0.1.8
@@ -21,11 +20,11 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
-	go.uber.org/multierr v1.10.0 // indirect
 )
 
 require (
@@ -51,7 +50,6 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.43.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/net v0.23.0
 	golang.org/x/sys v0.19.0 // indirect
