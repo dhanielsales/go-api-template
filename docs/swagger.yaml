@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  error.AppError:
+  apperror.AppError:
     properties:
       description:
         type: string
@@ -52,14 +52,11 @@ definitions:
         maxLength: 300
         minLength: 1
         type: string
-      imageUrl:
-        type: string
       name:
         maxLength: 50
         minLength: 1
         type: string
     required:
-    - imageUrl
     - name
     type: object
   store_presentation_controllers.createProductRequest:
@@ -112,14 +109,14 @@ info:
   contact:
     name: Dhaniel Sales
   description: A simple API to show how to use Go in a clean way
-  title: Go Scaffold API
+  title: Go Template API
   version: "1.0"
 paths:
-  /api/v0/category:
+  /api/v0/category/:
     get:
       consumes:
       - '*/*'
-      description: fetch every category available.
+      description: fetch every category available
       parameters:
       - description: Unique request ID.
         in: header
@@ -147,7 +144,7 @@ paths:
         "500":
           description: Internal Server Error.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
       summary: Get all categories.
       tags:
       - Category
@@ -186,15 +183,15 @@ paths:
         "400":
           description: Bad Request. Invalid request body.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
         "500":
           description: Internal Server Error.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
       summary: Create one category.
       tags:
       - Category
-  /api/v0/category/{id}:
+  /api/v0/category/{id}/:
     delete:
       consumes:
       - '*/*'
@@ -229,7 +226,7 @@ paths:
         "500":
           description: Internal Server Error.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
       summary: Delete one category.
       tags:
       - Category
@@ -258,16 +255,12 @@ paths:
       responses:
         "200":
           description: OK
-          headers:
-            X-Conversational-ID:
-              description: Unique request ID.
-              type: string
           schema:
             $ref: '#/definitions/models.Category'
         "500":
           description: Internal Server Error.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
       summary: Get one category.
       tags:
       - Category
@@ -302,15 +295,15 @@ paths:
         "400":
           description: Bad Request. Invalid request body.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
         "500":
           description: Internal Server Error.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
       summary: Update one category.
       tags:
       - Category
-  /api/v0/product:
+  /api/v0/product/:
     get:
       consumes:
       - '*/*'
@@ -342,7 +335,7 @@ paths:
         "500":
           description: Internal Server Error.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
       summary: Get all categories.
       tags:
       - Product
@@ -381,15 +374,15 @@ paths:
         "400":
           description: Bad Request. Invalid request body.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
         "500":
           description: Internal Server Error.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
       summary: Create one product.
       tags:
       - Product
-  /api/v0/product/{id}:
+  /api/v0/product/{id}/:
     delete:
       consumes:
       - '*/*'
@@ -424,7 +417,7 @@ paths:
         "500":
           description: Internal Server Error.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
       summary: Delete one product.
       tags:
       - Product
@@ -462,7 +455,7 @@ paths:
         "500":
           description: Internal Server Error.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
       summary: Get one product.
       tags:
       - Product
@@ -497,11 +490,11 @@ paths:
         "400":
           description: Bad Request. Invalid request body.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
         "500":
           description: Internal Server Error.
           schema:
-            $ref: '#/definitions/error.AppError'
+            $ref: '#/definitions/apperror.AppError'
       summary: Update one product.
       tags:
       - Product

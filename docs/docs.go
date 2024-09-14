@@ -17,9 +17,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v0/category": {
+        "/api/v0/category/": {
             "get": {
-                "description": "fetch every category available.",
+                "description": "fetch every category available",
                 "consumes": [
                     "*/*"
                 ],
@@ -65,7 +65,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     }
                 }
@@ -123,19 +123,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request. Invalid request body.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     }
                 }
             }
         },
-        "/api/v0/category/{id}": {
+        "/api/v0/category/{id}/": {
             "get": {
                 "description": "fetch one category by id.",
                 "consumes": [
@@ -176,18 +176,12 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Category"
-                        },
-                        "headers": {
-                            "X-Conversational-ID": {
-                                "type": "string",
-                                "description": "Unique request ID."
-                            }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     }
                 }
@@ -239,13 +233,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request. Invalid request body.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     }
                 }
@@ -301,13 +295,13 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     }
                 }
             }
         },
-        "/api/v0/product": {
+        "/api/v0/product/": {
             "get": {
                 "description": "fetch every product available.",
                 "consumes": [
@@ -355,7 +349,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     }
                 }
@@ -413,19 +407,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request. Invalid request body.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     }
                 }
             }
         },
-        "/api/v0/product/{id}": {
+        "/api/v0/product/{id}/": {
             "get": {
                 "description": "fetch one product by id.",
                 "consumes": [
@@ -477,7 +471,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     }
                 }
@@ -529,13 +523,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request. Invalid request body.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     }
                 }
@@ -591,7 +585,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error.",
                         "schema": {
-                            "$ref": "#/definitions/error.AppError"
+                            "$ref": "#/definitions/apperror.AppError"
                         }
                     }
                 }
@@ -599,7 +593,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "error.AppError": {
+        "apperror.AppError": {
             "type": "object",
             "properties": {
                 "description": {
@@ -672,7 +666,6 @@ const docTemplate = `{
         "store_presentation_controllers.createCategoryRequest": {
             "type": "object",
             "required": [
-                "imageUrl",
                 "name"
             ],
             "properties": {
@@ -680,9 +673,6 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 300,
                     "minLength": 1
-                },
-                "imageUrl": {
-                    "type": "string"
                 },
                 "name": {
                     "type": "string",
@@ -763,7 +753,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Go Scaffold API",
+	Title:            "Go Template API",
 	Description:      "A simple API to show how to use Go in a clean way",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

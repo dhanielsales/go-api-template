@@ -1,7 +1,9 @@
 package app
 
 import (
+	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 
 	//nolint:revive // necessary to set up swagger docs.
@@ -66,6 +68,10 @@ func New(envVars *env.Values) (*app, error) {
 	// Start store module
 	store.Bootstrap(postgres, redisStorage, httpServer, validator)
 
+	data, _ := json.MarshalIndent(httpServer.App.Routes(), "", "  ")
+
+	fmt.Println(string(data))
+
 	return &app{
 		http:      httpServer,
 		postgres:  postgres,
@@ -81,9 +87,9 @@ func (s *app) Run() {
 	s.http.Start()
 }
 
-func (s *app) Cleanup() error {
+func (s *app) Cleanup(ctx context.Context) error {
 	logger.Info("Cleaning up...")
-	if err := s.http.Cleanup(); err != nil {
+	if err := s.http.Cleanup(ctx); err != nil {
 		return err
 	}
 

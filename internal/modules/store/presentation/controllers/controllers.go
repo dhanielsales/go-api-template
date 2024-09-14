@@ -9,7 +9,7 @@ import (
 func New(service *storeservice.StoreService, httpServer *httputils.HTTPServer, validator *httputils.Validator) {
 	controller := newController(service, httpServer, validator)
 
-	router := httpServer.App.Group("/api/v0/")
+	router := httpServer.App.Group("/api/v0")
 	// Setup middlewares here
 	// EX: router.Use(middleware)
 

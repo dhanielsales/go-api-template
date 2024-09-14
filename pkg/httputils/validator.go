@@ -1,11 +1,10 @@
 package httputils
 
 import (
-	"bytes"
-
 	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
 	"github.com/dhanielsales/go-api-template/pkg/transcriber"
-	"github.com/gofiber/fiber/v2"
+
+	"github.com/labstack/echo/v4"
 )
 
 type (
@@ -33,15 +32,13 @@ func NewValidator(transcrib transcriber.Transcriber) *Validator {
 	}
 }
 
-func (v Validator) DecodeAndValidate(c *fiber.Ctx, target any) error {
+func (v Validator) DecodeAndValidate(c echo.Context, target any) error {
 	if v.transcrib == nil {
 		return apperror.New("transcrib is nil")
 	}
 
-	ctx := c.Context()
-	source := bytes.NewBuffer(c.Body())
-
-	if err := v.transcrib.DecodeAndValidate(ctx, source, target); err != nil {
+	ctx := c.Request().Context()
+	if err := v.transcrib.DecodeAndValidate(ctx, c.Request().Body, target); err != nil {
 		return apperror.FromError(err).WithDescription("invalid validation").WithDetails(err)
 	}
 
