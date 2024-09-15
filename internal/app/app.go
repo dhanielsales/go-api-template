@@ -69,7 +69,6 @@ func New(envVars *env.Values) (*app, error) {
 	store.Bootstrap(postgres, redisStorage, httpServer, validator)
 
 	data, _ := json.MarshalIndent(httpServer.App.Routes(), "", "  ")
-
 	fmt.Println(string(data))
 
 	return &app{

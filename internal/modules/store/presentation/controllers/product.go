@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/dhanielsales/go-api-template/internal/modules/store/service"
-	"github.com/labstack/echo/v4"
 
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 )
 
 func setupProductRoutes(r *echo.Group, controller *StoreController) {
