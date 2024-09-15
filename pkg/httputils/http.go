@@ -25,6 +25,7 @@ func New(envValues *env.Values) *HTTPServer {
 	errorHandler := newErrorHandler()
 	app.HTTPErrorHandler = errorHandler.Response
 
+	app.Use(contextMiddleware)
 	app.Use(middleware.Recover())
 	app.Use(middleware.BodyLimit("2M"))
 	app.Use(middleware.Logger())
