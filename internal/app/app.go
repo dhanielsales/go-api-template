@@ -26,10 +26,10 @@ import (
 
 type app struct {
 	http      *httputils.HTTPServer
-	postgres  *postgresstorage.Storage
 	redis     *redisstorage.Storage
-	logger    logger.Logger
+	postgres  *postgresstorage.Storage
 	env       *env.Values
+	logger    logger.Logger
 	transcrib transcriber.Transcriber
 }
 

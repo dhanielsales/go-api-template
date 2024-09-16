@@ -23,14 +23,6 @@ func New(client *redis.Client) (*Storage, error) {
 	}, nil
 }
 
-func NewDefault() (*Storage, error) {
-	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
-	})
-
-	return New(client)
-}
-
 func (s *Storage) Cleanup() error {
 	err := s.Client.Close()
 	if err != nil {
