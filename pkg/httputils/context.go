@@ -3,6 +3,7 @@ package httputils
 import (
 	"context"
 
+	"github.com/dhanielsales/go-api-template/pkg/contextutils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -25,5 +26,5 @@ func (ctx contextValue) Get(key string) any {
 }
 
 func (ctx contextValue) Set(key string, val any) {
-	ctx.SetRequest(ctx.Request().WithContext(context.WithValue(ctx.Request().Context(), key, val)))
+	ctx.SetRequest(ctx.Request().WithContext(context.WithValue(ctx.Request().Context(), contextutils.ContextKey(key), val)))
 }

@@ -1,8 +1,6 @@
 package httputils
 
 import (
-	"fmt"
-
 	"github.com/dhanielsales/go-api-template/pkg/conversational"
 	"github.com/dhanielsales/go-api-template/pkg/logger"
 	"github.com/labstack/echo/v4"
@@ -69,7 +67,6 @@ func (h HTTPErrorHandler) Response(err error, c echo.Context) {
 		return
 	} else {
 		currErr := apperror.FromError(err)
-		fmt.Println("currErr", currErr.Error())
 		logger.Error(
 			currErr.Error(),
 			logger.LogString("cid", cid),
