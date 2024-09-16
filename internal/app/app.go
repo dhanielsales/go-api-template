@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -81,9 +82,9 @@ func (s *app) Run() {
 	s.http.Start()
 }
 
-func (s *app) Cleanup() error {
+func (s *app) Cleanup(ctx context.Context) error {
 	logger.Info("Cleaning up...")
-	if err := s.http.Cleanup(); err != nil {
+	if err := s.http.Cleanup(ctx); err != nil {
 		return err
 	}
 

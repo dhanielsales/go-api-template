@@ -55,6 +55,7 @@ linters-settings:
     ignore-decls:
       - "c *gin.Context"
       - "c *fiber.Ctx"
+      - "c echo.Context"
       - "rw http.ResponseWriter"
       - "wg sync.WaitGroup"
       - "wg *sync.WaitGroup"

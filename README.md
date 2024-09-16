@@ -38,7 +38,7 @@ https://railway.app/pricing
 - [x] refactor log
 - [x] Add observability
 - [x] Add conversational id to logs
-- [ ] Add CI/CD
+- [x] Add CI/CD
+- [x] Change Http layer for echo
 - [ ] Add tests
-- [ ] Change Http layer for echo, gin or fuego
 - [ ] Add simple auth using package and an interface to able to setup your own auth or keyclock
