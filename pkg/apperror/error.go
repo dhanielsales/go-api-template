@@ -35,6 +35,15 @@ func (e *AppError) Unwrap() error {
 	return e.err
 }
 
+func (e *AppError) StatusCode() int {
+	if e.status == 0 {
+		e.Level = Error
+		return http.StatusInternalServerError
+	}
+
+	return e.status
+}
+
 func New(description string) *AppError {
 	return &AppError{
 		Name:        http.StatusText(http.StatusInternalServerError),
@@ -58,21 +67,6 @@ func FromError(err error) *AppError {
 
 func (e *AppError) WithDetails(value any) *AppError {
 	e.Details = value
-
-	return e
-}
-
-func (e *AppError) StatusCode() int {
-	if e.status == 0 {
-		e.Level = Error
-		return http.StatusInternalServerError
-	}
-
-	return e.status
-}
-
-func (e *AppError) WithError(err error) *AppError {
-	e.err = err
 
 	return e
 }

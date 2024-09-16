@@ -1,29 +1,27 @@
 package env
 
 import (
-	"log"
-	"os"
-	"reflect"
-	"strconv"
 	"sync"
+
+	"github.com/dhanielsales/go-api-template/pkg/envvalues"
 )
 
 type Values struct {
-	ENV               string `env:"ENV"`
-	APP_NAME          string `env:"APP_NAME"`
-	HTTP_ADDRESS      string `env:"HTTP_ADDRESS"`
-	HTTP_PORT         string `env:"HTTP_PORT"`
-	HTTP_ALLOW_ORIGIN string `env:"HTTP_ALLOW_ORIGIN"`
-	POSTGRES_URL      string `env:"POSTGRES_URL"`
-	REDIS_URL         string `env:"REDIS_URL"`
+	ENV               string `env:"ENV" default:"development"`
+	APP_NAME          string `env:"APP_NAME" default:"go-api-template"`
+	HTTP_ADDRESS      string `env:"HTTP_ADDRESS" default:"localhost"`
+	HTTP_PORT         string `env:"HTTP_PORT" default:"8080"`
+	HTTP_ALLOW_ORIGIN string `env:"HTTP_ALLOW_ORIGIN" default:"*"`
+	POSTGRES_URL      string `env:"POSTGRES_URL" default:"postgres://postgres:postgres@localhost:5432/main?sslmode=disable"`
+	REDIS_URL         string `env:"REDIS_URL" default:"redis://default:password@localhost:6379/0"`
 
-	KAFKA_BROKER                   string `env:"KAFKA_BROKER"`
-	KAFKA_SSL                      bool   `env:"KAFKA_SSL"`
-	KAFKA_USERNAME                 string `env:"KAFKA_USERNAME"`
-	KAFKA_PASSWORD                 string `env:"KAFKA_PASSWORD"`
-	KAFKA_GROUP_ID                 string `env:"KAFKA_GROUP_ID"`
-	KAFKA_CLIENT_ID                string `env:"KAFKA_CLIENT_ID"`
-	KAFKA_NOTIFICATION_ERROR_EMAIL string `env:"KAFKA_NOTIFICATION_ERROR_EMAIL"`
+	KAFKA_BROKER                   string `env:"KAFKA_BROKER" default:""`
+	KAFKA_SSL                      bool   `env:"KAFKA_SSL" default:"false"`
+	KAFKA_USERNAME                 string `env:"KAFKA_USERNAME" default:""`
+	KAFKA_PASSWORD                 string `env:"KAFKA_PASSWORD" default:""`
+	KAFKA_GROUP_ID                 string `env:"KAFKA_GROUP_ID" default:""`
+	KAFKA_CLIENT_ID                string `env:"KAFKA_CLIENT_ID" default:""`
+	KAFKA_NOTIFICATION_ERROR_EMAIL string `env:"KAFKA_NOTIFICATION_ERROR_EMAIL" default:"aaaaaa"`
 }
 
 var (
@@ -35,49 +33,9 @@ var (
 func GetInstance() *Values {
 	if instance == nil {
 		once.Do(func() {
-			instance = load()
+			instance = envvalues.Load[Values]()
 		})
 	}
 
 	return instance
-}
-
-func load() *Values {
-	var configStruct Values
-
-	config := reflect.Indirect(reflect.ValueOf(&configStruct))
-	for i := range config.NumField() {
-		envVar := config.Type().Field(i).Tag.Get("env")
-
-		if envVar == "" {
-			log.Panic("'env' tag not found in struct")
-		}
-
-		field := config.Field(i)
-		valueOnEnv := os.Getenv(envVar)
-		if valueOnEnv == "" {
-			log.Panicf("Env var '%s' not found", envVar)
-		}
-
-		switch field.Kind() {
-		case reflect.Bool:
-			value, err := strconv.ParseBool(valueOnEnv)
-			if err != nil {
-				log.Panicf("Error on parse bool env var '%s': %s", envVar, err.Error())
-			}
-			config.Field(i).SetBool(value)
-		case reflect.Int:
-			value, err := strconv.Atoi(valueOnEnv)
-			if err != nil {
-				log.Panicf("Error on parse int env var '%s': %s", envVar, err.Error())
-			}
-			config.Field(i).SetInt(int64(value))
-		case reflect.String:
-			config.Field(i).SetString(valueOnEnv)
-		default:
-			log.Panicf("Type '%s' not supported", field.Kind())
-		}
-	}
-
-	return &configStruct
 }
