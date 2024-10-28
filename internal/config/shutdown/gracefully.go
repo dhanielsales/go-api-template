@@ -2,6 +2,7 @@ package shutdown
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,21 +11,30 @@ import (
 )
 
 type Starter interface {
-	Run()
+	Run(ctx context.Context) error
 	Cleanup(ctx context.Context) error
 }
 
-func StartGracefully(s Starter) {
-	ctx := context.Background()
-	quit := make(chan os.Signal, 1)
-	defer close(quit)
+// SetupGracefully it's a helper to run the [Starter] that was been passed by parameters and ensure they will be stoped gracefully.
+func SetupGracefully(ctx context.Context, starter Starter) error {
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	defer cancel()
 
-	go s.Run()
-
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
-	<-quit
-
-	if err := s.Cleanup(ctx); err != nil {
-		logger.Error("error on cleanup app", logger.LogErr("err", err))
+	if err := starter.Run(ctx); err != nil {
+		logger.Error("error on run app", logger.LogErr("err", err))
+		return fmt.Errorf("error on run app: %w", err)
 	}
+
+	select {
+	case <-ctx.Done():
+		cause := context.Cause(ctx)
+		logger.Info("stopping the service", logger.LogErr("cause", cause))
+	}
+
+	if err := starter.Cleanup(ctx); err != nil {
+		logger.Error("error on cleanup app", logger.LogErr("err", err))
+		return fmt.Errorf("error on cleanup app: %w", err)
+	}
+
+	return nil
 }

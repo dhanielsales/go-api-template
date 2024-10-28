@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/lib/pq"
 )
@@ -19,7 +20,7 @@ func New(client *sql.DB) *Storage {
 func (s *Storage) Cleanup() error {
 	err := s.Client.Close()
 	if err != nil {
-		return err
+		return fmt.Errorf("error closing postgress connection: %w", err)
 	}
 
 	return nil

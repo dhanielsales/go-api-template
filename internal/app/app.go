@@ -77,9 +77,13 @@ func New(envVars *env.Values) (*app, error) {
 	}, nil
 }
 
-func (s *app) Run() {
+func (s *app) Run(_ context.Context) error {
 	logger.Info("Starting...")
-	s.http.Start()
+	if err := s.http.Start(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *app) Cleanup(ctx context.Context) error {

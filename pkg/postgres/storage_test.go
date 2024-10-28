@@ -62,5 +62,5 @@ func TestStorageCleanupError(t *testing.T) {
 
 	err = s.Cleanup()
 	assert.Error(t, err)
-	assert.EqualError(t, err, "Error on close")
+	assert.EqualError(t, err, "error closing postgress connection: Error on close")
 }

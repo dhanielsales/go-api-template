@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -26,7 +27,7 @@ func New(client *redis.Client) (*Storage, error) {
 func (s *Storage) Cleanup() error {
 	err := s.Client.Close()
 	if err != nil {
-		return err
+		return fmt.Errorf("error closing redis connection: %w", err)
 	}
 
 	return nil

@@ -20,3 +20,6 @@ dist/
 
 # Temporary files
 tmp/
+
+# Version
+.tool-versions

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"runtime/debug"
@@ -26,7 +27,7 @@ func mainRecover() {
 // @contact.name Dhaniel Sales
 // @BasePath /
 func main() {
-	// setup exit code for graceful shutdown
+	// setup exit code and defer functions
 	var exitCode int
 	defer func() {
 		fmt.Printf("exiting with code %d\n", exitCode)
@@ -34,8 +35,9 @@ func main() {
 	}()
 	defer mainRecover()
 
-	// load config
+	// load config and start context
 	envVars := env.GetInstance()
+	ctx := context.Background()
 
 	// Create new service
 	srv, err := app.New(envVars)
@@ -45,6 +47,10 @@ func main() {
 		return
 	}
 
-	// Start and ensuring the server is shutdown gracefully & app runs
-	shutdown.StartGracefully(srv)
+	// Start and ensuring the server is shutdown gracefully
+	if err := shutdown.SetupGracefully(ctx, srv); err != nil {
+		fmt.Printf("error on the service: %v", err)
+		exitCode = 1
+		return
+	}
 }

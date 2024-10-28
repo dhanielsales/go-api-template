@@ -81,15 +81,19 @@ func TestLoad(t *testing.T) {
 		tt.Parallel()
 
 		type values struct {
-			String string `env:"string" default:"string"`
-			Bool   bool   `env:"bool" default:"true"`
-			Int    int    `env:"int" default:"12"`
+			String   string   `env:"string" default:"string"`
+			Strings  []string `env:"strings" default:"1;2;3"`
+			Strings2 []string `env:"strings" default:"1 2 3" delimiter:" "`
+			Bool     bool     `env:"bool" default:"true"`
+			Int      int      `env:"int" default:"12"`
 		}
 
 		expected := &values{
-			String: "string",
-			Bool:   true,
-			Int:    12,
+			String:   "string",
+			Strings:  []string{"1", "2", "3"},
+			Strings2: []string{"1", "2", "3"},
+			Bool:     true,
+			Int:      12,
 		}
 		result := envvalues.Load[values]()
 

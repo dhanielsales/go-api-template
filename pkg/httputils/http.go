@@ -2,6 +2,7 @@ package httputils
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/dhanielsales/go-api-template/internal/config/env"
@@ -32,7 +33,7 @@ func New(envValues *env.Values) *HTTPServer {
 	app.Use(middleware.Logger())
 
 	app.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		// AllowOrigins: []string{}, // envValues.HTTP_ALLOW_ORIGIN
+		AllowOrigins: envValues.HTTP_ALLOW_ORIGIN,
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, conversational.CID_HEADER_KEY},
 	}))
 
@@ -61,10 +62,18 @@ func New(envValues *env.Values) *HTTPServer {
 	}
 }
 
-func (h *HTTPServer) Start() {
-	_ = h.App.Start(":" + h.port)
+func (h *HTTPServer) Start() error {
+	if err := h.App.Start(":" + h.port); err != nil {
+		return fmt.Errorf("error starting http server: %w", err)
+	}
+
+	return nil
 }
 
 func (h *HTTPServer) Cleanup(ctx context.Context) error {
-	return h.App.Shutdown(ctx)
+	if err := h.App.Shutdown(ctx); err != nil {
+		return fmt.Errorf("error closing http server: %w", err)
+	}
+
+	return nil
 }
