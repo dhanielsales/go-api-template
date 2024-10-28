@@ -28,7 +28,7 @@ var (
 func GetInstance() Logger {
 	if instance == nil {
 		once.Do(func() {
-			instance = NewStdoutLogger(slog.LevelDebug)
+			instance = NewStdoutLogger(slog.LevelDebug) // TODO add support to LOG_LEVEL. Consider logrus
 		})
 	}
 

@@ -22,11 +22,13 @@ type HTTPServer struct {
 
 func New(envValues *env.Values) *HTTPServer {
 	app := echo.New()
+	app.HideBanner = true
+	app.HidePort = true
 
 	errorHandler := newErrorHandler()
 	app.HTTPErrorHandler = errorHandler.Response
 
-	app.Pre(middleware.AddTrailingSlash()) // Needs to be Pre
+	app.Pre(middleware.AddTrailingSlash()) // Needs to be Pre()
 	app.Use(contextMiddleware)
 	app.Use(middleware.Recover())
 	app.Use(middleware.BodyLimit("2M"))

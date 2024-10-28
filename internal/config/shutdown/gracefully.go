@@ -20,10 +20,7 @@ func SetupGracefully(ctx context.Context, starter Starter) error {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	defer cancel()
 
-	if err := starter.Run(ctx); err != nil {
-		logger.Error("error on run app", logger.LogErr("err", err))
-		return fmt.Errorf("error on run app: %w", err)
-	}
+	go starter.Run(ctx)
 
 	select {
 	case <-ctx.Done():

@@ -8,6 +8,7 @@ import (
 
 type Values struct {
 	ENV               string   `env:"ENV" default:"development"`
+	LOG_LEVEL         string   `env:"LOG_LEVEL" default:"debug"`
 	APP_NAME          string   `env:"APP_NAME" default:"go-api-template"`
 	HTTP_ADDRESS      string   `env:"HTTP_ADDRESS" default:"localhost"`
 	HTTP_PORT         string   `env:"HTTP_PORT" default:"8080"`
@@ -21,7 +22,7 @@ type Values struct {
 	KAFKA_PASSWORD                 string `env:"KAFKA_PASSWORD" default:""`
 	KAFKA_GROUP_ID                 string `env:"KAFKA_GROUP_ID" default:""`
 	KAFKA_CLIENT_ID                string `env:"KAFKA_CLIENT_ID" default:""`
-	KAFKA_NOTIFICATION_ERROR_EMAIL string `env:"KAFKA_NOTIFICATION_ERROR_EMAIL" default:"aaaaaa"`
+	KAFKA_NOTIFICATION_ERROR_EMAIL string `env:"KAFKA_NOTIFICATION_ERROR_EMAIL" default:""`
 }
 
 var (

@@ -11,6 +11,11 @@ tasks:
   dev:
     desc: Run development server
     cmds:
+      - go run cmd/go-api-template/main.go
+
+  dev-watch:
+    desc: Run development server
+    cmds:
       - air
 
   docs:
@@ -66,17 +71,18 @@ tasks:
   setup-tools:
     desc: Install tools
     cmds:
-      - go get -u github.com/swaggo/swag
-      - go install github.com/cosmtrek/air@latest
+      - go get -u github.com/swaggo/swag@latest
+      - go install github.com/air-verse/air@latest
       - go install github.com/go-task/task/v3/cmd/task@latest
       - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
       - go install go.uber.org/mock/mockgen@latest
-        go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-      - npm i -g json-graphql-server
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
   setup-infra:
     desc: Create infrastructure
     cmds:
+      - cmd: docker network create app-network
+        ignore_error: true
       - docker run --name '{{.POSTGRES_CONTAINER_NAME}}' --network=app-network -e "POSTGRES_USER=postgres" -e "POSTGRES_PASSWORD=postgres" -e "POSTGRES_DB=main" -d -p 5432:5432 postgres
       - docker run --name '{{.REDISDB_CONTAINER_NAME}}' -d -p 6379:6379 redis redis-server --requirepass "password"
 

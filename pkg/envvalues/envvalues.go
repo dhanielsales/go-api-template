@@ -53,21 +53,21 @@ func Load[Values any]() *Values {
 		valueOnEnv := os.Getenv(envVar)
 		if valueOnEnv == "" {
 			valueOnEnv = field.Tag.Get(DEFAULT_VALUE_TAG)
-			logger.Debug("Env var not found, using default value", logger.LogString("envVar", envVar), logger.LogString("default", valueOnEnv))
+			logger.Debug("env var not found, using default value", logger.LogString("envVar", envVar), logger.LogString("default", valueOnEnv))
 		}
 
 		switch fieldValue.Kind() {
 		case reflect.Bool:
 			value, err := strconv.ParseBool(valueOnEnv)
 			if err != nil {
-				logger.Error("Error on parse bool env var", logger.LogString("envVar", envVar), logger.LogErr("err", err))
+				logger.Error("error on parse bool env var", logger.LogString("envVar", envVar), logger.LogErr("err", err))
 				continue
 			}
 			fieldValue.SetBool(value)
 		case reflect.Int:
 			value, err := strconv.Atoi(valueOnEnv)
 			if err != nil {
-				logger.Error("Error on parse int env var", logger.LogString("envVar", envVar), logger.LogErr("err", err))
+				logger.Error("error on parse int env var", logger.LogString("envVar", envVar), logger.LogErr("err", err))
 				continue
 			}
 			fieldValue.SetInt(int64(value))
@@ -87,7 +87,7 @@ func Load[Values any]() *Values {
 
 			fieldValue.Set(slice)
 		default:
-			logger.Error("Type not supported", logger.LogAny("kind", fieldValue.Kind()))
+			logger.Error("type not supported, skiping field", logger.LogAny("kind", fieldValue.Kind()))
 		}
 	}
 

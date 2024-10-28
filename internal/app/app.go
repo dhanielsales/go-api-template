@@ -41,6 +41,7 @@ func New(envVars *env.Values) (*app, error) {
 	}
 
 	postgres := postgresstorage.New(postgresDB)
+	logger.Info("postgres connection stablished")
 
 	// init the Redis storage
 	opts, err := goredis.ParseURL(envVars.REDIS_URL)
@@ -53,6 +54,7 @@ func New(envVars *env.Values) (*app, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error opening redis connection: %w", err)
 	}
+	logger.Info("redis connection stablished")
 
 	// init logger
 	loggerInstance := logger.GetInstance()
@@ -77,9 +79,9 @@ func New(envVars *env.Values) (*app, error) {
 	}, nil
 }
 
-func (s *app) Run(_ context.Context) error {
-	logger.Info("Starting...")
-	if err := s.http.Start(); err != nil {
+func (a *app) Run(_ context.Context) error {
+	logger.Info(fmt.Sprintf("http server start at %s port", a.env.HTTP_PORT))
+	if err := a.http.Start(); err != nil {
 		return err
 	}
 
@@ -87,7 +89,7 @@ func (s *app) Run(_ context.Context) error {
 }
 
 func (s *app) Cleanup(ctx context.Context) error {
-	logger.Info("Cleaning up...")
+	logger.Info("cleaning up...")
 	if err := s.http.Cleanup(ctx); err != nil {
 		return err
 	}
