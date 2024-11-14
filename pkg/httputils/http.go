@@ -14,12 +14,15 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+// HTTPServer represents the HTTP server configuration and lifecycle management
+// for the application, built using the Echo framework.
 type HTTPServer struct {
 	App          *echo.Echo
 	port         string
 	ErrorHandler *HTTPErrorHandler
 }
 
+// New creates and configures a new HTTPServer instance with the provided environment values.
 func New(envValues *env.Values) *HTTPServer {
 	app := echo.New()
 	app.HideBanner = true
@@ -64,6 +67,7 @@ func New(envValues *env.Values) *HTTPServer {
 	}
 }
 
+// Start begins the HTTP server and listens on the configured port.
 func (h *HTTPServer) Start() error {
 	if err := h.App.Start(":" + h.port); err != nil {
 		return fmt.Errorf("error starting http server: %w", err)
@@ -72,6 +76,7 @@ func (h *HTTPServer) Start() error {
 	return nil
 }
 
+// Cleanup shuts down the HTTP server gracefully.
 func (h *HTTPServer) Cleanup(ctx context.Context) error {
 	if err := h.App.Shutdown(ctx); err != nil {
 		return fmt.Errorf("error closing http server: %w", err)

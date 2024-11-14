@@ -8,12 +8,15 @@ import (
 	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
 )
 
+// HTTPErrorHandler is responsible for handling errors and formatting responses in a standardized way across the application.
 type HTTPErrorHandler struct{}
 
 func newErrorHandler() *HTTPErrorHandler {
 	return &HTTPErrorHandler{}
 }
 
+// Response handles the error response by logging the error and formatting
+// the response to the client based on the type of error (generic error, Echo error, AppError).
 func (h HTTPErrorHandler) Response(err error, c echo.Context) {
 	meta := getMeta(c)
 	cid := conversational.GetCIDFromContext(c.Request().Context())

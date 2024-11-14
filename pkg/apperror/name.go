@@ -2,19 +2,22 @@ package apperror
 
 import "net/http"
 
+// ErrorName represents different types of errors in the application.
 type ErrorName uint8
 
+// Constants for different error names.
 const unknown = "unknown"
 
 const (
-	InternalServerError ErrorName = iota
-	UnauthorizedError
-	NotFoundError
-	BadRequestError
-	UnprocessableEntityError
-	ForbiddenRequestError
+	InternalServerError      ErrorName = iota // Represents internal server errors (500).
+	UnauthorizedError                         // Represents unauthorized errors (401).
+	NotFoundError                             // Represents not found errors (404).
+	BadRequestError                           // Represents bad request errors (400).
+	UnprocessableEntityError                  // Represents unprocessable entity errors (422).
+	ForbiddenRequestError                     // Represents forbidden request errors (403).
 )
 
+// String returns a string representation of the ErrorName.
 func (n ErrorName) String() string {
 	switch n {
 	case InternalServerError:
@@ -34,6 +37,7 @@ func (n ErrorName) String() string {
 	return unknown
 }
 
+// Status returns the HTTP status code corresponding to the ErrorName.
 func (n ErrorName) Status() int {
 	switch n {
 	case InternalServerError:
@@ -49,9 +53,10 @@ func (n ErrorName) Status() int {
 	case ForbiddenRequestError:
 		return http.StatusForbidden
 	}
-	return 500
+	return http.StatusInternalServerError
 }
 
+// Level returns the error level corresponding to the ErrorName.
 func (n ErrorName) Level() ErrorLevel {
 	switch n {
 	case InternalServerError:

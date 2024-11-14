@@ -10,9 +10,10 @@ import (
 	"github.com/dhanielsales/go-api-template/pkg/logger"
 )
 
+// Starter interface defines the methods required for a component to be started and cleaned up gracefully.
 type Starter interface {
-	Run(ctx context.Context) error
-	Cleanup(ctx context.Context) error
+	Run(ctx context.Context) error     // Run starts the component and processes in the background.
+	Cleanup(ctx context.Context) error // Cleanup shuts down the component gracefully.
 }
 
 // SetupGracefully it's a helper to run the [Starter] that was been passed by parameters and ensure they will be stoped gracefully.

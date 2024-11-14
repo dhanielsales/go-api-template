@@ -7,11 +7,18 @@ import (
 	"strconv"
 )
 
+// PaginationResult represents pagination parameters with limit and offset values.
 type PaginationResult struct {
 	Limit  int32
 	Offset int32
 }
 
+const (
+	DESC = "DESC" // Descending order.
+	ASC  = "ASC"  // Ascending order.
+)
+
+// Pagination calculates and returns the pagination limit and offset based on the page and perPage parameters.
 func Pagination(page, perPage string) PaginationResult {
 	currentPage, err := strconv.Atoi(page)
 	if err != nil {
@@ -45,11 +52,7 @@ func Pagination(page, perPage string) PaginationResult {
 	return PaginationResult{Limit: int32(limit), Offset: int32(offset)}
 }
 
-const (
-	DESC = "DESC"
-	ASC  = "ASC"
-)
-
+// Sorting constructs an SQL sorting clause for the specified field and direction.
 func Sorting(field, direction string) string {
 	var orderBy string
 
@@ -70,6 +73,7 @@ func Sorting(field, direction string) string {
 	return orderBy
 }
 
+// CallTx manages a database transaction, handling commit or rollback based on the function's success.
 func CallTx[R any](ctx context.Context, db *sql.DB, f func(q *sql.Tx) (R, error)) (R, error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {

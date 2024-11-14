@@ -19,15 +19,13 @@ var (
 )
 
 const (
-	fieldTag      = "json"
-	validationTag = "validate"
-
-	nullValue        = "null"
-	emptyObjectValue = "{}"
-	objectValue      = "<object>"
-	arrayValue       = "<array>"
-
-	ErrUnexpectedPanic = "validator: unexpected panic occurred: %v"
+	fieldTag           = "json"                                     // Struct tag for JSON field names.
+	validationTag      = "validate"                                 // Struct tag for validation rules.
+	nullValue          = "null"                                     // String representation for null values.
+	emptyObjectValue   = "{}"                                       // String representation for empty objects.
+	objectValue        = "<object>"                                 // Placeholder for object types.
+	arrayValue         = "<array>"                                  // Placeholder for array types.
+	ErrUnexpectedPanic = "validator: unexpected panic occurred: %v" // Error message for unexpected panics.
 )
 
 // defaultSolver returns a new instance of validatorSolver with the default validator.
@@ -62,12 +60,14 @@ func newValidatorSolver(validate *validator.Validate) *validatorSolver {
 	}
 }
 
+// validatorSolver is a custom struct validator that provides structured error handling for invalid fields.
 type validatorSolver struct {
 	v             *validator.Validate
 	fieldTag      string
 	validationTag string
 }
 
+// Validate performs validation on the provided value and returns detailed error information if validation fails.
 func (v *validatorSolver) Validate(ctx context.Context, val any) (err error) {
 	if val == nil {
 		return nil
@@ -111,6 +111,7 @@ func (v *validatorSolver) Validate(ctx context.Context, val any) (err error) {
 	return err
 }
 
+// getFieldKey retrieves the JSON field key for an invalid field from the validation error.
 func (v *validatorSolver) getFieldKey(fieldErr validator.FieldError) string {
 	namespaceSlice := strings.Split(fieldErr.Namespace(), ".")
 	if len(namespaceSlice) == 1 {
@@ -120,6 +121,7 @@ func (v *validatorSolver) getFieldKey(fieldErr validator.FieldError) string {
 	return strings.Join(namespaceSlice[1:], ".")
 }
 
+// formatExpectation formats the validation rule applied to an invalid field.
 func (v *validatorSolver) formatExpectation(fieldErr validator.FieldError) string {
 	if fieldErr.Param() != "" {
 		return fieldErr.Tag() + "=" + fieldErr.Param()
@@ -128,6 +130,7 @@ func (v *validatorSolver) formatExpectation(fieldErr validator.FieldError) strin
 	return fieldErr.Tag()
 }
 
+// formatValue formats the actual value of an invalid field for error reporting.
 func (v *validatorSolver) formatValue(fieldErr validator.FieldError) string {
 	//nolint:exhaustive // No need to check every possible kind
 	switch fieldErr.Kind() {

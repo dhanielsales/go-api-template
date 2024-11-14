@@ -41,4 +41,5 @@ https://railway.app/pricing
 - [x] Add CI/CD
 - [x] Change Http layer for echo
 - [ ] Add tests
+- [ ] Refact logger using logruss
 - [ ] Add simple auth using package and an interface to able to setup your own auth or keyclock
