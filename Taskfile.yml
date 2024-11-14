@@ -21,12 +21,12 @@ tasks:
   docs:
     desc: Generate swagger docs
     cmds:
-      - swag init --parseDependency --dir  ./cmd/service,./internal/modules
+      - swag init --parseDependency --dir  ./cmd/go-api-template,./internal/modules
 
   build:
     desc: Build binary
     cmds:
-      - go build -o 'dist/{{.APP_NAME}}' cmd/service/main.go
+      - go build -o 'dist/{{.APP_NAME}}' cmd/go-api-template/main.go
 
   lint:
     desc: Run linting
