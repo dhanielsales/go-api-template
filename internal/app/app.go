@@ -15,8 +15,8 @@ import (
 	"github.com/dhanielsales/go-api-template/pkg/logger"
 	"github.com/dhanielsales/go-api-template/pkg/transcriber"
 
-	postgresstorage "github.com/dhanielsales/go-api-template/pkg/postgres"
-	redisstorage "github.com/dhanielsales/go-api-template/pkg/redis"
+	redisstorage "github.com/dhanielsales/go-api-template/pkg/redisutils"
+	"github.com/dhanielsales/go-api-template/pkg/sqlutils"
 
 	// Modules
 	"github.com/dhanielsales/go-api-template/internal/modules/store"
@@ -27,7 +27,7 @@ import (
 type app struct {
 	http      *httputils.HTTPServer
 	redis     *redisstorage.Storage
-	postgres  *postgresstorage.Storage
+	sql       *sqlutils.Storage
 	env       *env.Values
 	logger    logger.Logger
 	transcrib transcriber.Transcriber
@@ -40,7 +40,7 @@ func New(envVars *env.Values) (*app, error) {
 		return nil, fmt.Errorf("error opening postgres connection: %w", err)
 	}
 
-	postgres := postgresstorage.New(postgresDB)
+	sql := sqlutils.New(postgresDB)
 	logger.Info("postgres connection stablished")
 
 	// init the Redis storage
@@ -67,11 +67,11 @@ func New(envVars *env.Values) (*app, error) {
 	validator := httputils.NewValidator(transcrib)
 
 	// Start store module
-	store.Bootstrap(postgres, redisStorage, httpServer, validator)
+	store.Bootstrap(sql, redisStorage, httpServer, validator)
 
 	return &app{
 		http:      httpServer,
-		postgres:  postgres,
+		sql:       sql,
 		redis:     redisStorage,
 		logger:    loggerInstance,
 		transcrib: transcrib,
@@ -94,7 +94,7 @@ func (s *app) Cleanup(ctx context.Context) error {
 		return err
 	}
 
-	if err := s.postgres.Cleanup(); err != nil {
+	if err := s.sql.Cleanup(); err != nil {
 		return err
 	}
 

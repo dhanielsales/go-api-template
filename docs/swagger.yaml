@@ -3,9 +3,12 @@ definitions:
   apperror.AppError:
     properties:
       description:
+        description: A description providing more details about the error.
         type: string
-      details: {}
+      details:
+        description: Additional details related to the error.
       name:
+        description: The name of the error.
         type: string
     type: object
   models.Category:
@@ -46,7 +49,7 @@ definitions:
       updated_at:
         type: integer
     type: object
-  store_presentation_controllers.createCategoryRequest:
+  store_presentation_controllers_category.CreateCategoryRequest:
     properties:
       description:
         maxLength: 300
@@ -59,7 +62,20 @@ definitions:
     required:
     - name
     type: object
-  store_presentation_controllers.createProductRequest:
+  store_presentation_controllers_category.UpdateCategoryRequest:
+    properties:
+      description:
+        maxLength: 300
+        minLength: 1
+        type: string
+      name:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  store_presentation_controllers_product.CreateProductRequest:
     properties:
       category_id:
         type: string
@@ -79,20 +95,7 @@ definitions:
     - name
     - price
     type: object
-  store_presentation_controllers.updateCategoryRequest:
-    properties:
-      description:
-        maxLength: 300
-        minLength: 1
-        type: string
-      name:
-        maxLength: 50
-        minLength: 1
-        type: string
-    required:
-    - name
-    type: object
-  store_presentation_controllers.updateProductRequest:
+  store_presentation_controllers_product.UpdateProductRequest:
     properties:
       description:
         maxLength: 300
@@ -167,7 +170,7 @@ paths:
         name: Category
         required: true
         schema:
-          $ref: '#/definitions/store_presentation_controllers.createCategoryRequest'
+          $ref: '#/definitions/store_presentation_controllers_category.CreateCategoryRequest'
       produces:
       - application/json
       - application/json
@@ -283,7 +286,7 @@ paths:
         name: Category
         required: true
         schema:
-          $ref: '#/definitions/store_presentation_controllers.updateCategoryRequest'
+          $ref: '#/definitions/store_presentation_controllers_category.UpdateCategoryRequest'
       produces:
       - application/json
       - application/json
@@ -358,7 +361,7 @@ paths:
         name: Product
         required: true
         schema:
-          $ref: '#/definitions/store_presentation_controllers.createProductRequest'
+          $ref: '#/definitions/store_presentation_controllers_product.CreateProductRequest'
       produces:
       - application/json
       - application/json
@@ -478,7 +481,7 @@ paths:
         name: Product
         required: true
         schema:
-          $ref: '#/definitions/store_presentation_controllers.updateProductRequest'
+          $ref: '#/definitions/store_presentation_controllers_product.UpdateProductRequest'
       produces:
       - application/json
       - application/json

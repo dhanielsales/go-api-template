@@ -23,7 +23,7 @@ type transcriber struct {
 	solver Solver
 }
 
-var _ Transcriber = &transcriber{}
+var _ Transcriber = (*transcriber)(nil)
 
 // NewTranscriber returns a new instance of Transcriber with the given solver.
 func NewTranscriber(solver Solver) *transcriber {

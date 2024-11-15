@@ -2,17 +2,31 @@ package store
 
 import (
 	"github.com/dhanielsales/go-api-template/pkg/httputils"
-	"github.com/dhanielsales/go-api-template/pkg/postgres"
-	"github.com/dhanielsales/go-api-template/pkg/redis"
+	"github.com/dhanielsales/go-api-template/pkg/redisutils"
+	"github.com/dhanielsales/go-api-template/pkg/sqlutils"
 
-	"github.com/dhanielsales/go-api-template/internal/modules/store/presentation/controllers"
-	storerepository "github.com/dhanielsales/go-api-template/internal/modules/store/repository"
-	storeservice "github.com/dhanielsales/go-api-template/internal/modules/store/service"
+	controllerscategory "github.com/dhanielsales/go-api-template/internal/modules/store/presentation/controllers/category"
+	controllersproduct "github.com/dhanielsales/go-api-template/internal/modules/store/presentation/controllers/product"
+
+	storagescategory "github.com/dhanielsales/go-api-template/internal/modules/store/storages/category"
+	storagesproduct "github.com/dhanielsales/go-api-template/internal/modules/store/storages/product"
+
+	servicecategory "github.com/dhanielsales/go-api-template/internal/modules/store/service/category"
+	serviceproduct "github.com/dhanielsales/go-api-template/internal/modules/store/service/product"
 )
 
-func Bootstrap(postgresStorage *postgres.Storage, redisStorage *redis.Storage, httpServer *httputils.HTTPServer, validator *httputils.Validator) {
-	repository := storerepository.New(postgresStorage, redisStorage)
-	service := storeservice.New(repository)
+func Bootstrap(sqlStorage *sqlutils.Storage, redisStorage *redisutils.Storage, httpServer *httputils.HTTPServer, validator *httputils.Validator) {
+	categoryRepo := storagescategory.NewWithDefaultQueries(sqlStorage, redisStorage)
+	productRepo := storagesproduct.NewWithDefaultQueries(sqlStorage)
 
-	controllers.New(service, httpServer, validator)
+	categoryService := servicecategory.New(categoryRepo)
+	productService := serviceproduct.New(productRepo)
+
+	categoryCtrl := controllerscategory.New(categoryService, validator)
+	productCtrl := controllersproduct.New(productService, validator)
+
+	router := httpServer.App.Group("/api/v0")
+
+	categoryCtrl.SetupRoutes(router)
+	productCtrl.SetupRoutes(router)
 }

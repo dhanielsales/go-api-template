@@ -103,7 +103,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/store_presentation_controllers.createCategoryRequest"
+                            "$ref": "#/definitions/store_presentation_controllers_category.CreateCategoryRequest"
                         }
                     }
                 ],
@@ -219,7 +219,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/store_presentation_controllers.updateCategoryRequest"
+                            "$ref": "#/definitions/store_presentation_controllers_category.UpdateCategoryRequest"
                         }
                     }
                 ],
@@ -387,7 +387,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/store_presentation_controllers.createProductRequest"
+                            "$ref": "#/definitions/store_presentation_controllers_product.CreateProductRequest"
                         }
                     }
                 ],
@@ -509,7 +509,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/store_presentation_controllers.updateProductRequest"
+                            "$ref": "#/definitions/store_presentation_controllers_product.UpdateProductRequest"
                         }
                     }
                 ],
@@ -597,10 +597,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
+                    "description": "A description providing more details about the error.",
                     "type": "string"
                 },
-                "details": {},
+                "details": {
+                    "description": "Additional details related to the error."
+                },
                 "name": {
+                    "description": "The name of the error.",
                     "type": "string"
                 }
             }
@@ -663,7 +667,7 @@ const docTemplate = `{
                 }
             }
         },
-        "store_presentation_controllers.createCategoryRequest": {
+        "store_presentation_controllers_category.CreateCategoryRequest": {
             "type": "object",
             "required": [
                 "name"
@@ -681,7 +685,25 @@ const docTemplate = `{
                 }
             }
         },
-        "store_presentation_controllers.createProductRequest": {
+        "store_presentation_controllers_category.UpdateCategoryRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 300,
+                    "minLength": 1
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                }
+            }
+        },
+        "store_presentation_controllers_product.CreateProductRequest": {
             "type": "object",
             "required": [
                 "category_id",
@@ -708,25 +730,7 @@ const docTemplate = `{
                 }
             }
         },
-        "store_presentation_controllers.updateCategoryRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "maxLength": 300,
-                    "minLength": 1
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 1
-                }
-            }
-        },
-        "store_presentation_controllers.updateProductRequest": {
+        "store_presentation_controllers_product.UpdateProductRequest": {
             "type": "object",
             "required": [
                 "name"

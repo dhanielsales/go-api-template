@@ -1,12 +1,13 @@
 version: "2"
 sql:
   - schema: "internal/config/migrations"
-    queries: "internal/modules/store/repository/postgres/db/queries"
+    queries: "internal/modules/store/storages/gen/queries"
     engine: "postgresql"
     gen:
       go:
         package: "db"
-        out: "internal/modules/store/repository/postgres/gen/"
+        emit_interface: true
+        out: "internal/modules/store/storages/gen/"
         overrides:
           - db_type: "pg_catalog.numeric"
             go_type: "float64"
