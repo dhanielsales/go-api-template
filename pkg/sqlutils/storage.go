@@ -3,8 +3,6 @@ package sqlutils
 import (
 	"database/sql"
 	"fmt"
-
-	_ "github.com/lib/pq"
 )
 
 // Storage encapsulates a SQL database client, providing methods for managing connection cleanup and interacting with the database.

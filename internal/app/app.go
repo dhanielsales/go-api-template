@@ -21,6 +21,7 @@ import (
 	// Modules
 	"github.com/dhanielsales/go-api-template/internal/modules/store"
 
+	_ "github.com/lib/pq"
 	goredis "github.com/redis/go-redis/v9"
 )
 
