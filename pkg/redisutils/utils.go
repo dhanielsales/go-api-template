@@ -19,7 +19,7 @@ const MAX_RETRIES = 5
 var MAX_RETRIES_ERR = errors.New("Max retries reached")
 
 // WithTx executes a Redis transaction with retry logic, allowing for concurrent-safe operations.
-func WithTx(ctx context.Context, client *redis.Client, fn func(pipe redis.Pipeliner) error) error {
+func WithTx(ctx context.Context, client RedisClient, fn func(pipe redis.Pipeliner) error) error {
 	for retries := MAX_RETRIES; retries > 0; retries-- {
 		err := client.Watch(ctx, func(tx *redis.Tx) error {
 			_, err := tx.TxPipelined(ctx, fn)

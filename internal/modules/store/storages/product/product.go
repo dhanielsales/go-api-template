@@ -19,7 +19,7 @@ func New(sql *sqlutils.Storage, storage storages.Storage) *ProductRepository {
 	}
 }
 
-func NewWithDefaultQueries(sql *sqlutils.Storage) *ProductRepository {
+func NewWithDefaultStorage(sql *sqlutils.Storage) *ProductRepository {
 	return New(sql, storages.NewStorage(sql.Client))
 }
 

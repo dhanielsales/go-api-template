@@ -3,17 +3,32 @@ package redisutils
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
 
+//go:generate mockgen -source ./$GOFILE -destination ./mock_$GOFILE -package $GOPACKAGE
+
+// RedisClient defines an interface for interacting with a Redis database.
+// It abstracts common Redis operations to allow flexibility in implementation.
+type RedisClient interface {
+	Del(ctx context.Context, keys ...string) *redis.IntCmd
+	Get(ctx context.Context, key string) *redis.StringCmd
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd
+	Scan(ctx context.Context, cursor uint64, match string, count int64) *redis.ScanCmd
+	Watch(ctx context.Context, fn func(*redis.Tx) error, keys ...string) error
+	Ping(ctx context.Context) *redis.StatusCmd
+	Close() error
+}
+
 // Storage encapsulates a Redis client, providing methods for initialization and cleanup.
 type Storage struct {
-	Client *redis.Client
+	Client RedisClient
 }
 
 // New initializes a new Storage instance with the given Redis client and verifies the connection.
-func New(client *redis.Client) (*Storage, error) {
+func New(client RedisClient) (*Storage, error) {
 	ctx := context.Background()
 	ping := client.Ping(ctx)
 	_, err := ping.Result()

@@ -11,7 +11,7 @@ import (
 type CategoryRepository struct {
 	Postgres *sqlutils.Storage
 	Storage  storages.Storage
-	Redis    *redisutils.Storage // TODO convert to interface to allow mocks to unit tests
+	Redis    *redisutils.Storage
 }
 
 func New(sql *sqlutils.Storage, storage storages.Storage, redis *redisutils.Storage) *CategoryRepository {
@@ -22,7 +22,7 @@ func New(sql *sqlutils.Storage, storage storages.Storage, redis *redisutils.Stor
 	}
 }
 
-func NewWithDefaultQueries(sql *sqlutils.Storage, redis *redisutils.Storage) *CategoryRepository {
+func NewWithDefaultStorage(sql *sqlutils.Storage, redis *redisutils.Storage) *CategoryRepository {
 	return New(sql, storages.NewStorage(sql.Client), redis)
 }
 

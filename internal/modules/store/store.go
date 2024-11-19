@@ -16,8 +16,8 @@ import (
 )
 
 func Bootstrap(sqlStorage *sqlutils.Storage, redisStorage *redisutils.Storage, httpServer *httputils.HTTPServer, validator *httputils.Validator) {
-	categoryRepo := storagescategory.NewWithDefaultQueries(sqlStorage, redisStorage)
-	productRepo := storagesproduct.NewWithDefaultQueries(sqlStorage)
+	categoryRepo := storagescategory.NewWithDefaultStorage(sqlStorage, redisStorage)
+	productRepo := storagesproduct.NewWithDefaultStorage(sqlStorage)
 
 	categoryService := servicecategory.New(categoryRepo)
 	productService := serviceproduct.New(productRepo)

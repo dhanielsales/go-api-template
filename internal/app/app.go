@@ -14,19 +14,19 @@ import (
 	"github.com/dhanielsales/go-api-template/pkg/logger"
 	"github.com/dhanielsales/go-api-template/pkg/transcriber"
 
-	redisstorage "github.com/dhanielsales/go-api-template/pkg/redisutils"
+	"github.com/dhanielsales/go-api-template/pkg/redisutils"
 	"github.com/dhanielsales/go-api-template/pkg/sqlutils"
 	"github.com/dhanielsales/go-api-template/pkg/sqlutils/postgres"
 
 	// Modules
 	"github.com/dhanielsales/go-api-template/internal/modules/store"
 
-	goredis "github.com/redis/go-redis/v9"
+	"github.com/redis/go-redis/v9"
 )
 
 type app struct {
 	http      *httputils.HTTPServer
-	redis     *redisstorage.Storage
+	redis     *redisutils.Storage
 	sql       *sqlutils.Storage
 	env       *env.Values
 	logger    logger.Logger
@@ -44,13 +44,12 @@ func New(envVars *env.Values) (*app, error) {
 	logger.Info("postgres connection stablished")
 
 	// init the Redis storage
-	opts, err := goredis.ParseURL(envVars.REDIS_URL)
+	opts, err := redis.ParseURL(envVars.REDIS_URL)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing redis url: %w", err)
 	}
 
-	redisClient := goredis.NewClient(opts)
-	redisStorage, err := redisstorage.New(redisClient)
+	redisStorage, err := redisutils.New(redis.NewClient(opts))
 	if err != nil {
 		return nil, fmt.Errorf("error opening redis connection: %w", err)
 	}
