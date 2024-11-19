@@ -14,7 +14,7 @@ import (
 )
 
 func (s *service) GetProductByID(ctx context.Context, id uuid.UUID) (*models.Product, error) {
-	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx *sql.Tx) (*models.Product, error) {
+	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx sqlutils.SQLTX) (*models.Product, error) {
 		queries := s.repository.WithTx(tx)
 
 		product, err := queries.GetProductByID(ctx, id)

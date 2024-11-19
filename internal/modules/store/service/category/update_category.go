@@ -2,7 +2,6 @@ package category
 
 import (
 	"context"
-	"database/sql"
 	"net/http"
 
 	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
@@ -17,7 +16,7 @@ type UpdateCategoryPayload struct {
 }
 
 func (s *service) UpdateCategory(ctx context.Context, id uuid.UUID, data UpdateCategoryPayload) (int64, error) {
-	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx *sql.Tx) (int64, error) {
+	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx sqlutils.SQLTX) (int64, error) {
 		queries := s.repository.WithTx(tx)
 
 		category, err := queries.GetCategoryByID(ctx, id)

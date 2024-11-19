@@ -2,7 +2,6 @@ package sqlutils
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"strconv"
 )
@@ -74,7 +73,7 @@ func Sorting(field, direction string) string {
 }
 
 // WithTx manages a database transaction, handling commit or rollback based on the function's success.
-func WithTx[R any](ctx context.Context, db *sql.DB, f func(q *sql.Tx) (R, error)) (R, error) {
+func WithTx[R any](ctx context.Context, db SQLDB, f func(q SQLTX) (R, error)) (R, error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return *new(R), err

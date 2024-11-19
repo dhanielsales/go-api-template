@@ -26,8 +26,8 @@ type CreateCategoryParams struct {
 	CreatedAt   int64
 }
 
-func (q *Queries) CreateCategory(ctx context.Context, arg CreateCategoryParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createCategory,
+func (q *Queries) CreateCategory(ctx context.Context, db DBTX, arg CreateCategoryParams) (sql.Result, error) {
+	return db.ExecContext(ctx, createCategory,
 		arg.ID,
 		arg.Name,
 		arg.Slug,
@@ -42,8 +42,8 @@ DELETE
 	WHERE id = $1
 `
 
-func (q *Queries) DeleteCategory(ctx context.Context, id uuid.UUID) (sql.Result, error) {
-	return q.db.ExecContext(ctx, deleteCategory, id)
+func (q *Queries) DeleteCategory(ctx context.Context, db DBTX, id uuid.UUID) (sql.Result, error) {
+	return db.ExecContext(ctx, deleteCategory, id)
 }
 
 const getCategoryById = `-- name: GetCategoryById :one
@@ -52,8 +52,8 @@ SELECT id, name, slug, description, created_at, updated_at
 	WHERE id = $1
 `
 
-func (q *Queries) GetCategoryById(ctx context.Context, id uuid.UUID) (Category, error) {
-	row := q.db.QueryRowContext(ctx, getCategoryById, id)
+func (q *Queries) GetCategoryById(ctx context.Context, db DBTX, id uuid.UUID) (Category, error) {
+	row := db.QueryRowContext(ctx, getCategoryById, id)
 	var i Category
 	err := row.Scan(
 		&i.ID,
@@ -80,8 +80,8 @@ type GetManyCategoryParams struct {
 	Limit   int32
 }
 
-func (q *Queries) GetManyCategory(ctx context.Context, arg GetManyCategoryParams) ([]Category, error) {
-	rows, err := q.db.QueryContext(ctx, getManyCategory, arg.OrderBy, arg.Offset, arg.Limit)
+func (q *Queries) GetManyCategory(ctx context.Context, db DBTX, arg GetManyCategoryParams) ([]Category, error) {
+	rows, err := db.QueryContext(ctx, getManyCategory, arg.OrderBy, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -128,8 +128,8 @@ type UpdateCategoryParams struct {
 	ID          uuid.UUID
 }
 
-func (q *Queries) UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, updateCategory,
+func (q *Queries) UpdateCategory(ctx context.Context, db DBTX, arg UpdateCategoryParams) (sql.Result, error) {
+	return db.ExecContext(ctx, updateCategory,
 		arg.Name,
 		arg.Slug,
 		arg.Description,

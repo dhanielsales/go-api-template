@@ -2,9 +2,9 @@ package models
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
+	"github.com/dhanielsales/go-api-template/pkg/sqlutils"
 	"github.com/google/uuid"
 )
 
@@ -18,8 +18,8 @@ type CategoryRepository interface {
 	DeleteCategoryInCache(ctx context.Context, categoryID uuid.UUID) error
 	GetCategoryInCache(ctx context.Context, categoryID uuid.UUID) *Category
 	SetCategoryInCache(ctx context.Context, category *Category, expiration time.Duration) error
-	WithTx(tx *sql.Tx) CategoryRepository
-	Client() *sql.DB
+	WithTx(tx sqlutils.SQLTX) CategoryRepository
+	Client() sqlutils.SQLDB
 }
 
 type GetManyCategoryPayload struct {

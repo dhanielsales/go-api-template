@@ -27,7 +27,7 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, product *models.P
 		params.Description = sql.NullString{String: *product.Description, Valid: true}
 	}
 
-	res, err := r.Queries.CreateProduct(ctx, params)
+	res, err := r.Storage.CreateProduct(ctx, params)
 	if err != nil {
 		return 0, err
 	}
@@ -54,7 +54,7 @@ func (r *ProductRepository) UpdateProduct(ctx context.Context, id uuid.UUID, pro
 		params.Description = sql.NullString{String: *product.Description, Valid: true}
 	}
 
-	res, err := r.Queries.UpdateProduct(ctx, params)
+	res, err := r.Storage.UpdateProduct(ctx, params)
 	if err != nil {
 		return 0, err
 	}
@@ -68,7 +68,7 @@ func (r *ProductRepository) UpdateProduct(ctx context.Context, id uuid.UUID, pro
 }
 
 func (r *ProductRepository) DeleteProduct(ctx context.Context, id uuid.UUID) (int64, error) {
-	res, err := r.Queries.DeleteProduct(ctx, id)
+	res, err := r.Storage.DeleteProduct(ctx, id)
 	if err != nil {
 		return 0, err
 	}
@@ -82,7 +82,7 @@ func (r *ProductRepository) DeleteProduct(ctx context.Context, id uuid.UUID) (in
 }
 
 func (r *ProductRepository) GetProductByID(ctx context.Context, id uuid.UUID) (*models.Product, error) {
-	product, err := r.Queries.GetProductById(ctx, id)
+	product, err := r.Storage.GetProductById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func (r *ProductRepository) GetManyProduct(ctx context.Context, params models.Ge
 	pagination := sqlutils.Pagination(params.Page, params.PerPage)
 	sorting := sqlutils.Sorting(params.OrderBy, params.OrderDirection)
 
-	products, err := r.Queries.GetManyProduct(ctx, db.GetManyProductParams{
+	products, err := r.Storage.GetManyProduct(ctx, db.GetManyProductParams{
 		OrderBy: sorting,
 		Offset:  pagination.Offset,
 		Limit:   pagination.Limit,
@@ -107,7 +107,7 @@ func (r *ProductRepository) GetManyProduct(ctx context.Context, params models.Ge
 }
 
 func (r *ProductRepository) GetManyProductByCategoryID(ctx context.Context, categoryID uuid.UUID) ([]*models.Product, error) {
-	products, err := r.Queries.GetManyProductByCategoryId(ctx, categoryID)
+	products, err := r.Storage.GetManyProductByCategoryId(ctx, categoryID)
 	if err != nil {
 		return nil, err
 	}

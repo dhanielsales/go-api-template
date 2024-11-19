@@ -28,8 +28,8 @@ type CreateProductParams struct {
 	CreatedAt   int64
 }
 
-func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createProduct,
+func (q *Queries) CreateProduct(ctx context.Context, db DBTX, arg CreateProductParams) (sql.Result, error) {
+	return db.ExecContext(ctx, createProduct,
 		arg.ID,
 		arg.Name,
 		arg.Slug,
@@ -46,8 +46,8 @@ DELETE
 	WHERE id = $1
 `
 
-func (q *Queries) DeleteProduct(ctx context.Context, id uuid.UUID) (sql.Result, error) {
-	return q.db.ExecContext(ctx, deleteProduct, id)
+func (q *Queries) DeleteProduct(ctx context.Context, db DBTX, id uuid.UUID) (sql.Result, error) {
+	return db.ExecContext(ctx, deleteProduct, id)
 }
 
 const getManyProduct = `-- name: GetManyProduct :many
@@ -64,8 +64,8 @@ type GetManyProductParams struct {
 	Limit   int32
 }
 
-func (q *Queries) GetManyProduct(ctx context.Context, arg GetManyProductParams) ([]Product, error) {
-	rows, err := q.db.QueryContext(ctx, getManyProduct, arg.OrderBy, arg.Offset, arg.Limit)
+func (q *Queries) GetManyProduct(ctx context.Context, db DBTX, arg GetManyProductParams) ([]Product, error) {
+	rows, err := db.QueryContext(ctx, getManyProduct, arg.OrderBy, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -102,8 +102,8 @@ SELECT id, name, slug, description, price, category_id, created_at, updated_at
 	WHERE category_id = $1
 `
 
-func (q *Queries) GetManyProductByCategoryId(ctx context.Context, categoryID uuid.UUID) ([]Product, error) {
-	rows, err := q.db.QueryContext(ctx, getManyProductByCategoryId, categoryID)
+func (q *Queries) GetManyProductByCategoryId(ctx context.Context, db DBTX, categoryID uuid.UUID) ([]Product, error) {
+	rows, err := db.QueryContext(ctx, getManyProductByCategoryId, categoryID)
 	if err != nil {
 		return nil, err
 	}
@@ -140,8 +140,8 @@ SELECT id, name, slug, description, price, category_id, created_at, updated_at
 	WHERE id = $1
 `
 
-func (q *Queries) GetProductById(ctx context.Context, id uuid.UUID) (Product, error) {
-	row := q.db.QueryRowContext(ctx, getProductById, id)
+func (q *Queries) GetProductById(ctx context.Context, db DBTX, id uuid.UUID) (Product, error) {
+	row := db.QueryRowContext(ctx, getProductById, id)
 	var i Product
 	err := row.Scan(
 		&i.ID,
@@ -178,8 +178,8 @@ type UpdateProductParams struct {
 	ID          uuid.UUID
 }
 
-func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, updateProduct,
+func (q *Queries) UpdateProduct(ctx context.Context, db DBTX, arg UpdateProductParams) (sql.Result, error) {
+	return db.ExecContext(ctx, updateProduct,
 		arg.Name,
 		arg.Slug,
 		arg.Description,

@@ -2,7 +2,6 @@ package category
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/dhanielsales/go-api-template/internal/models"
 	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
@@ -17,7 +16,7 @@ type GetManyCategoryParams struct {
 }
 
 func (s *service) GetManyCategory(ctx context.Context, params GetManyCategoryParams) ([]*models.Category, error) {
-	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx *sql.Tx) ([]*models.Category, error) {
+	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx sqlutils.SQLTX) ([]*models.Category, error) {
 		queries := s.repository.WithTx(tx)
 
 		dbResult, err := queries.GetManyCategory(ctx, models.GetManyCategoryPayload{

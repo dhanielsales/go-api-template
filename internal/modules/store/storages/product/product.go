@@ -1,37 +1,35 @@
 package product
 
 import (
-	"database/sql"
+	"github.com/dhanielsales/go-api-template/internal/models"
+	"github.com/dhanielsales/go-api-template/internal/modules/store/storages"
 
 	"github.com/dhanielsales/go-api-template/pkg/sqlutils"
-
-	"github.com/dhanielsales/go-api-template/internal/models"
-	db "github.com/dhanielsales/go-api-template/internal/modules/store/storages/gen"
 )
 
 type ProductRepository struct {
 	Postgres *sqlutils.Storage
-	Queries  db.QueryWrapper
+	Storage  storages.Storage
 }
 
-func New(sql *sqlutils.Storage, queries db.QueryWrapper) *ProductRepository {
+func New(sql *sqlutils.Storage, storage storages.Storage) *ProductRepository {
 	return &ProductRepository{
 		Postgres: sql,
-		Queries:  queries,
+		Storage:  storage,
 	}
 }
 
 func NewWithDefaultQueries(sql *sqlutils.Storage) *ProductRepository {
-	return New(sql, db.NewQueryWrapper(sql.Client))
+	return New(sql, storages.NewStorage(sql.Client))
 }
 
-func (r *ProductRepository) WithTx(tx *sql.Tx) models.ProductRepository { // TODO any
+func (r *ProductRepository) WithTx(tx sqlutils.SQLTX) models.ProductRepository {
 	return &ProductRepository{
 		Postgres: r.Postgres,
-		Queries:  r.Queries.WithTx(tx),
+		Storage:  storages.NewStorage(tx),
 	}
 }
 
-func (r *ProductRepository) Client() *sql.DB {
+func (r *ProductRepository) Client() sqlutils.SQLDB {
 	return r.Postgres.Client
 }

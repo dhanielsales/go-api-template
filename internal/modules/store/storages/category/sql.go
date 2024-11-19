@@ -24,7 +24,7 @@ func (r *CategoryRepository) CreateCategory(ctx context.Context, category *model
 		params.Description = sql.NullString{String: *category.Description, Valid: true}
 	}
 
-	res, err := r.Queries.CreateCategory(ctx, params)
+	res, err := r.Storage.CreateCategory(ctx, params)
 	if err != nil {
 		return 0, err
 	}
@@ -49,7 +49,7 @@ func (r *CategoryRepository) UpdateCategory(ctx context.Context, id uuid.UUID, c
 		params.Description = sql.NullString{String: *category.Description, Valid: true}
 	}
 
-	res, err := r.Queries.UpdateCategory(ctx, params)
+	res, err := r.Storage.UpdateCategory(ctx, params)
 	if err != nil {
 		return 0, err
 	}
@@ -63,7 +63,7 @@ func (r *CategoryRepository) UpdateCategory(ctx context.Context, id uuid.UUID, c
 }
 
 func (r *CategoryRepository) DeleteCategory(ctx context.Context, id uuid.UUID) (int64, error) {
-	res, err := r.Queries.DeleteCategory(ctx, id)
+	res, err := r.Storage.DeleteCategory(ctx, id)
 	if err != nil {
 		return 0, err
 	}
@@ -77,8 +77,8 @@ func (r *CategoryRepository) DeleteCategory(ctx context.Context, id uuid.UUID) (
 }
 
 func (r *CategoryRepository) GetCategoryByID(ctx context.Context, id uuid.UUID) (*models.Category, error) {
-	return sqlutils.WithTx(ctx, r.Postgres.Client, func(tx *sql.Tx) (*models.Category, error) {
-		repo := r.Queries.WithTx(tx)
+	return sqlutils.WithTx(ctx, r.Postgres.Client, func(tx sqlutils.SQLTX) (*models.Category, error) {
+		repo := r.Storage.WithTx(tx)
 
 		dbCategory, err := repo.GetCategoryById(ctx, id)
 		if err != nil {
@@ -101,7 +101,7 @@ func (r *CategoryRepository) GetManyCategory(ctx context.Context, params models.
 	pagination := sqlutils.Pagination(params.Page, params.PerPage)
 	sorting := sqlutils.Sorting(params.OrderBy, params.OrderDirection)
 
-	categories, err := r.Queries.GetManyCategory(ctx, db.GetManyCategoryParams{
+	categories, err := r.Storage.GetManyCategory(ctx, db.GetManyCategoryParams{
 		Limit:   pagination.Limit,
 		Offset:  pagination.Offset,
 		OrderBy: sorting,

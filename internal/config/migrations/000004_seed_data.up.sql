@@ -9,4 +9,7 @@ VALUES ('eb0b97c4-f466-4415-a2ee-e664c56e97e8', 'Books', 'books', 'Books', 17062
 INSERT INTO category ("id", "name", "slug", "description", "created_at")
 VALUES ('64655489-ea4d-433a-aed5-a4dce06b87a0', 'Clothing', 'clothing', 'Clothing', 1706208670948);
 
+INSERT INTO product ("id", "name", "slug", "description", "price", "category_id", "created_at")
+VALUES ('64655489-ea4d-433a-aed5-a4dce06b87a0', 'Shirt', 'shirt', 'White shirt', 99.9, '64655489-ea4d-433a-aed5-a4dce06b87a0', 1706208670948);
+
 COMMIT;

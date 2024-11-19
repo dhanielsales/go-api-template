@@ -2,8 +2,8 @@ package models
 
 import (
 	"context"
-	"database/sql"
 
+	"github.com/dhanielsales/go-api-template/pkg/sqlutils"
 	"github.com/google/uuid"
 )
 
@@ -14,8 +14,8 @@ type ProductRepository interface {
 	GetProductByID(ctx context.Context, id uuid.UUID) (*Product, error)
 	GetManyProduct(ctx context.Context, data GetManyProductPayload) ([]*Product, error)
 	GetManyProductByCategoryID(ctx context.Context, categoryID uuid.UUID) ([]*Product, error)
-	WithTx(tx *sql.Tx) ProductRepository
-	Client() *sql.DB
+	WithTx(tx sqlutils.SQLTX) ProductRepository
+	Client() sqlutils.SQLDB
 }
 
 type GetManyProductPayload struct {

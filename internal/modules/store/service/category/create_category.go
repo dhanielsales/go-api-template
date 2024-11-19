@@ -2,7 +2,6 @@ package category
 
 import (
 	"context"
-	"database/sql"
 	"net/http"
 
 	"github.com/dhanielsales/go-api-template/internal/models"
@@ -16,7 +15,7 @@ type CreateCategoryPayload struct {
 }
 
 func (s *service) CreateCategory(ctx context.Context, data CreateCategoryPayload) (int64, error) {
-	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx *sql.Tx) (int64, error) {
+	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx sqlutils.SQLTX) (int64, error) {
 		queries := s.repository.WithTx(tx)
 
 		category, err := models.NewCategory(data.Name, data.Description)

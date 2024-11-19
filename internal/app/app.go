@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	//nolint:revive // necessary to set up swagger docs.
@@ -17,11 +16,11 @@ import (
 
 	redisstorage "github.com/dhanielsales/go-api-template/pkg/redisutils"
 	"github.com/dhanielsales/go-api-template/pkg/sqlutils"
+	"github.com/dhanielsales/go-api-template/pkg/sqlutils/postgres"
 
 	// Modules
 	"github.com/dhanielsales/go-api-template/internal/modules/store"
 
-	_ "github.com/lib/pq"
 	goredis "github.com/redis/go-redis/v9"
 )
 
@@ -36,7 +35,7 @@ type app struct {
 
 func New(envVars *env.Values) (*app, error) {
 	// init the Postgres storage
-	postgresDB, err := sql.Open("postgres", envVars.POSTGRES_URL)
+	postgresDB, err := postgres.NewPostgresDB(envVars.POSTGRES_URL)
 	if err != nil {
 		return nil, fmt.Errorf("error opening postgres connection: %w", err)
 	}

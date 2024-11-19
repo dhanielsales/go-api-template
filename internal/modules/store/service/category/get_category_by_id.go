@@ -14,7 +14,7 @@ import (
 )
 
 func (s *service) GetCategoryByID(ctx context.Context, id uuid.UUID) (*models.Category, error) {
-	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx *sql.Tx) (*models.Category, error) {
+	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx sqlutils.SQLTX) (*models.Category, error) {
 		categoryInCache := s.repository.GetCategoryInCache(ctx, id)
 
 		if categoryInCache != nil {

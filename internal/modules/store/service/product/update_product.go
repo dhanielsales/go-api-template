@@ -19,7 +19,7 @@ type UpdateProductPayload struct {
 }
 
 func (s *service) UpdateProduct(ctx context.Context, id uuid.UUID, data UpdateProductPayload) (int64, error) {
-	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx *sql.Tx) (int64, error) {
+	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx sqlutils.SQLTX) (int64, error) {
 		queries := s.repository.WithTx(tx)
 
 		product, err := queries.GetProductByID(ctx, id)

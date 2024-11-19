@@ -2,15 +2,14 @@ package sqlutils_test
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"testing"
 
 	"github.com/dhanielsales/go-api-template/pkg/sqlutils"
+	"github.com/dhanielsales/go-api-template/pkg/testutils"
+	"go.uber.org/mock/gomock"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestPagination(t *testing.T) {
@@ -61,112 +60,137 @@ func TestSorting(t *testing.T) {
 	}
 }
 
-func TestCallTxCommitSuccess(t *testing.T) {
+func TestCallTx(t *testing.T) {
 	t.Parallel()
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+
+	type expected struct {
+		data any
+		err  error
 	}
-	defer db.Close()
 
-	require.NoError(t, err)
+	tests := []struct {
+		name      string
+		txHandler func(tx sqlutils.SQLTX) (any, error)
+		prepare   func() sqlutils.SQLDB
+		expected  *expected
+	}{
+		{
+			name:      "Success",
+			txHandler: func(tx sqlutils.SQLTX) (any, error) { return 1, nil },
+			prepare: func() sqlutils.SQLDB {
+				ctrl := gomock.NewController(t)
+				mockdb := sqlutils.NewMockSQLDB(ctrl)
+				mocktx := sqlutils.NewMockSQLTX(ctrl)
 
-	mock.ExpectBegin()
-	mock.ExpectCommit()
+				mockdb.EXPECT().BeginTx(gomock.Any(), gomock.Any()).Return(mocktx, nil)
+				mocktx.EXPECT().Commit().Return(nil)
 
-	mockResult := 1
-	result, err := sqlutils.WithTx(context.Background(), db, func(tx *sql.Tx) (*int, error) {
-		return &mockResult, nil
-	})
+				return mockdb
+			},
+			expected: &expected{
+				data: 1,
+				err:  nil,
+			},
+		},
+		{
+			name:      "Success rollback",
+			txHandler: func(tx sqlutils.SQLTX) (any, error) { return 0, errors.New("error in handler") },
+			prepare: func() sqlutils.SQLDB {
+				ctrl := gomock.NewController(t)
+				mockdb := sqlutils.NewMockSQLDB(ctrl)
+				mocktx := sqlutils.NewMockSQLTX(ctrl)
 
-	require.NoError(t, err)
-	assert.Equal(t, &mockResult, result)
-}
+				mockdb.EXPECT().BeginTx(gomock.Any(), gomock.Any()).Return(mocktx, nil)
+				mocktx.EXPECT().Rollback().Return(nil)
 
-func TestCallTxRollbackOnError(t *testing.T) {
-	t.Parallel()
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+				return mockdb
+			},
+			expected: &expected{
+				data: nil,
+				err:  errors.New("error in handler"),
+			},
+		},
+		{
+			name:      "Success commit",
+			txHandler: func(tx sqlutils.SQLTX) (any, error) { return 1, nil },
+			prepare: func() sqlutils.SQLDB {
+				ctrl := gomock.NewController(t)
+				mockdb := sqlutils.NewMockSQLDB(ctrl)
+				mocktx := sqlutils.NewMockSQLTX(ctrl)
+
+				mockdb.EXPECT().BeginTx(gomock.Any(), gomock.Any()).Return(mocktx, nil)
+				mocktx.EXPECT().Commit().Return(nil)
+
+				return mockdb
+			},
+			expected: &expected{
+				data: 1,
+				err:  nil,
+			},
+		},
+		{
+			name:      "Error in the BeginTx",
+			txHandler: func(tx sqlutils.SQLTX) (any, error) { return 1, nil },
+			prepare: func() sqlutils.SQLDB {
+				ctrl := gomock.NewController(t)
+				mockdb := sqlutils.NewMockSQLDB(ctrl)
+
+				mockdb.EXPECT().BeginTx(gomock.Any(), gomock.Any()).Return(nil, errors.New("error begin tx"))
+
+				return mockdb
+			},
+			expected: &expected{
+				data: nil,
+				err:  errors.New("error begin tx"),
+			},
+		},
+		{
+			name:      "Error in the commit",
+			txHandler: func(tx sqlutils.SQLTX) (any, error) { return 1, nil },
+			prepare: func() sqlutils.SQLDB {
+				ctrl := gomock.NewController(t)
+				mockdb := sqlutils.NewMockSQLDB(ctrl)
+				mocktx := sqlutils.NewMockSQLTX(ctrl)
+
+				mockdb.EXPECT().BeginTx(gomock.Any(), gomock.Any()).Return(mocktx, nil)
+				mocktx.EXPECT().Commit().Return(errors.New("error commit"))
+
+				return mockdb
+			},
+			expected: &expected{
+				data: nil,
+				err:  errors.New("error commit"),
+			},
+		},
+		{
+			name:      "Error in the rollback",
+			txHandler: func(tx sqlutils.SQLTX) (any, error) { return 0, errors.New("error in the handler") },
+			prepare: func() sqlutils.SQLDB {
+				ctrl := gomock.NewController(t)
+				mockdb := sqlutils.NewMockSQLDB(ctrl)
+				mocktx := sqlutils.NewMockSQLTX(ctrl)
+
+				mockdb.EXPECT().BeginTx(gomock.Any(), gomock.Any()).Return(mocktx, nil)
+				mocktx.EXPECT().Rollback().Return(errors.New("error in the rollback"))
+
+				return mockdb
+			},
+			expected: &expected{
+				data: nil,
+				err:  errors.Join(errors.New("error in the handler"), errors.New("error in the rollback")),
+			},
+		},
 	}
-	defer db.Close()
 
-	require.NoError(t, err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	mock.ExpectBegin()
-	mock.ExpectRollback()
+			db := tt.prepare()
+			result, err := sqlutils.WithTx(context.Background(), db, tt.txHandler)
 
-	mockErr := errors.New("mock-error")
-	result, err := sqlutils.WithTx(context.Background(), db, func(tx *sql.Tx) (*int, error) {
-		return nil, mockErr
-	})
-
-	require.Error(t, err)
-	assert.Nil(t, result)
-}
-
-func TestCallTxBeginWithError(t *testing.T) {
-	t.Parallel()
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			assert.Equal(t, tt.expected.data, result)
+			testutils.ErrorEqual(t, tt.expected.err, err)
+		})
 	}
-	defer db.Close()
-
-	require.NoError(t, err)
-
-	mock.ExpectBegin().WillReturnError(errors.New("mock-error"))
-	mock.ExpectCommit()
-
-	result, err := sqlutils.WithTx(context.Background(), db, func(tx *sql.Tx) (*int, error) {
-		n := 0
-		return &n, nil
-	})
-
-	require.Error(t, err)
-	assert.Nil(t, result)
-}
-
-func TestCallTxRollbackWithError(t *testing.T) {
-	t.Parallel()
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
-	require.NoError(t, err)
-
-	mock.ExpectBegin()
-	mock.ExpectRollback().WillReturnError(errors.New("mock-error"))
-
-	result, err := sqlutils.WithTx(context.Background(), db, func(tx *sql.Tx) (*int, error) {
-		n := 0
-		return &n, nil
-	})
-
-	require.Error(t, err)
-	assert.Nil(t, result)
-}
-
-func TestCallTxWithErrorAndRollbackWithError(t *testing.T) {
-	t.Parallel()
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
-	require.NoError(t, err)
-
-	mock.ExpectBegin()
-	mock.ExpectRollback().WillReturnError(errors.New("mock-error"))
-
-	mockErr := errors.New("mock-error")
-	result, err := sqlutils.WithTx(context.Background(), db, func(tx *sql.Tx) (*int, error) {
-		return nil, mockErr
-	})
-
-	require.Error(t, err)
-	assert.Nil(t, result)
 }

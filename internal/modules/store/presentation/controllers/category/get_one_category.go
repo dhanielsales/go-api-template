@@ -23,7 +23,7 @@ import (
 // @Success 	200 				{object} 	models.Category
 // @Router /api/v0/category/{id}/ [get]
 func (t *CategoryController) GetOneCategory(c echo.Context) error {
-	id := uuid.MustParse(c.Param("id"))
+	id := uuid.MustParse(c.Param("id")) // TODO check the error
 	category, err := t.service.GetCategoryByID(c.Request().Context(), id)
 	if err != nil {
 		return err

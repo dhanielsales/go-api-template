@@ -18,7 +18,7 @@ type GetManyProductParams struct {
 }
 
 func (s *service) GetManyProduct(ctx context.Context, params GetManyProductParams) ([]*models.Product, error) {
-	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx *sql.Tx) ([]*models.Product, error) {
+	return sqlutils.WithTx(ctx, s.repository.Client(), func(tx sqlutils.SQLTX) ([]*models.Product, error) {
 		queries := s.repository.WithTx(tx)
 
 		products, err := queries.GetManyProduct(ctx, models.GetManyProductPayload{

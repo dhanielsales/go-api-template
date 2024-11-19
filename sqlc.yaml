@@ -6,7 +6,8 @@ sql:
     gen:
       go:
         package: "db"
-        emit_interface: true
+        # emit_interface: true
+        emit_methods_with_db_argument: true
         out: "internal/modules/store/storages/gen/"
         overrides:
           - db_type: "pg_catalog.numeric"

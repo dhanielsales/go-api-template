@@ -1,5 +1,6 @@
 BEGIN;
 
 DELETE FROM category;
+DELETE FROM product;
 
 COMMIT;

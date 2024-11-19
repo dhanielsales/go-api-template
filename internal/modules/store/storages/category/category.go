@@ -1,40 +1,39 @@
 package category
 
 import (
-	"database/sql"
+	"github.com/dhanielsales/go-api-template/internal/models"
+	"github.com/dhanielsales/go-api-template/internal/modules/store/storages"
 
 	"github.com/dhanielsales/go-api-template/pkg/redisutils"
 	"github.com/dhanielsales/go-api-template/pkg/sqlutils"
-
-	"github.com/dhanielsales/go-api-template/internal/models"
-	db "github.com/dhanielsales/go-api-template/internal/modules/store/storages/gen"
 )
 
 type CategoryRepository struct {
 	Postgres *sqlutils.Storage
-	Queries  db.QueryWrapper
+	Storage  storages.Storage
 	Redis    *redisutils.Storage // TODO convert to interface to allow mocks to unit tests
 }
 
-func New(sql *sqlutils.Storage, queries db.QueryWrapper, redis *redisutils.Storage) *CategoryRepository {
+func New(sql *sqlutils.Storage, storage storages.Storage, redis *redisutils.Storage) *CategoryRepository {
 	return &CategoryRepository{
 		Postgres: sql,
-		Queries:  queries,
+		Storage:  storage,
 		Redis:    redis,
 	}
 }
 
 func NewWithDefaultQueries(sql *sqlutils.Storage, redis *redisutils.Storage) *CategoryRepository {
-	return New(sql, db.NewQueryWrapper(sql.Client), redis)
+	return New(sql, storages.NewStorage(sql.Client), redis)
 }
 
-func (r *CategoryRepository) WithTx(tx *sql.Tx) models.CategoryRepository {
+func (r *CategoryRepository) WithTx(tx sqlutils.SQLTX) models.CategoryRepository {
 	return &CategoryRepository{
 		Postgres: r.Postgres,
-		Queries:  r.Queries.WithTx(tx),
+		Redis:    r.Redis,
+		Storage:  storages.NewStorage(tx),
 	}
 }
 
-func (r *CategoryRepository) Client() *sql.DB {
+func (r *CategoryRepository) Client() sqlutils.SQLDB {
 	return r.Postgres.Client
 }
