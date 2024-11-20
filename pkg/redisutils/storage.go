@@ -19,12 +19,14 @@ type RedisClient interface {
 	Scan(ctx context.Context, cursor uint64, match string, count int64) *redis.ScanCmd
 	Watch(ctx context.Context, fn func(*redis.Tx) error, keys ...string) error
 	Ping(ctx context.Context) *redis.StatusCmd
+	TxPipelined(ctx context.Context, fn func(redis.Pipeliner) error) ([]redis.Cmder, error)
 	Close() error
 }
 
 // Storage encapsulates a Redis client, providing methods for initialization and cleanup.
 type Storage struct {
-	Client RedisClient
+	Client  RedisClient
+	Client2 *redis.Client
 }
 
 // New initializes a new Storage instance with the given Redis client and verifies the connection.

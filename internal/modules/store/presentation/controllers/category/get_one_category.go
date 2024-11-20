@@ -3,6 +3,7 @@ package category
 import (
 	"net/http"
 
+	"github.com/dhanielsales/go-api-template/pkg/apperror"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -23,7 +24,11 @@ import (
 // @Success 	200 				{object} 	models.Category
 // @Router /api/v0/category/{id}/ [get]
 func (t *CategoryController) GetOneCategory(c echo.Context) error {
-	id := uuid.MustParse(c.Param("id")) // TODO check the error
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		return apperror.FromError(err).WithDescription("invalid parameter 'id'")
+	}
+
 	category, err := t.service.GetCategoryByID(c.Request().Context(), id)
 	if err != nil {
 		return err

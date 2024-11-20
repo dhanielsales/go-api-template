@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/dhanielsales/go-api-template/internal/modules/store/service/category"
+	"github.com/dhanielsales/go-api-template/pkg/apperror"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -27,13 +28,16 @@ import (
 // @Success 200 {object} int64
 // @Router /api/v0/category/{id}/ [put]
 func (t *CategoryController) UpdateCategory(c echo.Context) error {
-	var req UpdateCategoryRequest
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		return apperror.FromError(err).WithDescription("invalid parameter 'id'")
+	}
 
+	var req UpdateCategoryRequest
 	if err := t.validator.DecodeAndValidate(c, req); err != nil {
 		return err
 	}
 
-	id := uuid.MustParse(c.Param("id"))
 	affected, err := t.service.UpdateCategory(c.Request().Context(), id, category.UpdateCategoryPayload{
 		Name:        req.Name,
 		Description: req.Description,

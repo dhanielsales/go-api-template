@@ -16,7 +16,7 @@ func ComposeKey(keys ...string) string {
 // Maximum number of retries for a transaction.
 const MAX_RETRIES = 5
 
-var MAX_RETRIES_ERR = errors.New("Max retries reached")
+var ErrMaxRetryReachedOut = errors.New("max retries reached out")
 
 // WithTx executes a Redis transaction with retry logic, allowing for concurrent-safe operations.
 func WithTx(ctx context.Context, client RedisClient, fn func(pipe redis.Pipeliner) error) error {
@@ -30,10 +30,10 @@ func WithTx(ctx context.Context, client RedisClient, fn func(pipe redis.Pipeline
 			return nil
 		}
 
-		if err == redis.TxFailedErr {
+		if errors.Is(err, redis.TxFailedErr) {
 			return err
 		}
 	}
 
-	return MAX_RETRIES_ERR
+	return ErrMaxRetryReachedOut
 }

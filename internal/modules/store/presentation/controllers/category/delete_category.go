@@ -3,6 +3,7 @@ package category
 import (
 	"net/http"
 
+	"github.com/dhanielsales/go-api-template/pkg/apperror"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -23,7 +24,11 @@ import (
 // @Failure		500					{object}	apperror.AppError	"Internal Server Error."
 // @Router /api/v0/category/{id}/ [delete]
 func (t *CategoryController) DeleteCategory(c echo.Context) error {
-	id := uuid.MustParse(c.Param("id"))
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		return apperror.FromError(err).WithDescription("invalid parameter 'id'")
+	}
+
 	affected, err := t.service.DeleteCategory(c.Request().Context(), id)
 	if err != nil {
 		return err

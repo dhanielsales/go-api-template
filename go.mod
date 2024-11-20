@@ -3,7 +3,6 @@ module github.com/dhanielsales/go-api-template
 go 1.23.2
 
 require (
-	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/go-redis/redismock/v9 v9.2.0
 	github.com/lib/pq v1.10.9
 	github.com/stretchr/testify v1.9.0

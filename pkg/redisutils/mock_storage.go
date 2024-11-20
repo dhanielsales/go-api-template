@@ -131,6 +131,21 @@ func (mr *MockRedisClientMockRecorder) Set(ctx, key, value, expiration any) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Set", reflect.TypeOf((*MockRedisClient)(nil).Set), ctx, key, value, expiration)
 }
 
+// TxPipelined mocks base method.
+func (m *MockRedisClient) TxPipelined(ctx context.Context, fn func(redis.Pipeliner) error) ([]redis.Cmder, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TxPipelined", ctx, fn)
+	ret0, _ := ret[0].([]redis.Cmder)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TxPipelined indicates an expected call of TxPipelined.
+func (mr *MockRedisClientMockRecorder) TxPipelined(ctx, fn any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TxPipelined", reflect.TypeOf((*MockRedisClient)(nil).TxPipelined), ctx, fn)
+}
+
 // Watch mocks base method.
 func (m *MockRedisClient) Watch(ctx context.Context, fn func(*redis.Tx) error, keys ...string) error {
 	m.ctrl.T.Helper()

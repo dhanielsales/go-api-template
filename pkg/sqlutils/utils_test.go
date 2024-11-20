@@ -60,7 +60,7 @@ func TestSorting(t *testing.T) {
 	}
 }
 
-func TestCallTx(t *testing.T) {
+func TestWithTx(t *testing.T) {
 	t.Parallel()
 
 	type expected struct {

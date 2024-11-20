@@ -6,11 +6,12 @@ import (
 	"testing"
 
 	"github.com/dhanielsales/go-api-template/pkg/redisutils"
-
+	"github.com/dhanielsales/go-api-template/pkg/testutils"
 	"github.com/go-redis/redismock/v9"
-	goredis "github.com/redis/go-redis/v9"
+	redis "github.com/redis/go-redis/v9"
+	gomock "go.uber.org/mock/gomock"
+
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestComposeKey(t *testing.T) {
@@ -35,73 +36,148 @@ func TestComposeKey(t *testing.T) {
 	}
 }
 
-func TestCallTxTxSucceeded(t *testing.T) {
+func TestWithTx(t *testing.T) {
 	t.Parallel()
 
-	db, mock := redismock.NewClientMock()
+	tests := []struct {
+		name      string
+		txHandler func(pipe redis.Pipeliner) error
+		prepare   func() redisutils.RedisClient
+		expected  error
+	}{
+		{
+			name:      "Success",
+			txHandler: func(pipe redis.Pipeliner) error { return nil },
+			prepare: func() redisutils.RedisClient {
+				ctrl := gomock.NewController(t)
+				redisMock := redisutils.NewMockRedisClient(ctrl)
 
-	mock.ExpectPing().SetVal("PONG")
+				redisMock.EXPECT().Watch(gomock.Any(), gomock.Any()).Return(nil)
 
-	redisStorage, err := redisutils.New(db)
-	require.NoError(t, err)
+				return redisMock
+			},
+			expected: nil,
+		},
+		{
+			name:      "Error on handler",
+			txHandler: func(pipe redis.Pipeliner) error { return errors.New("error on handler") },
+			prepare: func() redisutils.RedisClient {
+				ctrl := gomock.NewController(t)
+				redisMock := redisutils.NewMockRedisClient(ctrl)
 
-	mock.ExpectTxPipeline()
-	mock.ExpectPing().SetVal("PONG")
-	mock.ExpectTxPipelineExec()
+				redisMock.EXPECT().Watch(gomock.Any(), gomock.Any()).Return(errors.New("error on handler")).MaxTimes(5)
 
-	err = redisutils.WithTx(context.Background(), redisStorage.Client, func(pipe goredis.Pipeliner) error {
-		pipe.Ping(context.Background())
-		return nil
-	})
-	assert.NoError(t, err)
+				return redisMock
+			},
+			expected: redisutils.ErrMaxRetryReachedOut,
+		},
+		{
+			name:      "Error tx failed",
+			txHandler: func(pipe redis.Pipeliner) error { return errors.New("error on handler") },
+			prepare: func() redisutils.RedisClient {
+				ctrl := gomock.NewController(t)
+				redisMock := redisutils.NewMockRedisClient(ctrl)
+
+				redisMock.EXPECT().Watch(gomock.Any(), gomock.Any()).Return(redis.TxFailedErr)
+
+				return redisMock
+			},
+			expected: redis.TxFailedErr,
+		},
+		{
+			name:      "Error tx pipelined",
+			txHandler: func(pipe redis.Pipeliner) error { return errors.New("error on handler") },
+			prepare: func() redisutils.RedisClient {
+				db, mock := redismock.NewClientMock()
+
+				mock.ExpectTxPipeline()
+				mock.ExpectTxPipelineExec()
+
+				return db
+			},
+			expected: redisutils.ErrMaxRetryReachedOut,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			redisdb := tt.prepare()
+			err := redisutils.WithTx(context.Background(), redisdb, tt.txHandler)
+
+			testutils.ErrorEqual(t, tt.expected, err)
+		})
+	}
 }
 
-func TestCallTxTxFailed(t *testing.T) {
-	t.Parallel()
+// func TestCallTxTxSucceeded(t *testing.T) {
+// 	t.Parallel()
 
-	db, mock := redismock.NewClientMock()
+// 	ctrl := gomock.NewController(t)
+// 	redisMock := redisutils.NewMockRedisClient(ctrl)
 
-	mock.ExpectPing().SetVal("PONG")
+// 	res := redis.NewStatusCmd(context.Background())
+// 	res.SetVal("pong")
 
-	redisStorage, err := redisutils.New(db)
-	require.NoError(t, err)
+// 	redisMock.EXPECT().Ping(gomock.Any()).Return(res)
 
-	mock.ExpectTxPipeline()
-	mock.ExpectPing().SetErr(goredis.TxFailedErr)
-	mock.ExpectTxPipelineExec()
+// 	redisStorage, err := redisutils.New(redisMock)
+// 	require.NoError(t, err)
 
-	err = redisutils.WithTx(context.Background(), redisStorage.Client, func(pipe goredis.Pipeliner) error {
-		pipe.Ping(context.Background())
-		return nil
-	})
-	assert.Error(t, err)
-}
+// 	err = redisutils.WithTx(context.Background(), redisStorage.Client, func(pipe goredis.Pipeliner) error {
+// 		pipe.Ping(context.Background())
+// 		return nil
+// 	})
+// 	assert.NoError(t, err)
+// }
 
-func TestCallTxMaxRetriesExceeded(t *testing.T) {
-	t.Parallel()
-	db, mock := redismock.NewClientMock()
+// func TestCallTxTxFailed(t *testing.T) {
+// 	t.Parallel()
 
-	mock.ExpectPing().SetVal("PONG")
+// 	db, mock := redismock.NewClientMock()
 
-	redisStorage, err := redisutils.New(db)
-	require.NoError(t, err)
+// 	mock.ExpectPing().SetVal("PONG")
 
-	mock.ExpectTxPipeline()
-	mock.ExpectPing().SetErr(errors.New("ping error"))
-	mock.ExpectTxPipelineExec()
-	mock.ExpectPing().SetErr(errors.New("ping error"))
-	mock.ExpectTxPipelineExec()
-	mock.ExpectPing().SetErr(errors.New("ping error"))
-	mock.ExpectTxPipelineExec()
-	mock.ExpectPing().SetErr(errors.New("ping error"))
-	mock.ExpectTxPipelineExec()
-	mock.ExpectPing().SetErr(errors.New("ping error"))
-	mock.ExpectTxPipelineExec()
+// 	redisStorage, err := redisutils.New(db)
+// 	require.NoError(t, err)
 
-	err = redisutils.WithTx(context.Background(), redisStorage.Client, func(pipe goredis.Pipeliner) error {
-		pipe.Ping(context.Background())
-		return nil
-	})
+// 	mock.ExpectTxPipeline()
+// 	mock.ExpectPing().SetErr(goredis.TxFailedErr)
+// 	mock.ExpectTxPipelineExec()
 
-	assert.Equal(t, redisutils.MAX_RETRIES_ERR, err)
-}
+// 	err = redisutils.WithTx(context.Background(), redisStorage.Client, func(pipe goredis.Pipeliner) error {
+// 		pipe.Ping(context.Background())
+// 		return nil
+// 	})
+// 	assert.Error(t, err)
+// }
+
+// func TestCallTxMaxRetriesExceeded(t *testing.T) {
+// 	t.Parallel()
+// 	db, mock := redismock.NewClientMock()
+
+// 	mock.ExpectPing().SetVal("PONG")
+
+// 	redisStorage, err := redisutils.New(db)
+// 	require.NoError(t, err)
+
+// 	mock.ExpectTxPipeline()
+// 	mock.ExpectPing().SetErr(errors.New("ping error"))
+// 	mock.ExpectTxPipelineExec()
+// 	mock.ExpectPing().SetErr(errors.New("ping error"))
+// 	mock.ExpectTxPipelineExec()
+// 	mock.ExpectPing().SetErr(errors.New("ping error"))
+// 	mock.ExpectTxPipelineExec()
+// 	mock.ExpectPing().SetErr(errors.New("ping error"))
+// 	mock.ExpectTxPipelineExec()
+// 	mock.ExpectPing().SetErr(errors.New("ping error"))
+// 	mock.ExpectTxPipelineExec()
+
+// 	err = redisutils.WithTx(context.Background(), redisStorage.Client, func(pipe goredis.Pipeliner) error {
+// 		pipe.Ping(context.Background())
+// 		return nil
+// 	})
+
+// 	assert.Equal(t, redisutils.MAX_RETRIES_ERR, err)
+// }
