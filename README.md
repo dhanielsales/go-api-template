@@ -40,7 +40,8 @@ https://railway.app/pricing
 - [x] Add conversational id to logs
 - [x] Add CI/CD
 - [x] Change Http layer for echo
+- [x] Refactor sqlutils to enable interface to unit tests
+- [x] Refactor rediutils to enable interface to unit tests
 - [ ] Add tests
-- [ ] Refactor rediutils to enable interface to unit tests
 - [ ] Refact logger using logruss
 - [ ] Add simple auth using package and an interface to able to setup your own auth or clerk
