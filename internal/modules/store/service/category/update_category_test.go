@@ -2,6 +2,7 @@ package category_test
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"net/http"
 	"testing"
@@ -47,7 +48,7 @@ func TestUpdateCategory(t *testing.T) {
 			name: "Error update category - get category to update",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(nil, errors.New("error getting category"))
+					mocks.repository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(nil, errors.New("error getting category"))
 				}),
 			},
 			args: &args{
@@ -58,11 +59,25 @@ func TestUpdateCategory(t *testing.T) {
 			},
 		},
 		{
+			name: "Error update category - not found category",
+			fields: &fields{
+				service: newCategoryService(t, func(mocks *mocks) {
+					mocks.repository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(nil, sql.ErrNoRows)
+				}),
+			},
+			args: &args{
+				params: category.UpdateCategoryPayload{},
+			},
+			expected: &expected{
+				err: apperror.FromError(sql.ErrNoRows).WithDescription("category not found").WithStatusCode(http.StatusNotFound),
+			},
+		},
+		{
 			name: "Error update category - update category unique violation",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{ID: id}, nil)
-					mocks.categoryRepository.EXPECT().UpdateCategory(gomock.Any(), gomock.Any(), gomock.Any()).Return(int64(0), &pq.Error{Message: "duplicate key value violates unique constraint 'slug'"})
+					mocks.repository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{ID: id}, nil)
+					mocks.repository.EXPECT().UpdateCategory(gomock.Any(), gomock.Any(), gomock.Any()).Return(int64(0), &pq.Error{Message: "duplicate key value violates unique constraint 'slug'"})
 				}),
 			},
 			args: &args{
@@ -76,23 +91,8 @@ func TestUpdateCategory(t *testing.T) {
 			name: "Error update category - update category general error",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{ID: id}, nil)
-					mocks.categoryRepository.EXPECT().UpdateCategory(gomock.Any(), gomock.Any(), gomock.Any()).Return(int64(0), errors.New("error updating category"))
-				}),
-			},
-			args: &args{
-				params: category.UpdateCategoryPayload{},
-			},
-			expected: &expected{
-				err: apperror.FromError(errors.New("error updating category")).WithDescription("can't process category entity"),
-			},
-		},
-		{
-			name: "Error update category - update category general error",
-			fields: &fields{
-				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{ID: id}, nil)
-					mocks.categoryRepository.EXPECT().UpdateCategory(gomock.Any(), gomock.Any(), gomock.Any()).Return(int64(0), errors.New("error updating category"))
+					mocks.repository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{ID: id}, nil)
+					mocks.repository.EXPECT().UpdateCategory(gomock.Any(), gomock.Any(), gomock.Any()).Return(int64(0), errors.New("error updating category"))
 				}),
 			},
 			args: &args{
@@ -106,9 +106,9 @@ func TestUpdateCategory(t *testing.T) {
 			name: "Error update category - setting category in cache",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{ID: id}, nil)
-					mocks.categoryRepository.EXPECT().UpdateCategory(gomock.Any(), gomock.Any(), gomock.Any()).Return(int64(1), nil)
-					mocks.categoryRepository.EXPECT().DeleteCategoryInCache(gomock.Any(), gomock.Any()).Return(errors.New("error deletting category in cache"))
+					mocks.repository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{ID: id}, nil)
+					mocks.repository.EXPECT().UpdateCategory(gomock.Any(), gomock.Any(), gomock.Any()).Return(int64(1), nil)
+					mocks.repository.EXPECT().DeleteCategoryInCache(gomock.Any(), gomock.Any()).Return(errors.New("error deletting category in cache"))
 				}),
 			},
 			args: &args{
@@ -122,9 +122,9 @@ func TestUpdateCategory(t *testing.T) {
 			name: "Success",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{ID: id}, nil)
-					mocks.categoryRepository.EXPECT().UpdateCategory(gomock.Any(), gomock.Any(), gomock.Any()).Return(int64(1), nil)
-					mocks.categoryRepository.EXPECT().DeleteCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
+					mocks.repository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{ID: id}, nil)
+					mocks.repository.EXPECT().UpdateCategory(gomock.Any(), gomock.Any(), gomock.Any()).Return(int64(1), nil)
+					mocks.repository.EXPECT().DeleteCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
 				}),
 			},
 			args: &args{

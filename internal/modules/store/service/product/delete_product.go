@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"net/http"
 
 	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
@@ -13,7 +14,7 @@ import (
 func (s *service) DeleteProduct(ctx context.Context, id uuid.UUID) (int64, error) {
 	affected, err := s.repository.DeleteProduct(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return 0, apperror.FromError(err).WithDescription("product not found").WithStatusCode(http.StatusNotFound)
 		}
 

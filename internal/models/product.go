@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/dhanielsales/go-api-template/pkg/utils"
+
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
-
-	"github.com/dhanielsales/go-api-template/pkg/utils"
 )
 
 type Product struct {
@@ -74,6 +74,10 @@ func (c *Product) validate() error {
 
 	if c.Price == 0 || c.Price < 0 {
 		return errors.New("price is required")
+	}
+
+	if c.CategoryID == uuid.Nil {
+		return errors.New("category_id is required")
 	}
 
 	return nil

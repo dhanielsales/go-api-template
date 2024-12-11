@@ -2,6 +2,8 @@ package category
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"net/http"
 
 	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
@@ -21,6 +23,10 @@ func (s *service) UpdateCategory(ctx context.Context, id uuid.UUID, data UpdateC
 
 		category, err := queries.GetCategoryByID(ctx, id)
 		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return 0, apperror.FromError(err).WithDescription("category not found").WithStatusCode(http.StatusNotFound)
+			}
+
 			return 0, apperror.FromError(err).WithDescription("can't process category entity")
 		}
 

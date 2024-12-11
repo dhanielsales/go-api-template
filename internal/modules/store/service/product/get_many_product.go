@@ -2,8 +2,6 @@ package product
 
 import (
 	"context"
-	"database/sql"
-	"net/http"
 
 	"github.com/dhanielsales/go-api-template/internal/models"
 	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
@@ -28,10 +26,6 @@ func (s *service) GetManyProduct(ctx context.Context, params GetManyProductParam
 			OrderDirection: params.OrderDirection,
 		})
 		if err != nil {
-			if err == sql.ErrNoRows {
-				return nil, apperror.FromError(err).WithDescription("product not found").WithStatusCode(http.StatusNotFound)
-			}
-
 			return nil, apperror.FromError(err).WithDescription("can't process product entity")
 		}
 

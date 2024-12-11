@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"net/http"
 
 	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
@@ -24,7 +25,7 @@ func (s *service) UpdateProduct(ctx context.Context, id uuid.UUID, data UpdatePr
 
 		product, err := queries.GetProductByID(ctx, id)
 		if err != nil {
-			if err == sql.ErrNoRows {
+			if errors.Is(err, sql.ErrNoRows) {
 				return 0, apperror.FromError(err).WithDescription("product not found").WithStatusCode(http.StatusNotFound)
 			}
 
@@ -35,6 +36,10 @@ func (s *service) UpdateProduct(ctx context.Context, id uuid.UUID, data UpdatePr
 
 		affected, err := queries.UpdateProduct(ctx, id, product)
 		if err != nil {
+			if sqlutils.IsUniqueViolationByField(err, "slug") {
+				return 0, apperror.FromError(err).WithDescription("product with 'slug' already exists").WithStatusCode(http.StatusUnprocessableEntity)
+			}
+
 			return 0, apperror.FromError(err).WithDescription("can't process product entity")
 		}
 

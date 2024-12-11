@@ -43,7 +43,7 @@ func TestDeleteCategory(t *testing.T) {
 			name: "Error deleting category - general error",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().DeleteCategory(gomock.Any(), gomock.Any()).Return(int64(0), errors.New("error deleting category"))
+					mocks.repository.EXPECT().DeleteCategory(gomock.Any(), gomock.Any()).Return(int64(0), errors.New("error deleting category"))
 				}),
 			},
 			args: &args{id},
@@ -55,8 +55,8 @@ func TestDeleteCategory(t *testing.T) {
 			name: "Error deleting category cache",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().DeleteCategory(gomock.Any(), gomock.Any()).Return(int64(1), nil)
-					mocks.categoryRepository.EXPECT().DeleteCategoryInCache(gomock.Any(), gomock.Any()).Return(errors.New("error cleaning cache"))
+					mocks.repository.EXPECT().DeleteCategory(gomock.Any(), gomock.Any()).Return(int64(1), nil)
+					mocks.repository.EXPECT().DeleteCategoryInCache(gomock.Any(), gomock.Any()).Return(errors.New("error cleaning cache"))
 				}),
 			},
 			args: &args{id},
@@ -68,8 +68,8 @@ func TestDeleteCategory(t *testing.T) {
 			name: "Success",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().DeleteCategory(gomock.Any(), gomock.Any()).Return(int64(1), nil)
-					mocks.categoryRepository.EXPECT().DeleteCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
+					mocks.repository.EXPECT().DeleteCategory(gomock.Any(), gomock.Any()).Return(int64(1), nil)
+					mocks.repository.EXPECT().DeleteCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
 				}),
 			},
 			args: &args{id},

@@ -36,7 +36,7 @@ func (ctrl *ProductController) CreateProduct(c echo.Context) error {
 		Name:        req.Name,
 		Description: req.Description,
 		Price:       req.Price,
-		CategotyID:  uuid.MustParse(req.CategoryID),
+		CategoryID:  uuid.MustParse(req.CategoryID),
 	})
 	if err != nil {
 		return err

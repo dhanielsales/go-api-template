@@ -58,7 +58,7 @@ func TestCreateCategory(t *testing.T) {
 			name: "Error creating category - unique violation",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().CreateCategory(gomock.Any(), gomock.Any()).Return(int64(0), &pq.Error{Message: "duplicate key value violates unique constraint 'slug'"})
+					mocks.repository.EXPECT().CreateCategory(gomock.Any(), gomock.Any()).Return(int64(0), &pq.Error{Message: "duplicate key value violates unique constraint 'slug'"})
 				}),
 			},
 			args: &args{
@@ -75,7 +75,7 @@ func TestCreateCategory(t *testing.T) {
 			name: "Error creating category - general error",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().CreateCategory(gomock.Any(), gomock.Any()).Return(int64(0), errors.New("error creating category"))
+					mocks.repository.EXPECT().CreateCategory(gomock.Any(), gomock.Any()).Return(int64(0), errors.New("error creating category"))
 				}),
 			},
 			args: &args{
@@ -92,8 +92,8 @@ func TestCreateCategory(t *testing.T) {
 			name: "Error cleaning category cache",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().CreateCategory(gomock.Any(), gomock.Any()).Return(int64(1), nil)
-					mocks.categoryRepository.EXPECT().DeleteAllCategoryInCache(gomock.Any()).Return(errors.New("error cleaning cache"))
+					mocks.repository.EXPECT().CreateCategory(gomock.Any(), gomock.Any()).Return(int64(1), nil)
+					mocks.repository.EXPECT().DeleteAllCategoryInCache(gomock.Any()).Return(errors.New("error cleaning cache"))
 				}),
 			},
 			args: &args{
@@ -110,8 +110,8 @@ func TestCreateCategory(t *testing.T) {
 			name: "Success",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().CreateCategory(gomock.Any(), gomock.Any()).Return(int64(1), nil)
-					mocks.categoryRepository.EXPECT().DeleteAllCategoryInCache(gomock.Any()).Return(nil)
+					mocks.repository.EXPECT().CreateCategory(gomock.Any(), gomock.Any()).Return(int64(1), nil)
+					mocks.repository.EXPECT().DeleteAllCategoryInCache(gomock.Any()).Return(nil)
 				}),
 			},
 			args: &args{

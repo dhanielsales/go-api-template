@@ -18,19 +18,17 @@ func newCategoryService(t *testing.T, expect func(mocks *mocks)) category.Catego
 
 	ctrl := gomock.NewController(t)
 	categoryRepository := models.NewMockCategoryRepository(ctrl)
-	sqldbmock := sqlutils.MockSQLDBHelper(ctrl)
-	categoryRepository.EXPECT().Client().Return(sqldbmock).AnyTimes()
+	categoryRepository.EXPECT().Client().Return(sqlutils.MockSQLDBHelper(ctrl)).AnyTimes()
 	categoryRepository.EXPECT().WithTx(gomock.Any()).Return(categoryRepository).AnyTimes()
 	if expect != nil {
-		expect(&mocks{sqldbmock, categoryRepository})
+		expect(&mocks{categoryRepository})
 	}
 
 	return category.New(categoryRepository)
 }
 
 type mocks struct {
-	sqldbmock          *sqlutils.MockSQLDB
-	categoryRepository *models.MockCategoryRepository
+	repository *models.MockCategoryRepository
 }
 
 func TestNewController(t *testing.T) {

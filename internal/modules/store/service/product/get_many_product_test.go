@@ -1,4 +1,4 @@
-package category_test
+package product_test
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/dhanielsales/go-api-template/internal/models"
-	"github.com/dhanielsales/go-api-template/internal/modules/store/service/category"
+	"github.com/dhanielsales/go-api-template/internal/modules/store/service/product"
 	apperror "github.com/dhanielsales/go-api-template/pkg/apperror"
 	"github.com/dhanielsales/go-api-template/pkg/testutils"
 
@@ -15,19 +15,19 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestGetManyCategory(t *testing.T) {
+func TestGetManyProduct(t *testing.T) {
 	t.Parallel()
 
 	type fields struct {
-		service category.CategoryService
+		service product.ProductService
 	}
 
 	type args struct {
-		params category.GetManyCategoryParams
+		params product.GetManyProductParams
 	}
 
 	type expected struct {
-		data []*models.Category
+		data []*models.Product
 		err  error
 	}
 
@@ -43,22 +43,22 @@ func TestGetManyCategory(t *testing.T) {
 		{
 			name: "Error getting categories - general error",
 			fields: &fields{
-				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.repository.EXPECT().GetManyCategory(gomock.Any(), gomock.Any()).Return(nil, errors.New("error getting categories"))
+				service: newProductService(t, func(mocks *mocks) {
+					mocks.repository.EXPECT().GetManyProduct(gomock.Any(), gomock.Any()).Return(nil, errors.New("error getting categories"))
 				}),
 			},
 			args: &args{
-				params: category.GetManyCategoryParams{},
+				params: product.GetManyProductParams{},
 			},
 			expected: &expected{
-				err: apperror.FromError(errors.New("error getting categories")).WithDescription("can't process category entity"),
+				err: apperror.FromError(errors.New("error getting categories")).WithDescription("can't process product entity"),
 			},
 		},
 		{
 			name: "Success",
 			fields: &fields{
-				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.repository.EXPECT().GetManyCategory(gomock.Any(), gomock.Any()).Return([]*models.Category{{
+				service: newProductService(t, func(mocks *mocks) {
+					mocks.repository.EXPECT().GetManyProduct(gomock.Any(), gomock.Any()).Return([]*models.Product{{
 						ID:   id,
 						Name: "Name",
 						Slug: "name",
@@ -66,11 +66,11 @@ func TestGetManyCategory(t *testing.T) {
 				}),
 			},
 			args: &args{
-				params: category.GetManyCategoryParams{},
+				params: product.GetManyProductParams{},
 			},
 			expected: &expected{
 				err: nil,
-				data: []*models.Category{{
+				data: []*models.Product{{
 					ID:   id,
 					Name: "Name",
 					Slug: "name",
@@ -82,7 +82,7 @@ func TestGetManyCategory(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			affects, err := tt.fields.service.GetManyCategory(ctx, tt.args.params)
+			affects, err := tt.fields.service.GetManyProduct(ctx, tt.args.params)
 
 			testutils.ErrorEqual(t, tt.expected.err, err)
 			assert.Equal(t, tt.expected.data, affects)

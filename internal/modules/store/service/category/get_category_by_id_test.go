@@ -46,7 +46,7 @@ func TestGetCategoryByID(t *testing.T) {
 			name: "Success - fiding in cache",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().GetCategoryInCache(gomock.Any(), gomock.Any()).Return(&models.Category{
+					mocks.repository.EXPECT().GetCategoryInCache(gomock.Any(), gomock.Any()).Return(&models.Category{
 						ID:   id,
 						Name: "Name",
 						Slug: "name",
@@ -67,8 +67,8 @@ func TestGetCategoryByID(t *testing.T) {
 			name: "Error getting category - general error",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().GetCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
-					mocks.categoryRepository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(nil, errors.New("error deleting category"))
+					mocks.repository.EXPECT().GetCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
+					mocks.repository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(nil, errors.New("error deleting category"))
 				}),
 			},
 			args: &args{id},
@@ -80,8 +80,8 @@ func TestGetCategoryByID(t *testing.T) {
 			name: "Error getting category - not found",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().GetCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
-					mocks.categoryRepository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(nil, sql.ErrNoRows)
+					mocks.repository.EXPECT().GetCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
+					mocks.repository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(nil, sql.ErrNoRows)
 				}),
 			},
 			args: &args{id},
@@ -93,13 +93,13 @@ func TestGetCategoryByID(t *testing.T) {
 			name: "Error setting category in cache",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().GetCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
-					mocks.categoryRepository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{
+					mocks.repository.EXPECT().GetCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
+					mocks.repository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{
 						ID:   id,
 						Name: "Name",
 						Slug: "name",
 					}, nil)
-					mocks.categoryRepository.EXPECT().SetCategoryInCache(gomock.Any(), gomock.Any(), gomock.Any()).Return(errors.New("error setting category in cache"))
+					mocks.repository.EXPECT().SetCategoryInCache(gomock.Any(), gomock.Any(), gomock.Any()).Return(errors.New("error setting category in cache"))
 				}),
 			},
 			args: &args{id},
@@ -111,13 +111,13 @@ func TestGetCategoryByID(t *testing.T) {
 			name: "Success",
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
-					mocks.categoryRepository.EXPECT().GetCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
-					mocks.categoryRepository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{
+					mocks.repository.EXPECT().GetCategoryInCache(gomock.Any(), gomock.Any()).Return(nil)
+					mocks.repository.EXPECT().GetCategoryByID(gomock.Any(), gomock.Any()).Return(&models.Category{
 						ID:   id,
 						Name: "Name",
 						Slug: "name",
 					}, nil)
-					mocks.categoryRepository.EXPECT().SetCategoryInCache(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
+					mocks.repository.EXPECT().SetCategoryInCache(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 				}),
 			},
 			args: &args{id},
