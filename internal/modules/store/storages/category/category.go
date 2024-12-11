@@ -14,6 +14,8 @@ type CategoryRepository struct {
 	Redis    *redisutils.Storage
 }
 
+const CATEGORY_CACHE = "category"
+
 func New(sql *sqlutils.Storage, storage storages.Storage, redis *redisutils.Storage) *CategoryRepository {
 	return &CategoryRepository{
 		Postgres: sql,

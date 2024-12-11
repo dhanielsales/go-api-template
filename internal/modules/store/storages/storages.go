@@ -11,6 +11,8 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate mockgen -source ./$GOFILE -destination ./mock_$GOFILE -package $GOPACKAGE
+
 // Storage defines the interface for interacting with storage operations for categories and products.
 type Storage interface {
 	CreateCategory(ctx context.Context, arg db.CreateCategoryParams) (sql.Result, error)

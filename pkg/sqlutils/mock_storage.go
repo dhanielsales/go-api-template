@@ -189,6 +189,60 @@ func (mr *MockQuerierMockRecorder) QueryRowContext(ctx, query any, args ...any) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "QueryRowContext", reflect.TypeOf((*MockQuerier)(nil).QueryRowContext), varargs...)
 }
 
+// MockResult is a mock of Result interface.
+type MockResult struct {
+	ctrl     *gomock.Controller
+	recorder *MockResultMockRecorder
+	isgomock struct{}
+}
+
+// MockResultMockRecorder is the mock recorder for MockResult.
+type MockResultMockRecorder struct {
+	mock *MockResult
+}
+
+// NewMockResult creates a new mock instance.
+func NewMockResult(ctrl *gomock.Controller) *MockResult {
+	mock := &MockResult{ctrl: ctrl}
+	mock.recorder = &MockResultMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockResult) EXPECT() *MockResultMockRecorder {
+	return m.recorder
+}
+
+// LastInsertId mocks base method.
+func (m *MockResult) LastInsertId() (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LastInsertId")
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// LastInsertId indicates an expected call of LastInsertId.
+func (mr *MockResultMockRecorder) LastInsertId() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LastInsertId", reflect.TypeOf((*MockResult)(nil).LastInsertId))
+}
+
+// RowsAffected mocks base method.
+func (m *MockResult) RowsAffected() (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RowsAffected")
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RowsAffected indicates an expected call of RowsAffected.
+func (mr *MockResultMockRecorder) RowsAffected() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RowsAffected", reflect.TypeOf((*MockResult)(nil).RowsAffected))
+}
+
 // MockSQLTX is a mock of SQLTX interface.
 type MockSQLTX struct {
 	ctrl     *gomock.Controller

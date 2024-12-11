@@ -93,7 +93,7 @@ func TestCreateCategory(t *testing.T) {
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
 					mocks.repository.EXPECT().CreateCategory(gomock.Any(), gomock.Any()).Return(int64(1), nil)
-					mocks.repository.EXPECT().DeleteAllCategoryInCache(gomock.Any()).Return(errors.New("error cleaning cache"))
+					mocks.repository.EXPECT().DeleteAllCategoriesInCache(gomock.Any()).Return(errors.New("error cleaning cache"))
 				}),
 			},
 			args: &args{
@@ -111,7 +111,7 @@ func TestCreateCategory(t *testing.T) {
 			fields: &fields{
 				service: newCategoryService(t, func(mocks *mocks) {
 					mocks.repository.EXPECT().CreateCategory(gomock.Any(), gomock.Any()).Return(int64(1), nil)
-					mocks.repository.EXPECT().DeleteAllCategoryInCache(gomock.Any()).Return(nil)
+					mocks.repository.EXPECT().DeleteAllCategoriesInCache(gomock.Any()).Return(nil)
 				}),
 			},
 			args: &args{

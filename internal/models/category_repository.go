@@ -17,7 +17,7 @@ type CategoryRepository interface {
 	DeleteCategory(ctx context.Context, id uuid.UUID) (int64, error)
 	GetCategoryByID(ctx context.Context, id uuid.UUID) (*Category, error)
 	GetManyCategory(ctx context.Context, data GetManyCategoryPayload) ([]*Category, error)
-	DeleteAllCategoryInCache(ctx context.Context) error
+	DeleteAllCategoriesInCache(ctx context.Context) error
 	DeleteCategoryInCache(ctx context.Context, categoryID uuid.UUID) error
 	GetCategoryInCache(ctx context.Context, categoryID uuid.UUID) *Category
 	SetCategoryInCache(ctx context.Context, category *Category, expiration time.Duration) error

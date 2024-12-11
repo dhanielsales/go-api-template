@@ -72,18 +72,18 @@ func (mr *MockCategoryRepositoryMockRecorder) CreateCategory(ctx, category any) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCategory", reflect.TypeOf((*MockCategoryRepository)(nil).CreateCategory), ctx, category)
 }
 
-// DeleteAllCategoryInCache mocks base method.
-func (m *MockCategoryRepository) DeleteAllCategoryInCache(ctx context.Context) error {
+// DeleteAllCategoriesInCache mocks base method.
+func (m *MockCategoryRepository) DeleteAllCategoriesInCache(ctx context.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteAllCategoryInCache", ctx)
+	ret := m.ctrl.Call(m, "DeleteAllCategoriesInCache", ctx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// DeleteAllCategoryInCache indicates an expected call of DeleteAllCategoryInCache.
-func (mr *MockCategoryRepositoryMockRecorder) DeleteAllCategoryInCache(ctx any) *gomock.Call {
+// DeleteAllCategoriesInCache indicates an expected call of DeleteAllCategoriesInCache.
+func (mr *MockCategoryRepositoryMockRecorder) DeleteAllCategoriesInCache(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAllCategoryInCache", reflect.TypeOf((*MockCategoryRepository)(nil).DeleteAllCategoryInCache), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAllCategoriesInCache", reflect.TypeOf((*MockCategoryRepository)(nil).DeleteAllCategoriesInCache), ctx)
 }
 
 // DeleteCategory mocks base method.

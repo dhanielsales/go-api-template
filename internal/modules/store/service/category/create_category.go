@@ -32,7 +32,7 @@ func (s *service) CreateCategory(ctx context.Context, data CreateCategoryPayload
 			return 0, apperror.FromError(err).WithDescription("can't process category entity")
 		}
 
-		err = s.repository.DeleteAllCategoryInCache(ctx)
+		err = s.repository.DeleteAllCategoriesInCache(ctx)
 		if err != nil {
 			return 0, apperror.FromError(err).WithDescription("can't process category entity")
 		}
