@@ -7,6 +7,9 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate mockgen -source ./$GOFILE -destination ./mock_$GOFILE -package $GOPACKAGE
+
+// TODO
 type ProductRepository interface {
 	CreateProduct(ctx context.Context, data *Product) (int64, error)
 	UpdateProduct(ctx context.Context, id uuid.UUID, data *Product) (int64, error)
@@ -18,6 +21,7 @@ type ProductRepository interface {
 	Client() sqlutils.SQLDB
 }
 
+// TODO
 type GetManyProductPayload struct {
 	Page           string
 	PerPage        string

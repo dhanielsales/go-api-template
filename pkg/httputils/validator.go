@@ -7,6 +7,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+//go:generate mockgen -source ./$GOFILE -destination ./mock_$GOFILE -package $GOPACKAGE
+
 // ErrorDetail represents detailed information about an error that occurred during validation.
 type ErrorDetail struct {
 	Error       bool   `json:"-"`
@@ -22,20 +24,27 @@ type GlobalErrorHandlerResp struct {
 	Message string `json:"message"`
 }
 
-// Validator handles the decoding and validation of incoming request data.
-type Validator struct {
+// TODO
+type Validator[C any] interface {
+	DecodeAndValidate(c C, target any) error
+}
+
+// TODO
+type validator struct {
 	transcrib transcriber.Transcriber
 }
 
-// NewValidator creates a new instance of Validator with the provided transcriber.
-func NewValidator(transcrib transcriber.Transcriber) *Validator {
-	return &Validator{
+var _ Validator[echo.Context] = (*validator)(nil)
+
+// NewValidator creates a new instance of validator with the provided transcriber.
+func NewValidator(transcrib transcriber.Transcriber) *validator {
+	return &validator{
 		transcrib: transcrib,
 	}
 }
 
 // DecodeAndValidate decodes the request body and validates the target object.
-func (v Validator) DecodeAndValidate(c echo.Context, target any) error {
+func (v validator) DecodeAndValidate(c echo.Context, target any) error {
 	if v.transcrib == nil {
 		return apperror.New("transcrib is nil")
 	}

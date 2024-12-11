@@ -8,6 +8,9 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate mockgen -source ./$GOFILE -destination ./mock_$GOFILE -package $GOPACKAGE
+
+// TODO
 type CategoryRepository interface {
 	CreateCategory(ctx context.Context, category *Category) (int64, error)
 	UpdateCategory(ctx context.Context, id uuid.UUID, category *Category) (int64, error)
@@ -22,6 +25,7 @@ type CategoryRepository interface {
 	Client() sqlutils.SQLDB
 }
 
+// TODO
 type GetManyCategoryPayload struct {
 	Page           string
 	PerPage        string

@@ -8,11 +8,11 @@ import (
 )
 
 type ProductController struct {
-	validator *httputils.Validator
+	validator httputils.Validator[echo.Context]
 	service   product.ProductService
 }
 
-func New(service product.ProductService, validator *httputils.Validator) *ProductController {
+func New(service product.ProductService, validator httputils.Validator[echo.Context]) *ProductController {
 	return &ProductController{
 		validator: validator,
 		service:   service,

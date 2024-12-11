@@ -8,11 +8,11 @@ import (
 )
 
 type CategoryController struct {
-	validator *httputils.Validator
+	validator httputils.Validator[echo.Context]
 	service   category.CategoryService
 }
 
-func New(service category.CategoryService, validator *httputils.Validator) *CategoryController {
+func New(service category.CategoryService, validator httputils.Validator[echo.Context]) *CategoryController {
 	return &CategoryController{
 		validator: validator,
 		service:   service,

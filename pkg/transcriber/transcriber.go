@@ -3,6 +3,7 @@ package transcriber
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -53,7 +54,7 @@ func (v *transcriber) DecodeAndValidate(ctx context.Context, source io.Reader, t
 	}
 
 	decoder := json.NewDecoder(source)
-	if err := decoder.Decode(target); err != nil && err != io.EOF {
+	if err := decoder.Decode(target); err != nil && !errors.Is(err, io.EOF) {
 		return v.formatDecodeError(err)
 	}
 

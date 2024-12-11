@@ -13,9 +13,11 @@ import (
 
 	servicecategory "github.com/dhanielsales/go-api-template/internal/modules/store/service/category"
 	serviceproduct "github.com/dhanielsales/go-api-template/internal/modules/store/service/product"
+
+	"github.com/labstack/echo/v4"
 )
 
-func Bootstrap(sqlStorage *sqlutils.Storage, redisStorage *redisutils.Storage, httpServer *httputils.HTTPServer, validator *httputils.Validator) {
+func Bootstrap(sqlStorage *sqlutils.Storage, redisStorage *redisutils.Storage, httpServer *httputils.HTTPServer, validator httputils.Validator[echo.Context]) {
 	categoryRepo := storagescategory.NewWithDefaultStorage(sqlStorage, redisStorage)
 	productRepo := storagesproduct.NewWithDefaultStorage(sqlStorage)
 

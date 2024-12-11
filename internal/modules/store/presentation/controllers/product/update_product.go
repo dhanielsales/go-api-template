@@ -34,7 +34,7 @@ func (t *ProductController) UpdateProduct(c echo.Context) error {
 	}
 
 	var req UpdateProductRequest
-	if err := t.validator.DecodeAndValidate(c, req); err != nil {
+	if err := t.validator.DecodeAndValidate(c, &req); err != nil {
 		return err
 	}
 

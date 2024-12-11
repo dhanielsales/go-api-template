@@ -28,7 +28,7 @@ import (
 func (ctrl *ProductController) CreateProduct(c echo.Context) error {
 	var req CreateProductRequest
 
-	if err := ctrl.validator.DecodeAndValidate(c, req); err != nil {
+	if err := ctrl.validator.DecodeAndValidate(c, &req); err != nil {
 		return err
 	}
 

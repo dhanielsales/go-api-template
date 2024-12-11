@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"strconv"
+
+	gomock "go.uber.org/mock/gomock"
 )
 
 // PaginationResult represents pagination parameters with limit and offset values.
@@ -94,4 +96,14 @@ func WithTx[R any](ctx context.Context, db SQLDB, f func(q SQLTX) (R, error)) (R
 	}
 
 	return result, nil
+}
+
+func MockSQLDBHelper(ctrl *gomock.Controller) *MockSQLDB {
+	sqldbmock := NewMockSQLDB(ctrl)
+	sqltxmock := NewMockSQLTX(ctrl)
+	sqldbmock.EXPECT().BeginTx(gomock.Any(), gomock.Any()).Return(sqltxmock, nil).AnyTimes()
+	sqltxmock.EXPECT().Rollback().Return(nil).AnyTimes()
+	sqltxmock.EXPECT().Commit().Return(nil).AnyTimes()
+
+	return sqldbmock
 }

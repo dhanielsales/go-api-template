@@ -43,5 +43,5 @@ https://railway.app/pricing
 - [x] Refactor sqlutils to enable interface to unit tests
 - [x] Refactor rediutils to enable interface to unit tests
 - [ ] Add tests
-- [ ] Refact logger using logruss
+- [ ] Refact logger using zap
 - [ ] Add simple auth using package and an interface to able to setup your own auth or clerk
